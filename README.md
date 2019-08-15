@@ -9,10 +9,10 @@
 Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time for tasks.
 
 ## Features
-* Support for showing accumulated and average timings for one or more tasks
-* "ASCII table" support for detailed result output on the console or in a log file (80 characters wide by default)
-* No dependencies
-* High test coverage
+  * Support for showing accumulated and average timings for one or more tasks
+  * "ASCII table" support for detailed result output on the console or in a log file (80 characters wide by default)
+  * No dependencies
+  * High test coverage
 
 ## Getting started
 ```java
@@ -41,23 +41,23 @@ Output:
 | bar ba                |       1.18 μs |    117.64 ms |       100,000 |  33.2% |
 | baz baz baz baz baz b |       1.18 μs |    118.28 ms |       100,000 |  33.4% |
 --------------------------------------------------------------------------------
-| Total: 353.98m                                                               |
+| Total: 353.98 ms                                                               |
 --------------------------------------------------------------------------------
 ```
 
 ## Example outputs
-```
+```bash
 --------------------------------------------------------------------------------
 | Task                  | Average      | Total        | Invocations   | %      |    
 --------------------------------------------------------------------------------
-| lookup                |     188.88 μ |     37.048 s |       196,143 |  79.7% |
-| transform             |      32.62 μ |      6.398 s |       196,143 |  13.8% |
+| lookup                |    188.88 μs |     37.048 s |       196,143 |  79.7% |
+| transform             |     32.62 μs |      6.398 s |       196,143 |  13.8% |
 | sort                  |    306.97 ms |    306.97 ms |             1 |   0.7% |
 | xml                   |     16.68 ms |     16.68 ms |             1 |   0.0% |
 | serializing           |      1.677 s |      1.677 s |             1 |   3.6% |
 | gzip-compressing             1.043 s |      1.043 s |             1 |   2.2% |
 --------------------------------------------------------------------------------
-| Total: 46.489s                                                               |
+| Total: 46.489 s                                                               |
 --------------------------------------------------------------------------------
 ```
 
@@ -65,5 +65,5 @@ Output:
 This project is utilizing `System.nanoTime()` which has some inherent issues with very quick task times. It does have a nanosecond resolution, but not a nanosecond precision. These are still usually orders of magnitude away from what you are trying to measure, so it is not a problem. If you are micro-benchmarking, consider using a framework like [JMH](https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-core)
 
 If you would like to know more:
-* https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html#nanoTime()
-* https://shipilev.net/blog/2014/nanotrusting-nanotime/#_timers
+  * [https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html#nanoTime()](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html#nanoTime())
+  * [https://shipilev.net/blog/2014/nanotrusting-nanotime/#_timers](https://shipilev.net/blog/2014/nanotrusting-nanotime/#_timers)
