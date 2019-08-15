@@ -35,14 +35,13 @@ public class Report
     public static String prettyPrint(Chronograph chronograph)
     {
         final StringBuilder sb = new StringBuilder();
-        sb.append("\n-------------------------------------------------------------------------------\n");
-        sb.append("| Task            | Average        | Total           | Invocations   | %      |    \n");
-        sb.append("-------------------------------------------------------------------------------\n");
+        sb.append("\n--------------------------------------------------------------------------------\n");
+        sb.append("| Task                  | Average      | Total        | Invocations   | %      |    \n");
+        sb.append("--------------------------------------------------------------------------------\n");
 
         final NumberFormat pf = NumberFormat.getPercentInstance();
         pf.setMinimumFractionDigits(1);
         pf.setMaximumFractionDigits(1);
-        pf.setMinimumIntegerDigits(2);
         pf.setGroupingUsed(false);
 
         final NumberFormat nf = NumberFormat.getNumberInstance();
@@ -53,32 +52,48 @@ public class Report
         {
             final TaskInfo task = chronograph.getTaskInfo(name);
 
-            final String totalTaskTimeStr = humanReadableFormat(Duration.ofNanos(task.getTotalTaskTime()));
-            final String avgTaskTimeStr = humanReadableFormat(task.getAverageTaskTime());
+            final String totalTaskTimeStr = DurationUtil.humanReadable(Duration.ofNanos(task.getTotalTaskTime()));
+            final String avgTaskTimeStr = DurationUtil.humanReadable(task.getAverageTaskTime());
             final String invocationsStr = nf.format(task.getInvocationCount());
 
             sb.append("| ");
-            sb.append(adjustWidth(task.getName(), 15)).append(" | ");
-            sb.append(adjustWidth(avgTaskTimeStr, 14)).append(" | ");
-            sb.append(adjustWidth(totalTaskTimeStr, 15)).append(" | ");
-            sb.append(adjustWidth(invocationsStr, 13)).append(" | ");
+            sb.append(adjustPadRight(task.getName(), 21)).append(" | ");
+            sb.append(adjustPadLeft(avgTaskTimeStr, 12)).append(" | ");
+            sb.append(adjustPadLeft(totalTaskTimeStr, 12)).append(" | ");
+            sb.append(adjustPadLeft(invocationsStr, 13)).append(" | ");
             final Duration totalTime = chronograph.getTotalTime();
             final double pct = totalTime.isZero() ? 0D : task.getTotalTaskTime() / (double) totalTime.toNanos();
-            sb.append(adjustWidth(pf.format(pct), 6)).append(" |");
+            sb.append(adjustPadLeft(pf.format(pct), 6)).append(" |");
             sb.append("\n");
+        }
+
+        if (chronograph.getTaskNames().size() > 1)
+        {
+            sb.append(totals(chronograph));
+        }
+
+        return sb.toString();
+    }
+
+    private static String totals(final Chronograph chronograph)
+    {
+        return repeat("-", 80) + "\n" +
+                "| " + adjustPadRight("Total" + ": " + DurationUtil.humanReadable(chronograph.getTotalTime()), 76) + " |" + "\n" +
+                repeat("-", 80) + "\n";
+    }
+
+    private static String repeat(final String s, final int count)
+    {
+        final StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < count; i++)
+        {
+            sb.append(s);
         }
         return sb.toString();
     }
 
-    private static String humanReadableFormat(Duration duration)
-    {
-        return duration.toString()
-                .substring(2)
-                .replaceAll("(\\d[HMS])(?!$)", "$1 ")
-                .toLowerCase();
-    }
 
-    private static String adjustWidth(final String s, final int width)
+    private static String adjustPadRight(final String s, final int width)
     {
         if (s.length() >= width)
         {
@@ -89,6 +104,22 @@ public class Report
         for (int i = s.length(); i < width; i++)
         {
             result[i] = ' ';
+        }
+        return new String(result);
+    }
+
+    private static String adjustPadLeft(final String s, final int width)
+    {
+        if (s.length() >= width)
+        {
+            return s.substring(0, width);
+        }
+
+        final char[] result = new char[width];
+        Arrays.fill(result, ' ');
+        for (int i = 0; i < s.length(); i++)
+        {
+            result[i + (width - s.length())] = s.charAt(i);
         }
         return new String(result);
     }

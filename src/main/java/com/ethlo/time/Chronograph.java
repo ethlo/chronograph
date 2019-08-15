@@ -28,7 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -54,7 +53,7 @@ public class Chronograph
             throw new IllegalArgumentException("task cannot be null");
         }
 
-        final TaskInfo taskTiming = taskInfos.computeIfAbsent(task, taskName->{
+        final TaskInfo taskTiming = taskInfos.computeIfAbsent(task, taskName -> {
             order.add(taskName);
             return new TaskInfo(taskName);
         });
@@ -64,7 +63,7 @@ public class Chronograph
     public void stop()
     {
         final long ts = System.nanoTime();
-        taskInfos.values().forEach(task->task.stopped(ts, true));
+        taskInfos.values().forEach(task -> task.stopped(ts, true));
     }
 
     public boolean isAnyRunning()
@@ -117,6 +116,7 @@ public class Chronograph
 
     /**
      * See {@link Report#prettyPrint(Chronograph)}
+     *
      * @return A formatted string with the task details
      */
     public String prettyPrint()

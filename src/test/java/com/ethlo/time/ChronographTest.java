@@ -132,6 +132,49 @@ public class ChronographTest
         assertThat(chronograph.getTaskNames()).isEmpty();
     }
 
+    @Test
+    public void testIsRunning()
+    {
+        final Chronograph chronograph = Chronograph.create();
+        assertThat(chronograph.isRunning(taskName)).isFalse();
+        chronograph.start(taskName);
+        assertThat(chronograph.isRunning(taskName)).isTrue();
+        chronograph.stop(taskName);
+        assertThat(chronograph.isRunning(taskName)).isFalse();
+    }
+
+    @Test
+    public void getTaskInfo()
+    {
+        final Chronograph chronograph = Chronograph.create();
+        chronograph.start("a");
+        chronograph.start("b");
+        chronograph.start("c");
+        chronograph.stop();
+        assertThat(chronograph.getTaskInfo()).hasSize(3);
+    }
+
+    @Test
+    public void getTotalTaskTimeForEmpty()
+    {
+        final Chronograph chronograph = Chronograph.create();
+        assertThat(chronograph.getTotalTime()).isEqualTo(Duration.ZERO);
+        chronograph.start(taskName);
+        assertThat(chronograph.getTotalTime()).isEqualTo(Duration.ZERO);
+        chronograph.stop();
+        assertThat(chronograph.getTotalTime()).isNotEqualTo(Duration.ZERO);
+    }
+
+    @Test
+    public void testIsAnyRunning()
+    {
+        final Chronograph chronograph = Chronograph.create();
+        chronograph.start(taskName);
+        assertThat(chronograph.isAnyRunning()).isTrue();
+        chronograph.stop();
+        assertThat(chronograph.isAnyRunning()).isFalse();
+    }
+
     private static final long SLEEP_PRECISION = TimeUnit.MILLISECONDS.toNanos(2);
     private static final long SPIN_YIELD_PRECISION = TimeUnit.MILLISECONDS.toNanos(2);
 
