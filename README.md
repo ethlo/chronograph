@@ -11,3 +11,22 @@ Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time fo
 * Support for showing accumulated timings for tasks
 * ASCII table support for detailed result output
 * No dependencies
+
+## Getting started
+```java
+
+final Chronograph chrono = Chronograph.create();
+chrono.start("my-first-task");
+performSomeTask();
+chrono.stop();
+System.out.println(chrono.prettyPrint());
+
+``` 
+
+Example output:
+```javascript
+--------------------------------------------------------------------------------
+&#124; Task                  &#124; Average      &#124; Total        &#124; Invocations   &#124; %      &#124;    
+--------------------------------------------------------------------------------
+&#124; my-first-task         &#124;      888.84μ &#124;       9.288s &#124;        10,449 &#124;  100%  &#124;
+```

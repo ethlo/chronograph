@@ -9,9 +9,9 @@ package com.ethlo.time;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,9 +21,9 @@ package com.ethlo.time;
  */
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -56,6 +56,8 @@ public class ChronographTest
         final Chronograph chronograph = Chronograph.create();
 
         final String taskName2 = "bar";
+        final String taskName3 = "baz baz baz baz baz baz";
+
         for (int i = 1; i <= 100_000; i++)
         {
             chronograph.start(taskName);
@@ -65,6 +67,10 @@ public class ChronographTest
             chronograph.start(taskName2);
             microsecondTask();
             chronograph.stop(taskName2);
+
+            chronograph.start(taskName3);
+            microsecondTask();
+            chronograph.stop(taskName3);
         }
 
         logger.info(chronograph.prettyPrint());
@@ -74,7 +80,7 @@ public class ChronographTest
     {
         try
         {
-            sleepNanos(1_000_000);
+            SleepUtil.sleepNanos(1_000_000);
         }
         catch (InterruptedException e)
         {
@@ -86,7 +92,7 @@ public class ChronographTest
     {
         try
         {
-            sleepNanos(1_000);
+            SleepUtil.sleepNanos(1_000);
         }
         catch (InterruptedException e)
         {
@@ -99,6 +105,17 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.stop(taskName);
+        fail("Should throw");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void stopAfterStopped()
+    {
+        final Chronograph chronograph = Chronograph.create();
+        chronograph.start(taskName);
+        chronograph.stop(taskName);
+        chronograph.stop(taskName);
+        fail("Should throw");
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -106,6 +123,15 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(null);
+        fail("Should throw");
+    }
+
+    @Test(expected = IllegalStateException.class)
+    public void sequentialStartk()
+    {
+        final Chronograph chronograph = Chronograph.create();
+        chronograph.start(taskName);
+        chronograph.start(taskName);
     }
 
     @Test
@@ -175,30 +201,11 @@ public class ChronographTest
         assertThat(chronograph.isAnyRunning()).isFalse();
     }
 
-    private static final long SLEEP_PRECISION = TimeUnit.MILLISECONDS.toNanos(2);
-    private static final long SPIN_YIELD_PRECISION = TimeUnit.MILLISECONDS.toNanos(2);
-
-    public static void sleepNanos(long nanoDuration) throws InterruptedException
+    @Test
+    public void testGetAverageForNonStoppedTask()
     {
-        final long end = System.nanoTime() + nanoDuration;
-        long timeLeft = nanoDuration;
-        do
-        {
-            if (timeLeft > SLEEP_PRECISION)
-            {
-                Thread.sleep(1);
-            }
-            else
-            {
-                if (timeLeft > SPIN_YIELD_PRECISION)
-                {
-                    Thread.yield();
-                }
-            }
-            timeLeft = end - System.nanoTime();
-
-            if (Thread.interrupted())
-                throw new InterruptedException();
-        } while (timeLeft > 0);
+        final Chronograph chronograph = Chronograph.create();
+        chronograph.start(taskName);
+        assertThat(chronograph.getTaskInfo(taskName).getAverageTaskTime()).isEqualTo(Duration.ZERO);
     }
 }
