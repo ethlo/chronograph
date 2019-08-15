@@ -9,9 +9,10 @@
 Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time for tasks.
 
 ## Features
-* Support for showing accumulated timings for tasks
-* ASCII table support for detailed result output
+* Support for showing accumulated and average timings for one or more tasks
+* "ASCII table" support for detailed result output on the console or in a log file (80 characters wide by default)
 * No dependencies
+* High test coverage
 
 ## Getting started
 ```java
