@@ -34,6 +34,11 @@ public class Report
      */
     public static String prettyPrint(Chronograph chronograph)
     {
+        if (chronograph.getTaskInfo().isEmpty())
+        {
+            return "No performance data";
+        }
+
         final StringBuilder sb = new StringBuilder();
         sb.append("\n--------------------------------------------------------------------------------\n");
         sb.append("| Task                  | Average      | Total        | Invocations   | %      |    \n");

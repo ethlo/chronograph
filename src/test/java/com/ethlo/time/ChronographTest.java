@@ -140,8 +140,14 @@ public class ChronographTest
         fail("Should throw");
     }
 
+    @Test
+    public void noData()
+    {
+        assertThat(Chronograph.create().prettyPrint()).isEqualTo("No performance data");
+    }
+
     @Test(expected = IllegalStateException.class)
-    public void sequentialStartk()
+    public void sequentialStart()
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);

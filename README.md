@@ -19,22 +19,14 @@ Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time fo
 final Chronograph chronograph = Chronograph.create();
 
 final String taskName1 = "foo"
-final String taskName2 = "bar";
+final String taskName2 = "bar bar";
 final String taskName3 = "baz baz baz baz baz baz";
 
 for (int i = 0; i < 100_000; i++)
 {
-    chronograph.start(taskName);
-    microsecondTask();
-    chronograph.stop(taskName);
-
-    chronograph.start(taskName2);
-    microsecondTask();
-    chronograph.stop(taskName2);
-
-    chronograph.start(taskName3);
-    microsecondTask();
-    chronograph.stop(taskName3);
+    chronograph.timed("foo", this::microsecondTask);
+    chronograph.timed("bar", this::microsecondTask);
+    chronograph.timed("baz baz baz baz baz baz", this::microsecondTask);
 }
 
 System.out.println(chronograph.prettyPrint());
@@ -45,9 +37,9 @@ Output:
 --------------------------------------------------------------------------------
 | Task                  | Average      | Total        | Invocations   | %      |    
 --------------------------------------------------------------------------------
-| a long task name      |        1.18μ |      118.06m |       100,000 |  33.4% |
-| bar                   |        1.18μ |      117.64m |       100,000 |  33.2% |
-| baz baz baz baz baz b |        1.18μ |      118.28m |       100,000 |  33.4% |
+| a long task name      |       1.18 μ |    118.06 ms |       100,000 |  33.4% |
+| bar ba                |       1.18 μ |    117.64 ms |       100,000 |  33.2% |
+| baz baz baz baz baz b |       1.18 μ |    118.28 ms |       100,000 |  33.4% |
 --------------------------------------------------------------------------------
 | Total: 353.98m                                                               |
 --------------------------------------------------------------------------------

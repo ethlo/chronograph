@@ -74,7 +74,7 @@ public class DurationUtil
             dfSec.setMaximumFractionDigits(0);
             dfSec.setMinimumIntegerDigits(3);
             dfSec.setMaximumIntegerDigits(3);
-            sb.append(seconds).append('.').append(dfSec.format(nanos / (double) NANOS_PER_MILLI)).append("s");
+            sb.append(seconds).append('.').append(dfSec.format(nanos / (double) NANOS_PER_MILLI)).append(" s");
         }
         else if (hasSecondOrMore)
         {
@@ -85,17 +85,17 @@ public class DurationUtil
             // Sub-second
             if (millis > 0)
             {
-                sb.append(df.format(nanos / (double) NANOS_PER_MILLI)).append("m ");
+                sb.append(df.format(nanos / (double) NANOS_PER_MILLI)).append(" ms ");
             }
 
             if (millis == 0 && micros > 0)
             {
-                sb.append(df.format(nanos / (double) NANOS_PER_MICRO)).append("μ ");
+                sb.append(df.format(nanos / (double) NANOS_PER_MICRO)).append(" μ ");
             }
 
             if (millis == 0 && micros == 0 && nano > 0)
             {
-                sb.append(nano).append("n ");
+                sb.append(nano).append(" n ");
             }
         }
 
