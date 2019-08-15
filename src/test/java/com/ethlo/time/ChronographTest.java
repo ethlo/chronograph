@@ -51,28 +51,29 @@ public class ChronographTest
     }
 
     @Test
-    public void startStopSequenceMultipleTasks() throws InterruptedException
+    public void sequenceMultipleFunctionTasks()
     {
         final Chronograph chronograph = Chronograph.create();
 
-        final String taskName2 = "bar";
-        final String taskName3 = "baz baz baz baz baz baz";
+        for (int i = 1; i <= 100_000; i++)
+        {
+            assertThat((int)chronograph.timedFunction("foo", this::microsecondTask, 1)).isEqualTo(2);
+        }
+    }
+
+    @Test
+    public void sequenceMultipleRunnableTasks()
+    {
+        final Chronograph chronograph = Chronograph.create();
 
         for (int i = 1; i <= 100_000; i++)
         {
-            chronograph.start(taskName);
-            microsecondTask();
-            chronograph.stop(taskName);
-
-            chronograph.start(taskName2);
-            microsecondTask();
-            chronograph.stop(taskName2);
-
-            chronograph.start(taskName3);
-            microsecondTask();
-            chronograph.stop(taskName3);
+            chronograph.timed("foo", this::microsecondTask);
+            chronograph.timed("bar", this::microsecondTask);
+            chronograph.timed("baz baz baz baz baz baz", this::microsecondTask);
         }
 
+        assertThat(chronograph.getTaskInfo()).hasSize(3);
         logger.info(chronograph.prettyPrint());
     }
 
@@ -93,6 +94,19 @@ public class ChronographTest
         try
         {
             SleepUtil.sleepNanos(1_000);
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private int microsecondTask(int input)
+    {
+        try
+        {
+            SleepUtil.sleepNanos(1_000);
+            return input + input;
         }
         catch (InterruptedException e)
         {
@@ -132,6 +146,7 @@ public class ChronographTest
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
         chronograph.start(taskName);
+        fail("Should throw");
     }
 
     @Test
@@ -143,7 +158,9 @@ public class ChronographTest
             chronograph.start(taskName);
             chronograph.stop(taskName);
         }
-        logger.info("Granularity: {}", chronograph.getTaskInfo(taskName).getAverageTaskTime().getNano() + " nanos");
+        final long avg = chronograph.getTaskInfo(taskName).getAverageTaskTime().getNano();
+        logger.info("Granularity: {}", avg + " nanos");
+        assertThat(avg).isGreaterThan(0);
     }
 
     @Test

@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Function;
 
 public class Chronograph
 {
@@ -127,5 +128,31 @@ public class Chronograph
     public Duration getTotalTime()
     {
         return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotalTaskTime).reduce(0L, Long::sum));
+    }
+
+    public void timed(final String taskName, final Runnable task)
+    {
+        try
+        {
+            start(taskName);
+            task.run();
+        }
+        finally
+        {
+            stop(taskName);
+        }
+    }
+
+    public <R,T> R timedFunction(final String taskName, final Function<T, R> task, T input)
+    {
+        try
+        {
+            start(taskName);
+            return task.apply(input);
+        }
+        finally
+        {
+            stop(taskName);
+        }
     }
 }
