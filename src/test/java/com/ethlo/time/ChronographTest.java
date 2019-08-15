@@ -56,7 +56,7 @@ public class ChronographTest
         final Chronograph chronograph = Chronograph.create();
 
         final String taskName2 = "bar";
-        for (int i = 1; i <= 1_000_000; i++)
+        for (int i = 1; i <= 100_000; i++)
         {
             chronograph.start(taskName);
             microsecondTask();
@@ -112,7 +112,7 @@ public class ChronographTest
     public void testGranularity()
     {
         final Chronograph chronograph = Chronograph.create();
-        for (int i = 0; i < 10_000_000; i++)
+        for (int i = 0; i < 1_000_000; i++)
         {
             chronograph.start(taskName);
             chronograph.stop(taskName);

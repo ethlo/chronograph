@@ -9,9 +9,9 @@ package com.ethlo.time;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,7 +23,6 @@ package com.ethlo.time;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 class TaskInfo
@@ -34,7 +33,7 @@ class TaskInfo
     private final AtomicLong taskStartTimestamp = new AtomicLong();
     private volatile boolean running = false;
 
-    void started()
+    void start()
     {
         if (running)
         {
@@ -44,20 +43,6 @@ class TaskInfo
 
         // The very last operation
         taskStartTimestamp.set(System.nanoTime());
-    }
-
-    void stopped()
-    {
-        // The very first operation
-        final long ts = System.nanoTime();
-        if (!running)
-        {
-            throw new IllegalStateException("Task " + name + " is not started");
-        }
-        running = false;
-
-        invocationCounts.incrementAndGet();
-        totalTaskTime.addAndGet(ts - taskStartTimestamp.get());
     }
 
     TaskInfo(final String name)
@@ -82,6 +67,33 @@ class TaskInfo
 
     public Duration getAverageTaskTime()
     {
+        final long invocations = getInvocationCount();
+        if (invocations == 0)
+        {
+            return Duration.ZERO;
+        }
+
         return Duration.ofNanos(BigDecimal.valueOf(getTotalTaskTime()).divide(BigDecimal.valueOf(getInvocationCount()), RoundingMode.HALF_UP).longValue());
+    }
+
+    public boolean isRunning()
+    {
+        return running;
+    }
+
+    void stopped(final long ts, boolean ignoreState)
+    {
+        if (!running && !ignoreState)
+        {
+            throw new IllegalStateException("Task " + name + " is not started");
+        }
+
+        if (running)
+        {
+            running = false;
+
+            invocationCounts.incrementAndGet();
+            totalTaskTime.addAndGet(ts - taskStartTimestamp.get());
+        }
     }
 }
