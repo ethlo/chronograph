@@ -90,12 +90,12 @@ public class DurationUtil
 
             if (millis == 0 && micros > 0)
             {
-                sb.append(df.format(nanos / (double) NANOS_PER_MICRO)).append(" μ ");
+                sb.append(df.format(nanos / (double) NANOS_PER_MICRO)).append(" μs ");
             }
 
             if (millis == 0 && micros == 0 && nano > 0)
             {
-                sb.append(nano).append(" n ");
+                sb.append(nano).append(" ns ");
             }
         }
 
