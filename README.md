@@ -5,4 +5,9 @@
 [![Coverage Status](https://coveralls.io/repos/github/ethlo/chronograph/badge.svg?branch=master&kill_cache=1)](https://coveralls.io/github/ethlo/itu?branch=master)
 [![Build Status](https://travis-ci.org/ethlo/chronograph.svg?branch=master)](https://travis-ci.org/ethlo/chronograph)
 
-Java Chronograph (stopwatch) allowing measurement of elapsed time for tasks with support for showing accumulated tables of information
+Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time for tasks.
+
+## Features
+* Support for showing accumulated timings for tasks
+* ASCII table support for detailed result output
+* No dependencies
