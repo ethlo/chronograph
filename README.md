@@ -2,8 +2,9 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.ethlo.time/chronograph.svg)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.ethlo.time%22%20a%3A%22chronograph%22)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](LICENSE)
-[![Coverage Status](https://coveralls.io/repos/github/ethlo/chronograph/badge.svg?branch=master&kill_cache=2)](https://coveralls.io/github/ethlo/chronograph?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/ethlo/chronograph/badge.svg?branch=master&kill_cache=3)](https://coveralls.io/github/ethlo/chronograph?branch=master)
 [![Build Status](https://travis-ci.org/ethlo/chronograph.svg?branch=master)](https://travis-ci.org/ethlo/chronograph)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/0d9d2c9bfddc400f84203aa82a55f211)](https://www.codacy.com/app/morten/chronograph?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ethlo/chronograph&amp;utm_campaign=Badge_Grade)
 
 Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time for tasks.
 
@@ -14,29 +15,28 @@ Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time fo
 
 ## Getting started
 ```java
+final Chronograph chronograph = Chronograph.create();
 
-        final Chronograph chronograph = Chronograph.create();
-        final String taskName1 = "foo"
-        final String taskName2 = "bar";
-        final String taskName3 = "baz baz baz baz baz baz";
+final String taskName1 = "foo"
+final String taskName2 = "bar";
+final String taskName3 = "baz baz baz baz baz baz";
 
-        for (int i = 1; i <= 100_000; i++)
-        {
-            chronograph.start(taskName);
-            microsecondTask();
-            chronograph.stop(taskName);
+for (int i = 0; i < 100_000; i++)
+{
+    chronograph.start(taskName);
+    microsecondTask();
+    chronograph.stop(taskName);
 
-            chronograph.start(taskName2);
-            microsecondTask();
-            chronograph.stop(taskName2);
+    chronograph.start(taskName2);
+    microsecondTask();
+    chronograph.stop(taskName2);
 
-            chronograph.start(taskName3);
-            microsecondTask();
-            chronograph.stop(taskName3);
-        }
+    chronograph.start(taskName3);
+    microsecondTask();
+    chronograph.stop(taskName3);
+}
 
-        logger.info(chronograph.prettyPrint());
-
+System.out.println(chronograph.prettyPrint());
 ``` 
 
 Example output:
