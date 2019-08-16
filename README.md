@@ -6,27 +6,50 @@
 [![Build Status](https://travis-ci.org/ethlo/chronograph.svg?branch=master)](https://travis-ci.org/ethlo/chronograph)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0d9d2c9bfddc400f84203aa82a55f211)](https://www.codacy.com/app/morten/chronograph?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ethlo/chronograph&amp;utm_campaign=Badge_Grade)
 
-Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time for tasks.
+Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
 
 ## Features
-  * Support for showing accumulated and average timings for one or more tasks
+  * Support for showing accumulated task timings. Tasks can be timed multiple times in on instance.
+  * Support for showing total and average timings for one or more tasks.
   * "ASCII table" support for detailed result output on the console or in a log file (80 characters wide by default)
   * No dependencies
-  * High test coverage
 
 ## Getting started
+
+### Simple
+```java  
+final Chronograph chronograph = Chronograph.create();
+chronograph.start("my-task");
+
+// Replace with your task or method call
+service.myTask();
+
+chronograph.stop();
+System.out.println(chronograph.prettyPrint());
+```
+
+Output
+```bash
+--------------------------------------------------------------------------------
+| Task                  | Average      | Total        | Invocations   | %      |    
+--------------------------------------------------------------------------------
+| my-task               |      1.17 ms |      1.17 ms |             1 |  100%  |
+```
+
+### Functional style with lamdas
 ```java
 final Chronograph chronograph = Chronograph.create();
 
-final String taskName1 = "foo"
-final String taskName2 = "bar bar";
-final String taskName3 = "baz baz baz baz baz baz";
-
 for (int i = 0; i < 100_000; i++)
 {
+    // Using `java.lang.Runnable` or other functional interface 
     chronograph.timed("foo", this::microsecondTask);
+    
+    // Using `java.lang.Runnable` or other functional interface again
     chronograph.timed("bar", this::microsecondTask);
-    chronograph.timed("baz baz baz baz baz baz", this::microsecondTask);
+    
+    // Using `java.util.Function` style with input and return value
+    final long result = chronograph.timedFunction("baz baz baz baz baz baz", this::microsecondFunction, 123);
 }
 
 System.out.println(chronograph.prettyPrint());
@@ -62,7 +85,7 @@ Output:
 ```
 
 ## Limitations
-This project is utilizing `System.nanoTime()` which has some inherent issues with very quick task times. It does have a nanosecond resolution, but not a nanosecond precision. These are still usually orders of magnitude away from what you are trying to measure, so it is not a problem. If you are micro-benchmarking, consider using a framework like [JMH](https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-core)
+This project is utilizing `System.nanoTime()` which has some inherent issues with very quick task times. It does have a nanosecond resolution, but not a nanosecond precision. These are still usually orders of magnitude away from what you are trying to measure, so it is not a problem. If you are micro-benchmarking, consider using a framework like [JMH](https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-core).
 
 If you would like to know more:
   * [https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html#nanoTime()](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html#nanoTime())
