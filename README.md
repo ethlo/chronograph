@@ -16,8 +16,20 @@ Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
 
 ## Getting started
 
-### Simple
-```java  
+### Include in your project
+
+#### Maven coordinates
+```xml
+<dependency>
+  <groupId>com.ethlo.time</groupId>
+  <artifactId>chronograph</artifactId>
+  <version>1.0.1</version>
+</dependency>
+``` 
+
+### Simple usage
+
+```java
 final Chronograph chronograph = Chronograph.create();
 chronograph.start("my-task");
 
@@ -28,7 +40,7 @@ chronograph.stop();
 System.out.println(chronograph.prettyPrint());
 ```
 
-Output
+*Output*
 ```bash
 --------------------------------------------------------------------------------
 | Task                  | Average      | Total        | Invocations   | %      |    
@@ -55,7 +67,7 @@ for (int i = 0; i < 100_000; i++)
 System.out.println(chronograph.prettyPrint());
 ``` 
 
-Output:
+*Output*
 ```bash
 --------------------------------------------------------------------------------
 | Task                  | Average      | Total        | Invocations   | %      |    
