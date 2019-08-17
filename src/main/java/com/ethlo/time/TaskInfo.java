@@ -29,12 +29,18 @@ import com.ethlo.util.LongList;
 class TaskInfo
 {
     private final String name;
+    private final LongList data = new LongList();
     private long invocationCounts;
     private long totalTaskTime;
     private long taskStartTimestamp;
     private boolean running = false;
+    private long min = Long.MAX_VALUE;
+    private long max = Long.MIN_VALUE;
 
-    private LongList data = new LongList();
+    TaskInfo(final String name)
+    {
+        this.name = name;
+    }
 
     void start()
     {
@@ -46,11 +52,6 @@ class TaskInfo
 
         // The very last operation
         taskStartTimestamp = System.nanoTime();
-    }
-
-    TaskInfo(final String name)
-    {
-        this.name = name;
     }
 
     public String getName()
@@ -109,17 +110,19 @@ class TaskInfo
             final long duration = ts - taskStartTimestamp;
             totalTaskTime += duration;
             data.add(duration);
+            min = Math.min(min, duration);
+            max = Math.min(max, duration);
         }
     }
 
     public long getMin()
     {
-        return data.getMin();
+        return min;
     }
 
     public long getMax()
     {
-        return data.getMax();
+        return max;
     }
 
     public double getStandardDeviation()

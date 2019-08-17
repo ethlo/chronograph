@@ -117,7 +117,7 @@ public class Chronograph
     }
 
     /**
-     * See {@link Report#prettyPrint(Chronograph)}
+     * See {@link Report#extendedPrettyPrint(Chronograph)}
      *
      * @return A formatted string with the task details
      */
@@ -137,21 +137,19 @@ public class Chronograph
         {
             start(taskName);
             task.run();
-        }
-        finally
+        } finally
         {
             stop(taskName);
         }
     }
 
-    public <R,T> R timedFunction(final String taskName, final Function<T, R> task, T input)
+    public <R, T> R timedFunction(final String taskName, final Function<T, R> task, T input)
     {
         try
         {
             start(taskName);
             return task.apply(input);
-        }
-        finally
+        } finally
         {
             stop(taskName);
         }

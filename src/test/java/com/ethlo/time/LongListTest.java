@@ -1,6 +1,27 @@
 package com.ethlo.time;
 
+/*-
+ * #%L
+ * Chronograph
+ * %%
+ * Copyright (C) 2019 Morten Haraldsen (ethlo)
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -140,19 +161,22 @@ public class LongListTest
         assertThat(l.percentile(90D)).isEqualTo(89);
     }
 
-    @Test
-    public void min()
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public void getOutOfBounds()
     {
-        final LongList l = createList(100, true);
-        assertThat(l.getMin()).isEqualTo(0);
+        final LongList l = createList(10, false);
+        l.get(10);
+        fail("Should throw");
     }
 
-    @Test
-    public void max()
+    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    public void getOutOfBoundsNegative()
     {
-        final LongList l = createList(100, true);
-        assertThat(l.getMax()).isEqualTo(99);
+        final LongList l = createList(10, false);
+        l.get(-1);
+        fail("Should throw");
     }
+
 
     @Test
     public void get()
@@ -169,5 +193,14 @@ public class LongListTest
     @Test
     public void iterator()
     {
+        final LongList l = createList(10, true);
+        l.sort();
+        int count = 0;
+        for (long a : l)
+        {
+            assertThat(a).isEqualTo(count);
+            count++;
+        }
+        assertThat(count).isEqualTo(10);
     }
 }

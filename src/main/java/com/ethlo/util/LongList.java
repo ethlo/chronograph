@@ -1,5 +1,25 @@
 package com.ethlo.util;
 
+/*-
+ * #%L
+ * Chronograph
+ * %%
+ * Copyright (C) 2019 Morten Haraldsen (ethlo)
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 import java.math.BigDecimal;
@@ -11,10 +31,25 @@ import java.util.List;
 public class LongList implements Iterable<Long>
 {
     private final int blockSize = 10000;
-    private int index = 0;
-
     private final List<long[]> blocks = new ArrayList<>(1);
+    private int index = 0;
     private boolean isSorted = false;
+
+    public static BigDecimal sqrt(BigDecimal value, final int SCALE)
+    {
+        BigDecimal TWO = BigDecimal.valueOf(2);
+        BigDecimal x0 = BigDecimal.ZERO;
+        BigDecimal x1 = new BigDecimal(Math.sqrt(value.doubleValue()));
+        while (!x0.equals(x1))
+        {
+            x0 = x1;
+            x1 = value.divide(x0, SCALE, ROUND_HALF_UP);
+            x1 = x1.add(x0);
+            x1 = x1.divide(TWO, SCALE, ROUND_HALF_UP);
+
+        }
+        return x1;
+    }
 
     public void add(long l)
     {
@@ -51,11 +86,14 @@ public class LongList implements Iterable<Long>
             set(i, a);
             set(from, b);
         }
+
+        isSorted = false;
     }
 
     public double percentile(double percentile)
     {
         sort();
+
         final int index = (int) Math.ceil((percentile / 100) * size());
         return get(index - 1);
     }
@@ -85,7 +123,7 @@ public class LongList implements Iterable<Long>
 
     public long get(int index)
     {
-        if (index < 0 || index > this.index)
+        if (index < 0 || index >= this.index)
         {
             throw new ArrayIndexOutOfBoundsException(index);
         }
@@ -126,40 +164,6 @@ public class LongList implements Iterable<Long>
         isSorted = false;
     }
 
-    public long getMin()
-    {
-        if (isSorted)
-        {
-            return get(0);
-        }
-        else
-        {
-            long min = Long.MAX_VALUE;
-            for (long l : this)
-            {
-                min = Math.min(l, min);
-            }
-            return min;
-        }
-    }
-
-    public long getMax()
-    {
-        if (isSorted)
-        {
-            return get(index - 1);
-        }
-        else
-        {
-            long max = Long.MIN_VALUE;
-            for (long l : this)
-            {
-                max = Math.max(l, max);
-            }
-            return max;
-        }
-    }
-
     public double getStandardDeviation()
     {
         final int count = size();
@@ -167,25 +171,9 @@ public class LongList implements Iterable<Long>
         BigDecimal sd = BigDecimal.valueOf(0);
         for (long l : this)
         {
-            final double val = Math.pow( (l - average) / (double) count, 2);
+            final double val = Math.pow((l - average) / (double) count, 2);
             sd = sd.add(BigDecimal.valueOf(val));
         }
         return sqrt(sd, 10).doubleValue();
-    }
-
-    public static BigDecimal sqrt(BigDecimal value, final int SCALE)
-    {
-        BigDecimal TWO = BigDecimal.valueOf(2);
-        BigDecimal x0 = BigDecimal.ZERO;
-        BigDecimal x1 = new BigDecimal(Math.sqrt(value.doubleValue()));
-        while (!x0.equals(x1))
-        {
-            x0 = x1;
-            x1 = value.divide(x0, SCALE, ROUND_HALF_UP);
-            x1 = x1.add(x0);
-            x1 = x1.divide(TWO, SCALE, ROUND_HALF_UP);
-
-        }
-        return x1;
     }
 }

@@ -57,7 +57,7 @@ public class ChronographTest
 
         for (int i = 1; i <= 100_000; i++)
         {
-            assertThat((int)chronograph.timedFunction("foo", this::microsecondTask, 1)).isEqualTo(2);
+            assertThat((int) chronograph.timedFunction("foo", this::microsecondTask, 1)).isEqualTo(2);
         }
     }
 
