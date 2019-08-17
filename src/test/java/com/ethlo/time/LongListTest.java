@@ -37,17 +37,28 @@ public class LongListTest
     public void performanceTestLarge()
     {
         final int size = 10_000_000;
+        final int count = 10;
 
         final Chronograph c = Chronograph.create();
+        c.title("Add " + size + " long values " + count + " times");
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < count; i++)
         {
-            c.timed("Add LongList", () -> createList(size, true));
-            c.timed("Add LinkedList", () -> addLinkedList(size));
-            c.timed("Add ArrayList", () -> addArrayList(size));
+            c.timed("LongList", () -> addLongList(size));
+            c.timed("LinkedList", () -> addLinkedList(size));
+            c.timed("ArrayList", () -> addArrayList(size));
         }
 
         logger.info(c.prettyPrint());
+    }
+
+    private void addLongList(int count)
+    {
+        final LongList l = new LongList();
+        for (long i = 0; i < count; i++)
+        {
+            l.add(i);
+        }
     }
 
     private void addLinkedList(int count)
@@ -76,7 +87,7 @@ public class LongListTest
         {
             l.add(i);
         }
-        assertThat(l.average()).isEqualTo(500.0D);
+        assertThat(l.getAverage()).isEqualTo(500.0D);
     }
 
     @Test
@@ -87,7 +98,7 @@ public class LongListTest
         {
             l.add(Integer.MAX_VALUE);
         }
-        assertThat(l.average()).isEqualTo(Integer.MAX_VALUE);
+        assertThat(l.getAverage()).isEqualTo(Integer.MAX_VALUE);
     }
 
     @Test

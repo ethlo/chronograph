@@ -1,5 +1,8 @@
 package com.ethlo.util;
 
+import static java.math.BigDecimal.ROUND_HALF_UP;
+
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -26,7 +29,7 @@ public class LongList implements Iterable<Long>
         isSorted = false;
     }
 
-    public double average()
+    public double getAverage()
     {
         BigInteger sum = BigInteger.ZERO;
         for (final Long aLong : this)
@@ -155,5 +158,34 @@ public class LongList implements Iterable<Long>
             }
             return max;
         }
+    }
+
+    public double getStandardDeviation()
+    {
+        final int count = size();
+        final double average = getAverage();
+        BigDecimal sd = BigDecimal.valueOf(0);
+        for (long l : this)
+        {
+            final double val = Math.pow( (l - average) / (double) count, 2);
+            sd = sd.add(BigDecimal.valueOf(val));
+        }
+        return sqrt(sd, 10).doubleValue();
+    }
+
+    public static BigDecimal sqrt(BigDecimal value, final int SCALE)
+    {
+        BigDecimal TWO = BigDecimal.valueOf(2);
+        BigDecimal x0 = BigDecimal.ZERO;
+        BigDecimal x1 = new BigDecimal(Math.sqrt(value.doubleValue()));
+        while (!x0.equals(x1))
+        {
+            x0 = x1;
+            x1 = value.divide(x0, SCALE, ROUND_HALF_UP);
+            x1 = x1.add(x0);
+            x1 = x1.divide(TWO, SCALE, ROUND_HALF_UP);
+
+        }
+        return x1;
     }
 }

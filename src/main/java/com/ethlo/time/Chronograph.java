@@ -36,6 +36,7 @@ public class Chronograph
 {
     private final ConcurrentLinkedQueue<String> order = new ConcurrentLinkedQueue<>();
     private final Map<String, TaskInfo> taskInfos;
+    private String title;
 
     private Chronograph()
     {
@@ -122,7 +123,7 @@ public class Chronograph
      */
     public String prettyPrint()
     {
-        return Report.prettyPrint(this);
+        return Report.extendedPrettyPrint(this);
     }
 
     public Duration getTotalTime()
@@ -157,4 +158,13 @@ public class Chronograph
     }
 
 
+    public void title(final String title)
+    {
+        this.title = title;
+    }
+
+    public String getTitle()
+    {
+        return this.title;
+    }
 }

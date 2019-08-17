@@ -27,22 +27,44 @@ import java.util.Arrays;
 
 public class Report
 {
+    public static final String ANSI_RESET = "\u001B[0m";
+    public static final String ANSI_BLACK = "\u001B[30m";
+    public static final String ANSI_RED = "\u001B[31m";
+    public static final String ANSI_GREEN = "\u001B[32m";
+    public static final String ANSI_YELLOW = "\u001B[33m";
+    public static final String ANSI_BLUE = "\u001B[34m";
+    public static final String ANSI_PURPLE = "\u001B[35m";
+    public static final String ANSI_CYAN = "\u001B[36m";
+    public static final String ANSI_WHITE = "\u001B[37m";
+
+    public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
+    public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
+    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
+    public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
+    public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
+    public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
+    public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
+    public static final String ANSI_GRAY_BACKGROUND = "\u001B[47m";
+
     /**
      * Generate a string with a table describing all tasks performed.
      * <p>For custom reporting, call {@link Chronograph#getTaskInfo()} and use the task info
      * directly.
      */
-    public static String prettyPrint(Chronograph chronograph)
+    public static String extendedPrettyPrint(Chronograph chronograph)
     {
         if (chronograph.getTaskInfo().isEmpty())
         {
             return "No performance data";
         }
 
-        final StringBuilder sb = new StringBuilder();
-        sb.append("\n--------------------------------------------------------------------------------\n");
-        sb.append("| Task                  | Average      | Total        | Invocations   | %      |    \n");
-        sb.append("--------------------------------------------------------------------------------\n");
+        final String color = ""; // ANSI_BLUE
+        final String background = ""; // ANSI_GRAY_BACKGROUND;
+
+        final StringBuilder sb = new StringBuilder(chronograph.getTitle() != null ? chronograph.getTitle() : "");
+        sb.append("\n").append(color).append(background).append(repeat("-", 154)).append("\n");
+        sb.append("| Task                  | Average      | Min          | Max          | Median       | Std dev      | 90th pctl    | Total       | Invocations   | %      |    \n");
+        sb.append(repeat("-", 154)).append("\n");
 
         final NumberFormat pf = NumberFormat.getPercentInstance();
         pf.setMinimumFractionDigits(1);
@@ -61,10 +83,24 @@ public class Report
             final String avgTaskTimeStr = DurationUtil.humanReadable(task.getAverage());
             final String invocationsStr = nf.format(task.getInvocations());
 
+            // TODO: Could be easily kept during runs, currently calculated like below
+            final String minStr = DurationUtil.humanReadable(Duration.ofNanos(task.getMin()));
+            final String maxStr = DurationUtil.humanReadable(Duration.ofNanos(task.getMax()));
+
+            // Needs data stored per invocation
+            final String deviationStr = DurationUtil.humanReadable(Duration.ofNanos((long) task.getStandardDeviation()));
+            final String percentileStr = DurationUtil.humanReadable(Duration.ofNanos((long) task.getPercentile(90)));
+            final String medianStr = DurationUtil.humanReadable(Duration.ofNanos((long) task.getMedian()));
+
             sb.append("| ");
             sb.append(adjustPadRight(task.getName(), 21)).append(" | ");
             sb.append(adjustPadLeft(avgTaskTimeStr, 12)).append(" | ");
-            sb.append(adjustPadLeft(totalTaskTimeStr, 12)).append(" | ");
+            sb.append(adjustPadLeft(minStr, 12)).append(" | ");
+            sb.append(adjustPadLeft(maxStr, 12)).append(" | ");
+            sb.append(adjustPadLeft(medianStr, 12)).append(" | ");
+            sb.append(adjustPadLeft(deviationStr, 12)).append(" | ");
+            sb.append(adjustPadLeft(percentileStr, 12)).append(" | ");
+            sb.append(adjustPadLeft(totalTaskTimeStr, 11)).append(" | ");
             sb.append(adjustPadLeft(invocationsStr, 13)).append(" | ");
             final Duration totalTime = chronograph.getTotalTime();
             final double pct = totalTime.isZero() ? 0D : task.getTotal() / (double) totalTime.toNanos();
@@ -80,11 +116,12 @@ public class Report
         return sb.toString();
     }
 
+
     private static String totals(final Chronograph chronograph)
     {
-        return repeat("-", 80) + "\n" +
-                "| " + adjustPadRight("Total" + ": " + DurationUtil.humanReadable(chronograph.getTotalTime()), 76) + " |" + "\n" +
-                repeat("-", 80) + "\n";
+        return repeat("-", 154) + "\n" +
+                "| " + adjustPadRight("Total" + ": " + DurationUtil.humanReadable(chronograph.getTotalTime()), 150) + " |" + "\n" +
+                repeat("-", 154) + "\n";
     }
 
     private static String repeat(final String s, final int count)

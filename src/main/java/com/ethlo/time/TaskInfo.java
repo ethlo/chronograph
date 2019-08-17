@@ -111,4 +111,19 @@ class TaskInfo
             data.add(duration);
         }
     }
+
+    public long getMin()
+    {
+        return data.getMin();
+    }
+
+    public long getMax()
+    {
+        return data.getMax();
+    }
+
+    public double getStandardDeviation()
+    {
+        return data.getStandardDeviation();
+    }
 }
