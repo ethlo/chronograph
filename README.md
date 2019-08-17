@@ -47,7 +47,7 @@ for (int i = 0; i < count; i++)
 System.out.println(c.prettyPrint());
 ```
 
-*Add 10000000 long values 10 times*
+*Add 10,000,000 long values 10 times*
 ```bash
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 | Task                  | Average      | Min          | Max          | Median       | Std dev      | 90th pctl    | Total       | Invocations   | %      |    
