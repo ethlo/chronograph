@@ -1,4 +1,4 @@
-package com.ethlo.time;
+package com.ethlo.util;
 
 /*-
  * #%L
@@ -25,6 +25,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.time.Duration;
 
 import org.junit.Test;
+
+import com.ethlo.time.DurationUtil;
 
 public class DurationUtilTest
 {

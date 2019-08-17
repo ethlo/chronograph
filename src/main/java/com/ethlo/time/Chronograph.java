@@ -36,6 +36,7 @@ public class Chronograph
 {
     private final ConcurrentLinkedQueue<String> order = new ConcurrentLinkedQueue<>();
     private final Map<String, TaskInfo> taskInfos;
+    private String title;
 
     private Chronograph()
     {
@@ -91,7 +92,7 @@ public class Chronograph
 
     public Duration getElapsedTime(final String task)
     {
-        return Duration.of(getTaskInfo(task).getTotalTaskTime(), ChronoUnit.NANOS);
+        return Duration.of(getTaskInfo(task).getTotal(), ChronoUnit.NANOS);
     }
 
     public TaskInfo getTaskInfo(final String task)
@@ -116,18 +117,18 @@ public class Chronograph
     }
 
     /**
-     * See {@link Report#prettyPrint(Chronograph)}
+     * See {@link Report#extendedPrettyPrint(Chronograph)}
      *
      * @return A formatted string with the task details
      */
     public String prettyPrint()
     {
-        return Report.prettyPrint(this);
+        return Report.extendedPrettyPrint(this);
     }
 
     public Duration getTotalTime()
     {
-        return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotalTaskTime).reduce(0L, Long::sum));
+        return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotal).reduce(0L, Long::sum));
     }
 
     public void timed(final String taskName, final Runnable task)
@@ -136,23 +137,32 @@ public class Chronograph
         {
             start(taskName);
             task.run();
-        }
-        finally
+        } finally
         {
             stop(taskName);
         }
     }
 
-    public <R,T> R timedFunction(final String taskName, final Function<T, R> task, T input)
+    public <R, T> R timedFunction(final String taskName, final Function<T, R> task, T input)
     {
         try
         {
             start(taskName);
             return task.apply(input);
-        }
-        finally
+        } finally
         {
             stop(taskName);
         }
+    }
+
+
+    public void title(final String title)
+    {
+        this.title = title;
+    }
+
+    public String getTitle()
+    {
+        return this.title;
     }
 }

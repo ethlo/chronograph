@@ -23,15 +23,24 @@ package com.ethlo.time;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.Duration;
-import java.util.concurrent.atomic.AtomicLong;
+
+import com.ethlo.util.LongList;
 
 class TaskInfo
 {
     private final String name;
-    private final AtomicLong invocationCounts = new AtomicLong();
-    private final AtomicLong totalTaskTime = new AtomicLong();
-    private final AtomicLong taskStartTimestamp = new AtomicLong();
-    private volatile boolean running = false;
+    private final LongList data = new LongList();
+    private long invocationCounts;
+    private long totalTaskTime;
+    private long taskStartTimestamp;
+    private boolean running = false;
+    private long min = Long.MAX_VALUE;
+    private long max = Long.MIN_VALUE;
+
+    TaskInfo(final String name)
+    {
+        this.name = name;
+    }
 
     void start()
     {
@@ -42,12 +51,7 @@ class TaskInfo
         running = true;
 
         // The very last operation
-        taskStartTimestamp.set(System.nanoTime());
-    }
-
-    TaskInfo(final String name)
-    {
-        this.name = name;
+        taskStartTimestamp = System.nanoTime();
     }
 
     public String getName()
@@ -55,25 +59,35 @@ class TaskInfo
         return name;
     }
 
-    public long getInvocationCount()
+    public long getInvocations()
     {
-        return invocationCounts.get();
+        return invocationCounts;
     }
 
-    public long getTotalTaskTime()
+    public long getTotal()
     {
-        return totalTaskTime.get();
+        return totalTaskTime;
     }
 
-    public Duration getAverageTaskTime()
+    public Duration getAverage()
     {
-        final long invocations = getInvocationCount();
+        final long invocations = getInvocations();
         if (invocations == 0)
         {
             return Duration.ZERO;
         }
 
-        return Duration.ofNanos(BigDecimal.valueOf(getTotalTaskTime()).divide(BigDecimal.valueOf(getInvocationCount()), RoundingMode.HALF_UP).longValue());
+        return Duration.ofNanos(BigDecimal.valueOf(getTotal()).divide(BigDecimal.valueOf(getInvocations()), RoundingMode.HALF_UP).longValue());
+    }
+
+    public double getMedian()
+    {
+        return data.getMedian();
+    }
+
+    public double getPercentile(double limit)
+    {
+        return data.getPercentile(limit);
     }
 
     public boolean isRunning()
@@ -92,8 +106,27 @@ class TaskInfo
         {
             running = false;
 
-            invocationCounts.incrementAndGet();
-            totalTaskTime.addAndGet(ts - taskStartTimestamp.get());
+            invocationCounts++;
+            final long duration = ts - taskStartTimestamp;
+            totalTaskTime += duration;
+            data.add(duration);
+            min = Math.min(min, duration);
+            max = Math.min(max, duration);
         }
+    }
+
+    public long getMin()
+    {
+        return min;
+    }
+
+    public long getMax()
+    {
+        return max;
+    }
+
+    public double getStandardDeviation()
+    {
+        return data.getStandardDeviation();
     }
 }

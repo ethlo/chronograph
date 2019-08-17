@@ -29,6 +29,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ethlo.util.SleepUtil;
+
 public class ChronographTest
 {
     private static final Logger logger = LoggerFactory.getLogger(ChronographTest.class);
@@ -57,7 +59,7 @@ public class ChronographTest
 
         for (int i = 1; i <= 100_000; i++)
         {
-            assertThat((int)chronograph.timedFunction("foo", this::microsecondTask, 1)).isEqualTo(2);
+            assertThat((int) chronograph.timedFunction("foo", this::microsecondTask, 1)).isEqualTo(2);
         }
     }
 
@@ -164,7 +166,7 @@ public class ChronographTest
             chronograph.start(taskName);
             chronograph.stop(taskName);
         }
-        final long avg = chronograph.getTaskInfo(taskName).getAverageTaskTime().getNano();
+        final long avg = chronograph.getTaskInfo(taskName).getAverage().getNano();
         logger.info("Granularity: {}", avg + " nanos");
         assertThat(avg).isGreaterThan(0);
     }
@@ -229,6 +231,6 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        assertThat(chronograph.getTaskInfo(taskName).getAverageTaskTime()).isEqualTo(Duration.ZERO);
+        assertThat(chronograph.getTaskInfo(taskName).getAverage()).isEqualTo(Duration.ZERO);
     }
 }
