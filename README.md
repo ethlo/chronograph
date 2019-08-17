@@ -29,73 +29,37 @@ Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
 </dependency>
 ``` 
 
-### Simple usage
-
-```java
-final Chronograph chronograph = Chronograph.create();
-chronograph.start("my-task");
-
-// Replace with your task or method call
-service.myTask();
-
-chronograph.stop();
-System.out.println(chronograph.prettyPrint());
-```
-
-*Output*
-```bash
---------------------------------------------------------------------------------
-| Task                  | Average      | Total        | Invocations   | %      |    
---------------------------------------------------------------------------------
-| my-task               |      1.17 ms |      1.17 ms |             1 |  100%  |
-```
-
 ### Functional style with lamdas
-```java
-final Chronograph chronograph = Chronograph.create();
 
-for (int i = 0; i < 100_000; i++)
+```java
+final int size = 10_000_000;
+final int count = 10;
+
+final Chronograph c = Chronograph.create();
+c.title("Add " + size + " long values " + count + " times");
+
+for (int i = 0; i < count; i++)
 {
-    // Using `java.lang.Runnable` or other functional interface 
-    chronograph.timed("foo", this::microsecondTask);
-    
-    // Using `java.lang.Runnable` or other functional interface again
-    chronograph.timed("bar", this::microsecondTask);
-    
-    // Using `java.util.Function` style with input and return value
-    final long result = chronograph.timedFunction("baz baz baz baz baz baz", this::microsecondFunction, 123);
+    c.timed("LongList", () -> addLongList(size));
+    c.timed("LinkedList", () -> addLinkedList(size));
+    c.timed("ArrayList", () -> addArrayList(size));
 }
 
-System.out.println(chronograph.prettyPrint());
-``` 
+System.out.println(c.prettyPrint());
+```
 
 *Output*
 ```bash
---------------------------------------------------------------------------------
-| Task                  | Average      | Total        | Invocations   | %      |    
---------------------------------------------------------------------------------
-| a long task name      |      1.18 μs |    118.06 ms |       100,000 |  33.4% |
-| bar ba                |      1.18 μs |    117.64 ms |       100,000 |  33.2% |
-| baz baz baz baz baz b |      1.18 μs |    118.28 ms |       100,000 |  33.4% |
---------------------------------------------------------------------------------
-| Total: 353.98 ms                                                             |
---------------------------------------------------------------------------------
-```
-
-## Example outputs
-```bash
---------------------------------------------------------------------------------
-| Task                  | Average      | Total        | Invocations   | %      |    
---------------------------------------------------------------------------------
-| lookup                |    188.88 μs |     37.048 s |       196,143 |  79.7% |
-| transform             |     32.62 μs |      6.398 s |       196,143 |  13.8% |
-| sort                  |    306.97 ms |    306.97 ms |             1 |   0.7% |
-| xml                   |     16.68 ms |     16.68 ms |             1 |   0.0% |
-| serializing           |      1.677 s |      1.677 s |             1 |   3.6% |
-| gzip-compressing      |      1.043 s |      1.043 s |             1 |   2.2% |
---------------------------------------------------------------------------------
-| Total: 46.489 s                                                              |
---------------------------------------------------------------------------------
+Add 10000000 long values 10 times
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+| Task                  | Average      | Min          | Max          | Median       | Std dev      | 90th pctl    | Total       | Invocations   | %      |    
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+| LongList              |     76.56 ms |     70.12 ms |    145.22 ms |     72.83 ms |      2.15 ms |     85.84 ms |   765.65 ms |            10 |   6.5% |
+| LinkedList            |    647.19 ms |     72.84 ms |    145.22 ms |    279.40 ms |    199.95 ms |      1.244 s |     6.472 s |            10 |  55.0% |
+| ArrayList             |    453.46 ms |     81.07 ms |    145.22 ms |     84.41 ms |    337.66 ms |    163.18 ms |     4.535 s |            10 |  38.5% |
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+| Total: 11.772 s                                                                                                                                        |
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 ```
 
 ## Limitations
