@@ -57,9 +57,9 @@ public class Report
         {
             final TaskInfo task = chronograph.getTaskInfo(name);
 
-            final String totalTaskTimeStr = DurationUtil.humanReadable(Duration.ofNanos(task.getTotalTaskTime()));
-            final String avgTaskTimeStr = DurationUtil.humanReadable(task.getAverageTaskTime());
-            final String invocationsStr = nf.format(task.getInvocationCount());
+            final String totalTaskTimeStr = DurationUtil.humanReadable(Duration.ofNanos(task.getTotal()));
+            final String avgTaskTimeStr = DurationUtil.humanReadable(task.getAverage());
+            final String invocationsStr = nf.format(task.getInvocations());
 
             sb.append("| ");
             sb.append(adjustPadRight(task.getName(), 21)).append(" | ");
@@ -67,7 +67,7 @@ public class Report
             sb.append(adjustPadLeft(totalTaskTimeStr, 12)).append(" | ");
             sb.append(adjustPadLeft(invocationsStr, 13)).append(" | ");
             final Duration totalTime = chronograph.getTotalTime();
-            final double pct = totalTime.isZero() ? 0D : task.getTotalTaskTime() / (double) totalTime.toNanos();
+            final double pct = totalTime.isZero() ? 0D : task.getTotal() / (double) totalTime.toNanos();
             sb.append(adjustPadLeft(pf.format(pct), 6)).append(" |");
             sb.append("\n");
         }

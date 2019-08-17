@@ -164,7 +164,7 @@ public class ChronographTest
             chronograph.start(taskName);
             chronograph.stop(taskName);
         }
-        final long avg = chronograph.getTaskInfo(taskName).getAverageTaskTime().getNano();
+        final long avg = chronograph.getTaskInfo(taskName).getAverage().getNano();
         logger.info("Granularity: {}", avg + " nanos");
         assertThat(avg).isGreaterThan(0);
     }
@@ -229,6 +229,6 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        assertThat(chronograph.getTaskInfo(taskName).getAverageTaskTime()).isEqualTo(Duration.ZERO);
+        assertThat(chronograph.getTaskInfo(taskName).getAverage()).isEqualTo(Duration.ZERO);
     }
 }
