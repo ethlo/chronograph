@@ -12,7 +12,8 @@ Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
   * The same task name can be timed multiple times and the times are being accumulated.
   * Support for showing total and average timings for one or more tasks.
   * Human readable durations
-  * ASCII table support for detailed result output on the console or in a log file (80 characters wide by default)
+  * Tuned code for minimal overhead
+  * ASCII table support for detailed result output on the console or in a log file
   * Easy to fetch the underlying data for when you need your own output format
   * No dependencies (~11KB jar file)
 
@@ -36,8 +37,6 @@ final int size = 10_000_000;
 final int count = 10;
 
 final Chronograph c = Chronograph.create();
-c.title("Add " + size + " long values " + count + " times");
-
 for (int i = 0; i < count; i++)
 {
     c.timed("LongList", () -> addLongList(size));
@@ -48,9 +47,8 @@ for (int i = 0; i < count; i++)
 System.out.println(c.prettyPrint());
 ```
 
-*Output*
+*Add 10000000 long values 10 times*
 ```bash
-Add 10000000 long values 10 times
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
 | Task                  | Average      | Min          | Max          | Median       | Std dev      | 90th pctl    | Total       | Invocations   | %      |    
 ----------------------------------------------------------------------------------------------------------------------------------------------------------
