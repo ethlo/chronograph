@@ -24,7 +24,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 
-import org.assertj.core.api.Assertions;
 import org.junit.Test;
 
 import com.ethlo.time.DurationUtil;
@@ -34,7 +33,7 @@ public class DurationUtilTest
     @Test
     public void humanReadableFormatMoreThanHour()
     {
-        Assertions.assertThat(DurationUtil.humanReadable(Duration.ofSeconds(4712).withNanos(123456789))).isEqualTo("01:18:32.123");
+        assertThat(DurationUtil.humanReadable(Duration.ofSeconds(4712).withNanos(123456789))).isEqualTo("01:18:32.123");
     }
 
     @Test
