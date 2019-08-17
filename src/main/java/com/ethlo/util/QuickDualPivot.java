@@ -39,7 +39,8 @@ public class QuickDualPivot
             swap(a, lo, hi);
         }
 
-        int lt = lo + 1, gt = hi - 1;
+        int lt = lo + 1;
+        int gt = hi - 1;
         int i = lo + 1;
         while (i <= gt)
         {

@@ -1,4 +1,4 @@
-package com.ethlo.time;
+package com.ethlo.util;
 
 /*-
  * #%L
@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ethlo.util.LongList;
+import com.ethlo.time.Chronograph;
 
 public class LongListTest
 {
@@ -52,6 +52,7 @@ public class LongListTest
         }
 
         logger.info(c.prettyPrint());
+        assertThat(true).isTrue();
     }
 
     @Test
@@ -71,6 +72,7 @@ public class LongListTest
         }
 
         logger.info(c.prettyPrint());
+        assertThat(true).isTrue();
     }
 
     private void addLongList(int count)
@@ -126,9 +128,9 @@ public class LongListTest
     public void sort()
     {
         final LongList l = createList(1_000_000, true);
-        final ArrayList<Long> al = new ArrayList<>();
         final Chronograph c = Chronograph.create();
         c.timed("sort", l::sort);
+        assertThat(isSorted(l)).isTrue();
         logger.info(c.prettyPrint());
     }
 
@@ -137,11 +139,6 @@ public class LongListTest
     {
         final LongList l = createList(100, true);
         assertThat(l.median()).isEqualTo(49.5);
-    }
-
-    private LongList createList()
-    {
-        return createList(100_000, false);
     }
 
     private LongList createList(int size, boolean reverseSorted)
@@ -202,5 +199,22 @@ public class LongListTest
             count++;
         }
         assertThat(count).isEqualTo(10);
+    }
+
+    private static boolean isSorted(LongList a)
+    {
+        return isSorted(a, 0, a.size() - 1);
+    }
+
+    private static boolean isSorted(LongList a, int lo, int hi)
+    {
+        for (int i = lo + 1; i <= hi; i++)
+        {
+            if (a.get(i) < a.get(i - 1))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 }
