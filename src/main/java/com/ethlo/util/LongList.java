@@ -35,7 +35,76 @@ public class LongList implements Iterable<Long>
     private int index = 0;
     private boolean isSorted = false;
 
-    public static BigDecimal sqrt(BigDecimal value, final int SCALE)
+    public void add(long l)
+    {
+        if (index % blockSize == 0)
+        {
+            blocks.add(new long[blockSize]);
+        }
+        final int blockIndex = index / blockSize;
+        blocks.get(blockIndex)[index % blockSize] = l;
+        index++;
+
+        isSorted = false;
+    }
+
+    public long get(int index)
+    {
+        if (index < 0 || index >= this.index)
+        {
+            throw new ArrayIndexOutOfBoundsException(index);
+        }
+        final int blockIndex = index / blockSize;
+        return blocks.get(blockIndex)[index % blockSize];
+    }
+
+    public int size()
+    {
+        return this.index;
+    }
+
+    public void set(final int index, final long l)
+    {
+        final int blockIndex = index / blockSize;
+        blocks.get(blockIndex)[index % blockSize] = l;
+        isSorted = false;
+    }
+
+    @Override
+    public Iterator<Long> iterator()
+    {
+        return new Iterator<Long>()
+        {
+            private int idx = 0;
+
+            @Override
+            public boolean hasNext()
+            {
+                return idx < index;
+            }
+
+            @Override
+            public Long next()
+            {
+                return get(idx++);
+            }
+        };
+    }
+
+    public double getStandardDeviation()
+    {
+        final int count = size();
+        final double average = getAverage();
+        BigDecimal sd = BigDecimal.valueOf(0);
+        for (long l : this)
+        {
+            final double val = Math.pow((l - average) / (double) count, 2);
+            sd = sd.add(BigDecimal.valueOf(val));
+        }
+        return sqrt(sd, 10).doubleValue();
+    }
+
+    private BigDecimal sqrt(BigDecimal value, final int SCALE)
     {
         BigDecimal TWO = BigDecimal.valueOf(2);
         BigDecimal x0 = BigDecimal.ZERO;
@@ -49,19 +118,6 @@ public class LongList implements Iterable<Long>
 
         }
         return x1;
-    }
-
-    public void add(long l)
-    {
-        if (index % blockSize == 0)
-        {
-            blocks.add(new long[blockSize]);
-        }
-        final int blockIndex = index / blockSize;
-        blocks.get(blockIndex)[index % blockSize] = l;
-        index++;
-
-        isSorted = false;
     }
 
     public double getAverage()
@@ -90,7 +146,7 @@ public class LongList implements Iterable<Long>
         isSorted = false;
     }
 
-    public double percentile(double percentile)
+    public double getPercentile(double percentile)
     {
         sort();
 
@@ -98,7 +154,7 @@ public class LongList implements Iterable<Long>
         return get(index - 1);
     }
 
-    public double median()
+    public double getMedian()
     {
         sort();
 
@@ -119,61 +175,5 @@ public class LongList implements Iterable<Long>
             QuickDualPivot.sort(this);
             this.isSorted = true;
         }
-    }
-
-    public long get(int index)
-    {
-        if (index < 0 || index >= this.index)
-        {
-            throw new ArrayIndexOutOfBoundsException(index);
-        }
-        final int blockIndex = index / blockSize;
-        return blocks.get(blockIndex)[index % blockSize];
-    }
-
-    @Override
-    public Iterator<Long> iterator()
-    {
-        return new Iterator<Long>()
-        {
-            private int idx = 0;
-
-            @Override
-            public boolean hasNext()
-            {
-                return idx < index;
-            }
-
-            @Override
-            public Long next()
-            {
-                return get(idx++);
-            }
-        };
-    }
-
-    public int size()
-    {
-        return this.index;
-    }
-
-    public void set(final int index, final long l)
-    {
-        final int blockIndex = index / blockSize;
-        blocks.get(blockIndex)[index % blockSize] = l;
-        isSorted = false;
-    }
-
-    public double getStandardDeviation()
-    {
-        final int count = size();
-        final double average = getAverage();
-        BigDecimal sd = BigDecimal.valueOf(0);
-        for (long l : this)
-        {
-            final double val = Math.pow((l - average) / (double) count, 2);
-            sd = sd.add(BigDecimal.valueOf(val));
-        }
-        return sqrt(sd, 10).doubleValue();
     }
 }

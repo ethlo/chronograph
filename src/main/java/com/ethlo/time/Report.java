@@ -82,12 +82,10 @@ public class Report
             final String totalTaskTimeStr = DurationUtil.humanReadable(Duration.ofNanos(task.getTotal()));
             final String avgTaskTimeStr = DurationUtil.humanReadable(task.getAverage());
             final String invocationsStr = nf.format(task.getInvocations());
-
-            // TODO: Could be easily kept during runs, currently calculated like below
             final String minStr = DurationUtil.humanReadable(Duration.ofNanos(task.getMin()));
             final String maxStr = DurationUtil.humanReadable(Duration.ofNanos(task.getMax()));
 
-            // Needs data stored per invocation
+            // TODO: Needs data stored per invocation, make optional
             final String deviationStr = DurationUtil.humanReadable(Duration.ofNanos((long) task.getStandardDeviation()));
             final String percentileStr = DurationUtil.humanReadable(Duration.ofNanos((long) task.getPercentile(90)));
             final String medianStr = DurationUtil.humanReadable(Duration.ofNanos((long) task.getMedian()));

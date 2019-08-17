@@ -138,7 +138,7 @@ public class LongListTest
     public void median()
     {
         final LongList l = createList(100, true);
-        assertThat(l.median()).isEqualTo(49.5);
+        assertThat(l.getMedian()).isEqualTo(49.5);
     }
 
     private LongList createList(int size, boolean reverseSorted)
@@ -155,7 +155,7 @@ public class LongListTest
     public void percentile()
     {
         final LongList l = createList(100, true);
-        assertThat(l.percentile(90D)).isEqualTo(89);
+        assertThat(l.getPercentile(90D)).isEqualTo(89);
     }
 
     @Test(expected = ArrayIndexOutOfBoundsException.class)

@@ -82,12 +82,12 @@ class TaskInfo
 
     public double getMedian()
     {
-        return data.median();
+        return data.getMedian();
     }
 
     public double getPercentile(double limit)
     {
-        return data.percentile(limit);
+        return data.getPercentile(limit);
     }
 
     public boolean isRunning()
