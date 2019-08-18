@@ -31,7 +31,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
+import com.ethlo.time.OutputConfig;
 
 public class LongListTest
 {
@@ -59,19 +61,17 @@ public class LongListTest
     public void performanceTestLarge()
     {
         final int size = 10_000_000;
-        final int count = 10;
+        final int count = 20;
 
-        final Chronograph c = Chronograph.create();
-        c.title("Add " + size + " long values " + count + " times");
-
+        final Chronograph c = Chronograph.createExtended();
         for (int i = 0; i < count; i++)
         {
-            c.timed("LongList", () -> addLongList(size));
             c.timed("LinkedList", () -> addLinkedList(size));
             c.timed("ArrayList", () -> addArrayList(size));
+            c.timed("LongList", () -> addLongList(size));
         }
 
-        logger.info(c.prettyPrint());
+        logger.info(c.prettyPrint(OutputConfig.ALL.begin().title("Add " + size + " long values " + count + " times").build()));
         assertThat(true).isTrue();
     }
 

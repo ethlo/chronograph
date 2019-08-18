@@ -36,16 +36,22 @@ public class Chronograph
 {
     private final ConcurrentLinkedQueue<String> order = new ConcurrentLinkedQueue<>();
     private final Map<String, TaskInfo> taskInfos;
-    private String title;
+    private final CaptureConfig config;
 
-    private Chronograph()
+    public Chronograph(CaptureConfig config)
     {
+        this.config = config;
         taskInfos = new ConcurrentHashMap<>(16);
     }
 
     public static Chronograph create()
     {
-        return new Chronograph();
+        return new Chronograph(CaptureConfig.DEFAULT);
+    }
+
+    public static Chronograph createExtended()
+    {
+        return new Chronograph(CaptureConfig.EXTENDED);
     }
 
     public void start(String task)
@@ -57,7 +63,7 @@ public class Chronograph
 
         final TaskInfo taskTiming = taskInfos.computeIfAbsent(task, taskName -> {
             order.add(taskName);
-            return new TaskInfo(taskName);
+            return new TaskInfo(taskName, this.config);
         });
         taskTiming.start();
     }
@@ -117,13 +123,19 @@ public class Chronograph
     }
 
     /**
-     * See {@link Report#extendedPrettyPrint(Chronograph)}
+     * See {@link Report#prettyPrint(Chronograph, OutputConfig)}
      *
      * @return A formatted string with the task details
+     * @param outputConfig
      */
+    public String prettyPrint(final OutputConfig outputConfig)
+    {
+        return Report.prettyPrint(this, outputConfig);
+    }
+
     public String prettyPrint()
     {
-        return Report.extendedPrettyPrint(this);
+        return Report.prettyPrint(this, this.getConfig().storeIndividual() ? OutputConfig.EXTENDED : OutputConfig.DEFAULT);
     }
 
     public Duration getTotalTime()
@@ -155,14 +167,8 @@ public class Chronograph
         }
     }
 
-
-    public void title(final String title)
+    public CaptureConfig getConfig()
     {
-        this.title = title;
-    }
-
-    public String getTitle()
-    {
-        return this.title;
+        return this.config;
     }
 }
