@@ -171,4 +171,9 @@ public class Chronograph
     {
         return this.config;
     }
+
+    public String prettyPrint(final String title, final OutputConfig config)
+    {
+        return Report.prettyPrint(this, config.begin().title(title).build());
+    }
 }

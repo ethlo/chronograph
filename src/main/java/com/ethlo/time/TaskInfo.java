@@ -82,14 +82,14 @@ public class TaskInfo
         return Duration.ofNanos(BigDecimal.valueOf(getTotal()).divide(BigDecimal.valueOf(getInvocations()), RoundingMode.HALF_UP).longValue());
     }
 
-    public double getMedian()
+    public Duration getMedian()
     {
-        return data != null ? data.getMedian() : Double.NaN;
+        return data != null ? Duration.ofNanos((long) data.getMedian()) : Duration.ZERO;
     }
 
-    public double getPercentile(double limit)
+    public Duration getPercentile(double limit)
     {
-        return data != null ? data.getPercentile(limit) : Double.NaN;
+        return data != null ? Duration.ofNanos((long) data.getPercentile(limit)) : Duration.ZERO;
     }
 
     public boolean isRunning()
@@ -131,8 +131,8 @@ public class TaskInfo
         return max;
     }
 
-    public double getStandardDeviation()
+    public Duration getStandardDeviation()
     {
-        return data != null ? data.getStandardDeviation() : Double.NaN;
+        return data != null ? Duration.ofNanos((long) data.getStandardDeviation()) : Duration.ZERO;
     }
 }

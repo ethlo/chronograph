@@ -31,7 +31,6 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.OutputConfig;
 
@@ -58,20 +57,50 @@ public class LongListTest
     }
 
     @Test
-    public void performanceTestLarge()
+    public void performanceTestLargeLinkedList()
     {
-        final int size = 10_000_000;
-        final int count = 20;
+        final int size = 20_000_000;
+        final int count = 10;
 
         final Chronograph c = Chronograph.createExtended();
         for (int i = 0; i < count; i++)
         {
-            c.timed("LinkedList", () -> addLinkedList(size));
-            c.timed("ArrayList", () -> addArrayList(size));
-            c.timed("LongList", () -> addLongList(size));
+            c.timed("add", () -> addLinkedList(size));
         }
 
-        logger.info(c.prettyPrint(OutputConfig.ALL.begin().title("Add " + size + " long values " + count + " times").build()));
+        logger.info(c.prettyPrint("LinkedList", OutputConfig.ALL));
+        assertThat(true).isTrue();
+    }
+
+    @Test
+    public void performanceTestLargeArrayList()
+    {
+        final int size = 20_000_000;
+        final int count = 10;
+
+        final Chronograph c = Chronograph.createExtended();
+        for (int i = 0; i < count; i++)
+        {
+            c.timed("add", () -> addArrayList(size));
+        }
+
+        logger.info(c.prettyPrint("ArrayList", OutputConfig.ALL));
+        assertThat(true).isTrue();
+    }
+
+    @Test
+    public void performanceTestLargeLongList()
+    {
+        final int size = 20_000_000;
+        final int count = 10;
+
+        final Chronograph c = Chronograph.createExtended();
+        for (int i = 0; i < count; i++)
+        {
+            c.timed("add", () -> addLongList(size));
+        }
+
+        logger.info(c.prettyPrint("LongList", OutputConfig.ALL));
         assertThat(true).isTrue();
     }
 
