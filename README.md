@@ -6,63 +6,110 @@
 [![Build Status](https://travis-ci.org/ethlo/chronograph.svg?branch=master)](https://travis-ci.org/ethlo/chronograph)
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/0d9d2c9bfddc400f84203aa82a55f211)](https://www.codacy.com/app/morten/chronograph?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ethlo/chronograph&amp;utm_campaign=Badge_Grade)
 
-Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time for tasks.
+Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
 
 ## Features
-  * Support for showing accumulated and average timings for one or more tasks
-  * "ASCII table" support for detailed result output on the console or in a log file (80 characters wide by default)
-  * No dependencies
-  * High test coverage
+  * The same task name can be timed multiple times and the times are being accumulated.
+  * Support for showing total and average timings for one or more tasks.
+  * Human readable durations
+  * Tuned code for minimal overhead
+  * ASCII table support for detailed result output on the console or in a log file
+  * Easy to fetch the underlying data for when you need your own output format
+  * No dependencies (~11KB jar file)
 
 ## Getting started
-```java
-final Chronograph chronograph = Chronograph.create();
 
-final String taskName1 = "foo"
-final String taskName2 = "bar bar";
-final String taskName3 = "baz baz baz baz baz baz";
+### Include in your project
 
-for (int i = 0; i < 100_000; i++)
-{
-    chronograph.timed("foo", this::microsecondTask);
-    chronograph.timed("bar", this::microsecondTask);
-    chronograph.timed("baz baz baz baz baz baz", this::microsecondTask);
-}
-
-System.out.println(chronograph.prettyPrint());
+#### Maven coordinates
+```xml
+<dependency>
+  <groupId>com.ethlo.time</groupId>
+  <artifactId>chronograph</artifactId>
+  <version>1.0.1</version>
+</dependency>
 ``` 
 
-Output:
-```bash
---------------------------------------------------------------------------------
-| Task                  | Average      | Total        | Invocations   | %      |    
---------------------------------------------------------------------------------
-| a long task name      |      1.18 μs |    118.06 ms |       100,000 |  33.4% |
-| bar ba                |      1.18 μs |    117.64 ms |       100,000 |  33.2% |
-| baz baz baz baz baz b |      1.18 μs |    118.28 ms |       100,000 |  33.4% |
---------------------------------------------------------------------------------
-| Total: 353.98 ms                                                             |
---------------------------------------------------------------------------------
+### Functional style with lamdas
+
+```java
+final int size = 10_000_000;
+final int count = 10;
+
+final Chronograph c = Chronograph.create();
+for (int i = 0; i < count; i++)
+{
+    c.timed("LongList", () -> addLongList(size));
+    c.timed("LinkedList", () -> addLinkedList(size));
+    c.timed("ArrayList", () -> addArrayList(size));
+}
+
+System.out.println(c.prettyPrint());
 ```
 
-## Example outputs
+*Add 10,000,000 long values 10 times*
 ```bash
---------------------------------------------------------------------------------
-| Task                  | Average      | Total        | Invocations   | %      |    
---------------------------------------------------------------------------------
-| lookup                |    188.88 μs |     37.048 s |       196,143 |  79.7% |
-| transform             |     32.62 μs |      6.398 s |       196,143 |  13.8% |
-| sort                  |    306.97 ms |    306.97 ms |             1 |   0.7% |
-| xml                   |     16.68 ms |     16.68 ms |             1 |   0.0% |
-| serializing           |      1.677 s |      1.677 s |             1 |   3.6% |
-| gzip-compressing      |      1.043 s |      1.043 s |             1 |   2.2% |
---------------------------------------------------------------------------------
-| Total: 46.489 s                                                              |
---------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+| Task                  | Average      | Min          | Max          | Median       | Std dev      | 90th pctl    | Total       | Invocations   | %      |    
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+| LongList              |     76.56 ms |     70.12 ms |    145.22 ms |     72.83 ms |      2.15 ms |     85.84 ms |   765.65 ms |            10 |   6.5% |
+| LinkedList            |    647.19 ms |     72.84 ms |    145.22 ms |    279.40 ms |    199.95 ms |      1.244 s |     6.472 s |            10 |  55.0% |
+| ArrayList             |    453.46 ms |     81.07 ms |    145.22 ms |     84.41 ms |    337.66 ms |    163.18 ms |     4.535 s |            10 |  38.5% |
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+| Total: 11.772 s                                                                                                                                        |
+----------------------------------------------------------------------------------------------------------------------------------------------------------
 ```
+
+[INFO ] 2019-08-19 21:54:51.021 [main] ListPerformanceTest - None
+----------------------------------------------------------------------------------------------------------------------------------
+| Task       | Total   | Count | %     | Median   | Std dev   | Mean     | Min      | Max      | 50 pctl  | 95 pctl  | 99.9 pctl |
+----------------------------------------------------------------------------------------------------------------------------------
+| LinkedList | 3.719 s |   200 | 35.0% | 16.06 ms | 334.12 μs | 18.59 ms | 16.01 ms | 53.71 ms | 16.06 ms | 24.60 ms |  53.71 ms |
+| ArrayList  | 3.419 s |   200 | 32.2% | 15.19 ms | 230.15 μs | 17.10 ms | 15.13 ms | 33.63 ms | 15.19 ms | 21.64 ms |  33.63 ms |
+| LongList   | 3.485 s |   200 | 32.8% | 16.99 ms |  50.18 μs | 17.43 ms | 16.95 ms | 19.68 ms | 16.99 ms | 18.52 ms |  19.68 ms |
+----------------------------------------------------------------------------------------------------------------------------------
+| 10.623 s                                                                                                                       |
+----------------------------------------------------------------------------------------------------------------------------------
+[INFO ] 2019-08-19 21:54:51.030 [main] ListPerformanceTest - Compact
+ Task        Total    Count  %      Median    Std dev    Mean      Min       Max       50 pctl   95 pctl   99.9 pctl 
+ LinkedList  3.719 s    200  35.0%  16.06 ms  334.12 μs  18.59 ms  16.01 ms  53.71 ms  16.06 ms  24.60 ms   53.71 ms 
+ ArrayList   3.419 s    200  32.2%  15.19 ms  230.15 μs  17.10 ms  15.13 ms  33.63 ms  15.19 ms  21.64 ms   33.63 ms 
+ LongList    3.485 s    200  32.8%  16.99 ms   50.18 μs  17.43 ms  16.95 ms  19.68 ms  16.99 ms  18.52 ms   19.68 ms 
+ 10.623 s                                                                                                            
+[INFO ] 2019-08-19 21:54:51.038 [main] ListPerformanceTest - Strong
+----------------------------------------------------------------------------------------------------------------------------------
+| Task       | Total   | Count | %     | Median   | Std dev   | Mean     | Min      | Max      | 50 pctl  | 95 pctl  | 99.9 pctl |
+----------------------------------------------------------------------------------------------------------------------------------
+| LinkedList | 3.719 s |   200 | 35.0% | 16.06 ms | 334.12 μs | 18.59 ms | 16.01 ms | 53.71 ms | 16.06 ms | 24.60 ms |  53.71 ms |
+| ArrayList  | 3.419 s |   200 | 32.2% | 15.19 ms | 230.15 μs | 17.10 ms | 15.13 ms | 33.63 ms | 15.19 ms | 21.64 ms |  33.63 ms |
+| LongList   | 3.485 s |   200 | 32.8% | 16.99 ms |  50.18 μs | 17.43 ms | 16.95 ms | 19.68 ms | 16.99 ms | 18.52 ms |  19.68 ms |
+----------------------------------------------------------------------------------------------------------------------------------
+| 10.623 s                                                                                                                       |
+----------------------------------------------------------------------------------------------------------------------------------
+[INFO ] 2019-08-19 21:54:51.048 [main] ListPerformanceTest - Minimal
+                                                                                                                                  
+  Task         Total     Count   %       Median     Std dev     Mean       Min        Max        50 pctl    95 pctl    99.9 pctl  
+                                                                                                                                  
+  LinkedList   3.719 s     200   35.0%   16.06 ms   334.12 μs   18.59 ms   16.01 ms   53.71 ms   16.06 ms   24.60 ms    53.71 ms  
+  ArrayList    3.419 s     200   32.2%   15.19 ms   230.15 μs   17.10 ms   15.13 ms   33.63 ms   15.19 ms   21.64 ms    33.63 ms  
+  LongList     3.485 s     200   32.8%   16.99 ms    50.18 μs   17.43 ms   16.95 ms   19.68 ms   16.99 ms   18.52 ms    19.68 ms  
+                                                                                                                                  
+  10.623 s                                                                                                                        
+                                                                                                                                  
+[INFO ] 2019-08-19 21:54:51.058 [main] ListPerformanceTest - Simple
+----------------------------------------------------------------------------------------------------------------------------------
+  Task         Total     Count   %       Median     Std dev     Mean       Min        Max        50 pctl    95 pctl    99.9 pctl  
+----------------------------------------------------------------------------------------------------------------------------------
+  LinkedList   3.719 s     200   35.0%   16.06 ms   334.12 μs   18.59 ms   16.01 ms   53.71 ms   16.06 ms   24.60 ms    53.71 ms  
+  ArrayList    3.419 s     200   32.2%   15.19 ms   230.15 μs   17.10 ms   15.13 ms   33.63 ms   15.19 ms   21.64 ms    33.63 ms  
+  LongList     3.485 s     200   32.8%   16.99 ms    50.18 μs   17.43 ms   16.95 ms   19.68 ms   16.99 ms   18.52 ms    19.68 ms  
+----------------------------------------------------------------------------------------------------------------------------------
+  10.623 s                                                                                                                        
+----------------------------------------------------------------------------------------------------------------------------------
+
 
 ## Limitations
-This project is utilizing `System.nanoTime()` which has some inherent issues with very quick task times. It does have a nanosecond resolution, but not a nanosecond precision. These are still usually orders of magnitude away from what you are trying to measure, so it is not a problem. If you are micro-benchmarking, consider using a framework like [JMH](https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-core)
+This project is utilizing `System.nanoTime()` which has some inherent issues with very quick task times. It does have a nanosecond resolution, but not a nanosecond precision. These are still usually orders of magnitude away from what you are trying to measure, so it is not a problem. If you are micro-benchmarking, consider using a framework like [JMH](https://mvnrepository.com/artifact/org.openjdk.jmh/jmh-core).
 
 If you would like to know more:
   * [https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html#nanoTime()](https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/System.html#nanoTime())

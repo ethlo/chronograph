@@ -39,7 +39,7 @@ public class LongListTest
         final LongList l = new LongList();
         for (int i = 1; i <= 1000; i++)
         {
-            l.add((long)i);
+            l.add((long) i);
         }
         assertThat(l.getAverage()).isEqualTo(500.0D);
     }
@@ -50,7 +50,7 @@ public class LongListTest
         final LongList l = new LongList();
         for (int i = 1; i <= 2_600_000; i++)
         {
-            l.add((long)Integer.MAX_VALUE);
+            l.add((long) Integer.MAX_VALUE);
         }
         assertThat(l.getAverage()).isEqualTo(Integer.MAX_VALUE);
     }
