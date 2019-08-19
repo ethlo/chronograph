@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import com.ethlo.ascii.TableTheme;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.OutputConfig;
-import com.ethlo.time.Report;
 
 public class LongListTest
 {
