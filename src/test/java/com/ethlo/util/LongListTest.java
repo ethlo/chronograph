@@ -43,7 +43,7 @@ public class LongListTest
     {
         final int size = 100_000;
 
-        final Chronograph c = Chronograph.create();
+        final Chronograph c = Chronograph.createExtended();
 
         for (int i = 0; i < 1_000; i++)
         {

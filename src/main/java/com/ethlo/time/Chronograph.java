@@ -21,7 +21,6 @@ package com.ethlo.time;
  */
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -98,7 +97,7 @@ public class Chronograph
 
     public Duration getElapsedTime(final String task)
     {
-        return Duration.of(getTaskInfo(task).getTotal(), ChronoUnit.NANOS);
+        return getTaskInfo(task).getTotal();
     }
 
     public TaskInfo getTaskInfo(final String task)
@@ -125,8 +124,8 @@ public class Chronograph
     /**
      * See {@link Report#prettyPrint(Chronograph, OutputConfig)}
      *
-     * @return A formatted string with the task details
      * @param outputConfig
+     * @return A formatted string with the task details
      */
     public String prettyPrint(final OutputConfig outputConfig)
     {
@@ -140,7 +139,7 @@ public class Chronograph
 
     public Duration getTotalTime()
     {
-        return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotal).reduce(0L, Long::sum));
+        return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotal).map(Duration::toNanos).reduce(0L, Long::sum));
     }
 
     public void timed(final String taskName, final Runnable task)

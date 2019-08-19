@@ -66,9 +66,9 @@ public class TaskInfo
         return invocationCounts;
     }
 
-    public long getTotal()
+    public Duration getTotal()
     {
-        return totalTaskTime;
+        return Duration.ofNanos(totalTaskTime);
     }
 
     public Duration getAverage()
@@ -79,7 +79,7 @@ public class TaskInfo
             return Duration.ZERO;
         }
 
-        return Duration.ofNanos(BigDecimal.valueOf(getTotal()).divide(BigDecimal.valueOf(getInvocations()), RoundingMode.HALF_UP).longValue());
+        return Duration.ofNanos(BigDecimal.valueOf(getTotal().toNanos()).divide(BigDecimal.valueOf(getInvocations()), RoundingMode.HALF_UP).longValue());
     }
 
     public Duration getMedian()
@@ -121,14 +121,14 @@ public class TaskInfo
         }
     }
 
-    public long getMin()
+    public Duration getMin()
     {
-        return min;
+        return Duration.ofNanos(min);
     }
 
-    public long getMax()
+    public Duration getMax()
     {
-        return max;
+        return Duration.ofNanos(max);
     }
 
     public Duration getStandardDeviation()
