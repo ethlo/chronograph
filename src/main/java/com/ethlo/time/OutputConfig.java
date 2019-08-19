@@ -20,6 +20,8 @@ package com.ethlo.time;
  * #L%
  */
 
+import com.ethlo.ascii.TableTheme;
+
 public class OutputConfig
 {
     public static final OutputConfig DEFAULT = OutputConfig.builder()
@@ -66,9 +68,11 @@ public class OutputConfig
     private final boolean standardDeviation;
     private final boolean total;
     private final boolean percentage;
+    private TableTheme theme;
 
     private OutputConfig(Builder builder)
     {
+        this.theme = builder.theme;
         this.title = builder.title;
         this.percentiles = builder.percentiles;
         this.median = builder.median;
@@ -150,11 +154,18 @@ public class OutputConfig
         b.invocations = invocations;
         b.average = average;
         b.title = title;
+        b.theme = theme;
         return b;
+    }
+
+    public TableTheme getTheme()
+    {
+        return theme;
     }
 
     public static class Builder
     {
+        private TableTheme theme = TableTheme.NONE;
         private String title;
         private double[] percentiles;
         private boolean median;
@@ -165,6 +176,12 @@ public class OutputConfig
         private boolean standardDeviation;
         private boolean total;
         private boolean percentage;
+
+        public Builder theme(final TableTheme theme)
+        {
+            this.theme = theme;
+            return this;
+        }
 
         public Builder title(final String title)
         {

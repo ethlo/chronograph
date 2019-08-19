@@ -34,19 +34,11 @@ public class Table
     private final Map<Integer, Integer> minColumnWidths;
     private final int tableWidth;
 
-    private boolean useColors = false;
+    private final TableTheme theme;
 
-    private String stringColor = Colors.ANSI_GREEN;
-    private String numericColor = Colors.ANSI_RED;
-    private String horisontalSpacerColor = Colors.ANSI_GRAY;
-    private String verticalSpacerColor = Colors.ANSI_GRAY;
-    private String cellBackground = Colors.ANSI_BLACK_BACKGROUND;
-    private String verticalSep = "|";
-    private String horisontalSep = "-";
-    private String padding = " ";
-
-    public Table(final TableRow header, final List<TableRow> rows)
+    public Table(TableTheme theme, final TableRow header, final List<TableRow> rows)
     {
+        this.theme = theme;
         this.header = header;
         this.rows = rows;
 
@@ -76,8 +68,8 @@ public class Table
 
     private int calculateTotalWidth(final Map<Integer, Integer> maxLengths)
     {
-        final int paddingSpace = maxLengths.size() * 2 * padding.length();
-        final int barSpace = (maxLengths.size() + 1) * verticalSep.length();
+        final int paddingSpace = maxLengths.size() * 2 * theme.getPadding().length();
+        final int barSpace = (maxLengths.size() + 1) * theme.getVerticalSeparator().length();
         final int cellSpace = maxLengths.values().stream().reduce(0, Integer::sum);
         return cellSpace + paddingSpace + barSpace;
     }
@@ -90,9 +82,9 @@ public class Table
     private String toString(TableRow header, final List<TableRow> rows)
     {
         final StringBuilder sb = new StringBuilder();
-        sb.append("\n").append(StringUtil.repeat(horisontalSep(), tableWidth)).append("\n");
+        sb.append("\n").append(StringUtil.repeat(verticalSep(), tableWidth)).append("\n");
         sb.append(toString(header));
-        sb.append("\n").append(StringUtil.repeat(horisontalSep(), tableWidth));
+        sb.append("\n").append(StringUtil.repeat(verticalSep(), tableWidth));
 
         for (TableRow row : rows)
         {
@@ -110,9 +102,9 @@ public class Table
         if (row.getCells().size() == 1)
         {
             // Totals row
-            sb.append(color(StringUtil.repeat(horisontalSep(), tableWidth), horisontalSpacerColor));
-            sb.append("\n").append(verticalSep()).append(padding()).append(color(row.getCells().get(0).getRendered(tableWidth - ((padding.length() * 2) + verticalSep.length())), stringColor)).append(color(verticalSep, verticalSpacerColor));
-            sb.append("\n").append(color(StringUtil.repeat(horisontalSep(), tableWidth), horisontalSpacerColor));
+            sb.append(color(StringUtil.repeat(verticalSep(), tableWidth), theme.getVerticalSpacerColor()));
+            sb.append("\n").append(horisontalSep()).append(padding()).append(color(row.getCells().get(0).getRendered(tableWidth - ((theme.getPadding().length() * 2) + theme.getVerticalSeparator().length())), theme.getStringColor())).append(color(theme.getHorizontalSeparator(), theme.getHorizontalSpacerColor()));
+            sb.append("\n").append(color(StringUtil.repeat(verticalSep(), tableWidth), theme.getVerticalSpacerColor()));
             return sb.toString();
         }
         else
@@ -121,26 +113,26 @@ public class Table
             for (int i = 0; i < row.getCells().size(); i++)
             {
                 final String value = row.getCells().get(i).getRendered(minColumnWidths.get(i));
-                final String cellValue = color(verticalSep + padding, verticalSpacerColor) + color(value, isNumeric(value) ? numericColor : stringColor) + padding();
+                final String cellValue = color(theme.getHorizontalSeparator() + theme.getPadding(), theme.getHorizontalSpacerColor()) + color(value, isNumeric(value) ? theme.getNumericColor() : theme.getStringColor()) + padding();
                 sb.append(cellValue);
             }
-            return sb.append(verticalSep()).toString();
+            return sb.append(horisontalSep()).toString();
         }
     }
 
     private String horisontalSep()
     {
-        return color(horisontalSep, horisontalSpacerColor);
+        return color(theme.getHorizontalSeparator(), theme.getHorizontalSpacerColor());
     }
 
     private String verticalSep()
     {
-        return color(verticalSep, verticalSpacerColor);
+        return color(theme.getVerticalSeparator(), theme.getVerticalSpacerColor());
     }
 
     private String padding()
     {
-        return color(padding, Colors.ANSI_BLACK);
+        return color(theme.getPadding(), AnsiColor.BLACK);
     }
 
     private boolean isNumeric(final String value)
@@ -157,8 +149,8 @@ public class Table
         }
     }
 
-    private String color(final String value, String color)
+    private String color(final String value, AnsiColor color)
     {
-        return useColors ? color + cellBackground + value + Colors.ANSI_RESET : value;
+        return color.value() + theme.getCellBackground().value() + value + AnsiColor.RESET.value();
     }
 }

@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ethlo.ascii.TableTheme;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.OutputConfig;
 
@@ -52,7 +53,7 @@ public class LongListTest
             c.timed("Add ArrayList", () -> addArrayList(size));
         }
 
-        logger.info(c.prettyPrint());
+        logger.info(c.prettyPrint(OutputConfig.ALL.begin().theme(TableTheme.MINIMAL).build()));
         assertThat(true).isTrue();
     }
 

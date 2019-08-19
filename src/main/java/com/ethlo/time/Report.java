@@ -67,7 +67,7 @@ public class Report
             rows.add(totals(chronograph));
         }
 
-        return new Table(getHeaderRow(outputConfig), rows).render();
+        return new Table(outputConfig.getTheme(), getHeaderRow(outputConfig), rows).render();
     }
 
     private static TableRow getTableRow(final Chronograph chronograph, final OutputConfig outputConfig, final NumberFormat pf, final NumberFormat nf, final TaskInfo task)
