@@ -30,6 +30,7 @@ import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.ethlo.ascii.TableTheme;
 
@@ -156,6 +157,19 @@ public class Chronograph
             stop(taskName);
         }
     }
+
+    public <R, T> R timedSupplier(final String taskName, final Supplier<R> task)
+    {
+        try
+        {
+            start(taskName);
+            return task.get();
+        } finally
+        {
+            stop(taskName);
+        }
+    }
+
 
     public CaptureConfig getConfig()
     {

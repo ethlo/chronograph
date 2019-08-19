@@ -76,15 +76,27 @@ public class Table
 
     public String render()
     {
-        return toString(header, rows);
+        return "\n" + toString(header, rows);
     }
 
     private String toString(TableRow header, final List<TableRow> rows)
     {
         final StringBuilder sb = new StringBuilder();
-        sb.append("\n").append(StringUtil.repeat(verticalSep(), tableWidth)).append("\n");
+
+        // Header top bar
+        if (theme.getVerticalSeparator().length() != 0)
+        {
+            sb.append(StringUtil.repeat(verticalSep(), tableWidth)).append("\n");
+        }
+
+        // Header columns
         sb.append(toString(header));
-        sb.append("\n").append(StringUtil.repeat(verticalSep(), tableWidth));
+
+        // Header bottom bar
+        if (theme.getVerticalSeparator().length() != 0)
+        {
+            sb.append("\n").append(StringUtil.repeat(verticalSep(), tableWidth));
+        }
 
         for (TableRow row : rows)
         {
@@ -102,9 +114,19 @@ public class Table
         if (row.getCells().size() == 1)
         {
             // Totals row
-            sb.append(color(StringUtil.repeat(verticalSep(), tableWidth), theme.getVerticalSpacerColor()));
-            sb.append("\n").append(horisontalSep()).append(padding()).append(color(row.getCells().get(0).getRendered(tableWidth - ((theme.getPadding().length() * 2) + theme.getVerticalSeparator().length())), theme.getStringColor())).append(color(theme.getHorizontalSeparator(), theme.getHorizontalSpacerColor()));
-            sb.append("\n").append(color(StringUtil.repeat(verticalSep(), tableWidth), theme.getVerticalSpacerColor()));
+            if (theme.getVerticalSeparator().length() != 0)
+            {
+                sb.append(color(StringUtil.repeat(verticalSep(), tableWidth), theme.getVerticalSpacerColor())).append("\n");
+            }
+
+            // Totals
+            final int minWidth = tableWidth - ((theme.getPadding().length() * 2) + (theme.getHorizontalSeparator().length() * 2)) + 1;
+            sb.append(horisontalSep()).append(padding()).append(color(row.getCells().get(0).getRendered(minWidth), theme.getStringColor())).append(color(theme.getHorizontalSeparator(), theme.getHorizontalSpacerColor()));
+
+            if (theme.getVerticalSeparator().length() != 0)
+            {
+                sb.append("\n").append(color(StringUtil.repeat(verticalSep(), tableWidth), theme.getVerticalSpacerColor()));
+            }
             return sb.toString();
         }
         else
@@ -139,7 +161,7 @@ public class Table
     {
         try
         {
-            final String stripped = StringUtil.stripAll(value, ",", ".", " ms", " s", " μs", " n", "%");
+            final String stripped = StringUtil.stripAll(value, ",", ".", ":", " ms", " s", " μs", " n", "%");
             Double.parseDouble(stripped);
             return true;
         }

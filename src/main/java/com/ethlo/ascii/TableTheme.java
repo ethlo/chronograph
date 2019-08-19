@@ -27,10 +27,19 @@ public class TableTheme
     public static final TableTheme STRONG = new TableTheme()
             .setStringColor(AnsiColor.GRAY)
             .setNumericColor(AnsiColor.GREEN)
-            .setVerticalSeparator("=")
+            .setVerticalSeparator("-")
             .setHorizontalSeparator("|")
             .setVerticalSpacerColor(AnsiColor.RED)
-            .setHorisontalSpacerColor(AnsiColor.RED)
+            .setHorizontalSpacerColor(AnsiColor.RED)
+            .setCellBackground(AnsiBackgroundColor.BLACK);
+
+    public static final TableTheme SIMPLE = new TableTheme()
+            .setStringColor(AnsiColor.GRAY)
+            .setNumericColor(AnsiColor.GREEN)
+            .setVerticalSeparator("-")
+            .setHorizontalSeparator(" ")
+            .setVerticalSpacerColor(AnsiColor.RED)
+            .setHorizontalSpacerColor(AnsiColor.RED)
             .setCellBackground(AnsiBackgroundColor.BLACK);
 
     public static final TableTheme MINIMAL = new TableTheme()
@@ -39,15 +48,22 @@ public class TableTheme
             .setVerticalSeparator(" ")
             .setHorizontalSeparator(" ")
             .setVerticalSpacerColor(AnsiColor.GRAY)
-            .setHorisontalSpacerColor(AnsiColor.GRAY)
+            .setHorizontalSpacerColor(AnsiColor.GRAY)
             .setCellBackground(AnsiBackgroundColor.BLACK);
 
-    public static final TableTheme COMPACT = MINIMAL
-            .setPadding("");
+    public static final TableTheme COMPACT = new TableTheme()
+            .setStringColor(AnsiColor.GRAY)
+            .setNumericColor(AnsiColor.GREEN)
+            .setVerticalSeparator("")
+            .setHorizontalSeparator("")
+            .setVerticalSpacerColor(AnsiColor.GRAY)
+            .setHorizontalSpacerColor(AnsiColor.GRAY)
+            .setCellBackground(AnsiBackgroundColor.BLACK)
+            .setPadding(" ");
 
     private AnsiColor stringColor = AnsiColor.NONE;
     private AnsiColor numericColor = AnsiColor.NONE;
-    private AnsiColor horisontalSpacerColor = AnsiColor.NONE;
+    private AnsiColor horizontalSpacerColor = AnsiColor.NONE;
     private AnsiColor verticalSpacerColor = AnsiColor.NONE;
     private AnsiBackgroundColor cellBackground = AnsiBackgroundColor.NONE;
     private String horizontalSeparator = "|";
@@ -66,7 +82,7 @@ public class TableTheme
 
     public AnsiColor getHorizontalSpacerColor()
     {
-        return horisontalSpacerColor;
+        return horizontalSpacerColor;
     }
 
     public AnsiColor getVerticalSpacerColor()
@@ -106,9 +122,9 @@ public class TableTheme
         return this;
     }
 
-    public TableTheme setHorisontalSpacerColor(final AnsiColor horisontalSpacerColor)
+    public TableTheme setHorizontalSpacerColor(final AnsiColor horizontalSpacerColor)
     {
-        this.horisontalSpacerColor = horisontalSpacerColor;
+        this.horizontalSpacerColor = horizontalSpacerColor;
         return this;
     }
 

@@ -23,114 +23,15 @@ package com.ethlo.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ethlo.ascii.TableTheme;
 import com.ethlo.time.Chronograph;
-import com.ethlo.time.OutputConfig;
 
 public class LongListTest
 {
     private static final Logger logger = LoggerFactory.getLogger(LongListTest.class);
-
-    @Test
-    public void performanceTestMedium()
-    {
-        final int size = 100_000;
-
-        final Chronograph c = Chronograph.createExtended();
-
-        for (int i = 0; i < 1_000; i++)
-        {
-            c.timed("LinkedList", () -> addLinkedList(size));
-            c.timed("ArrayList", () -> addArrayList(size));
-            c.timed("LongList", () -> createList(size, true));
-        }
-
-        logger.info(c.prettyPrint("Medium test (100k entries)", OutputConfig.ALL, TableTheme.COMPACT));
-        assertThat(true).isTrue();
-    }
-
-    @Test
-    public void performanceTestLargeLinkedList()
-    {
-        final int size = 20_000_000;
-        final int count = 10;
-
-        final Chronograph c = Chronograph.createExtended();
-        for (int i = 0; i < count; i++)
-        {
-            c.timed("add", () -> addLinkedList(size));
-        }
-
-        logger.info(c.prettyPrint("LinkedList", OutputConfig.ALL, TableTheme.STRONG));
-        assertThat(true).isTrue();
-    }
-
-    @Test
-    public void performanceTestLargeArrayList()
-    {
-        final int size = 20_000_000;
-        final int count = 10;
-
-        final Chronograph c = Chronograph.createExtended();
-        for (int i = 0; i < count; i++)
-        {
-            c.timed("add", () -> addArrayList(size));
-        }
-
-        logger.info(c.prettyPrint("ArrayList", OutputConfig.ALL, TableTheme.NONE));
-        assertThat(true).isTrue();
-    }
-
-    @Test
-    public void performanceTestLargeLongList()
-    {
-        final int size = 20_000_000;
-        final int count = 10;
-
-        final Chronograph c = Chronograph.createExtended();
-        for (int i = 0; i < count; i++)
-        {
-            c.timed("add", () -> addLongList(size));
-        }
-
-        logger.info(c.prettyPrint("LongList", OutputConfig.ALL, TableTheme.NONE));
-        assertThat(true).isTrue();
-    }
-
-    private void addLongList(int count)
-    {
-        final LongList l = new LongList();
-        for (long i = 0; i < count; i++)
-        {
-            l.add(i);
-        }
-    }
-
-    private void addLinkedList(int count)
-    {
-        final List<Long> l = new LinkedList<>();
-        for (long i = 0; i < count; i++)
-        {
-            l.add(i);
-        }
-    }
-
-    private void addArrayList(int count)
-    {
-        final List<Long> l = new ArrayList<>();
-        for (long i = 0; i < count; i++)
-        {
-            l.add(i);
-        }
-    }
 
     @Test
     public void averageSmall()
@@ -138,7 +39,7 @@ public class LongListTest
         final LongList l = new LongList();
         for (int i = 1; i <= 1000; i++)
         {
-            l.add(i);
+            l.add((long)i);
         }
         assertThat(l.getAverage()).isEqualTo(500.0D);
     }
@@ -149,7 +50,7 @@ public class LongListTest
         final LongList l = new LongList();
         for (int i = 1; i <= 2_600_000; i++)
         {
-            l.add(Integer.MAX_VALUE);
+            l.add((long)Integer.MAX_VALUE);
         }
         assertThat(l.getAverage()).isEqualTo(Integer.MAX_VALUE);
     }
@@ -211,7 +112,6 @@ public class LongListTest
         fail("Should throw");
     }
 
-
     @Test
     public void get()
     {
@@ -240,12 +140,7 @@ public class LongListTest
 
     private static boolean isSorted(LongList a)
     {
-        return isSorted(a, 0, a.size() - 1);
-    }
-
-    private static boolean isSorted(LongList a, int lo, int hi)
-    {
-        for (int i = lo + 1; i <= hi; i++)
+        for (int i = 1; i < a.size(); i++)
         {
             if (a.get(i) < a.get(i - 1))
             {

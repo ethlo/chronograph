@@ -78,44 +78,8 @@ public class Report
 
         row.append(new TableCell(task.getName()));
 
-        if (outputConfig.average())
-        {
-            final String avgTaskTimeStr = DurationUtil.humanReadable(task.getAverage());
-            row.append(new TableCell(avgTaskTimeStr, false));
-        }
-
-        if (outputConfig.min())
-        {
-            final String minStr = DurationUtil.humanReadable(task.getMin());
-            row.append(new TableCell(minStr, false));
-        }
-
-        if (outputConfig.max())
-        {
-            final String maxStr = DurationUtil.humanReadable(task.getMax());
-            row.append(new TableCell(maxStr, false));
-        }
-
-        if (outputConfig.median())
-        {
-            final String medianStr = DurationUtil.humanReadable(task.getMedian());
-            row.append(new TableCell(medianStr, false));
-        }
-
-        if (outputConfig.standardDeviation())
-        {
-            final String deviationStr = DurationUtil.humanReadable(task.getStandardDeviation());
-            row.append(new TableCell(deviationStr, false));
-        }
-
-        if (outputConfig.percentiles() != null)
-        {
-            for (double percentile : outputConfig.percentiles())
-            {
-                final String percentileStr = DurationUtil.humanReadable(task.getPercentile(percentile));
-                row.append(new TableCell(percentileStr, false));
-            }
-        }
+        final long invocations = task.getInvocations();
+        final boolean multipleInvocations = invocations > 1;
 
         if (outputConfig.total())
         {
@@ -125,7 +89,7 @@ public class Report
 
         if (outputConfig.invocations())
         {
-            final String invocationsStr = nf.format(task.getInvocations());
+            final String invocationsStr = nf.format(invocations);
             row.append(new TableCell(invocationsStr, false));
         }
 
@@ -136,6 +100,45 @@ public class Report
             row.append(new TableCell(pf.format(pct), false));
         }
 
+        if (outputConfig.median())
+        {
+            final String medianStr = multipleInvocations ? DurationUtil.humanReadable(task.getMedian()) : "";
+            row.append(new TableCell(medianStr, false));
+        }
+
+        if (outputConfig.standardDeviation())
+        {
+            final String deviationStr = multipleInvocations ? DurationUtil.humanReadable(task.getStandardDeviation()) : "";
+            row.append(new TableCell(deviationStr, false));
+        }
+
+        if (outputConfig.average())
+        {
+            final String avgTaskTimeStr = multipleInvocations ? DurationUtil.humanReadable(task.getAverage()) : "";
+            row.append(new TableCell(avgTaskTimeStr, false));
+        }
+
+        if (outputConfig.min())
+        {
+            final String minStr = multipleInvocations ? DurationUtil.humanReadable(task.getMin()) : "";
+            row.append(new TableCell(minStr, false));
+        }
+
+        if (outputConfig.max())
+        {
+            final String maxStr = multipleInvocations ? DurationUtil.humanReadable(task.getMax()) : "";
+            row.append(new TableCell(maxStr, false));
+        }
+
+        if (outputConfig.percentiles() != null)
+        {
+            for (double percentile : outputConfig.percentiles())
+            {
+                final String percentileStr = multipleInvocations ? DurationUtil.humanReadable(task.getPercentile(percentile)) : "";
+                row.append(new TableCell(percentileStr, false));
+            }
+        }
+
         return row;
     }
 
@@ -144,39 +147,6 @@ public class Report
         final TableRow headerRow = new TableRow();
 
         headerRow.append("Task");
-
-        if (outputConfig.average())
-        {
-            headerRow.append("Average");
-        }
-
-        if (outputConfig.min())
-        {
-            headerRow.append("Min");
-        }
-
-        if (outputConfig.max())
-        {
-            headerRow.append("Max");
-        }
-
-        if (outputConfig.median())
-        {
-            headerRow.append("Median");
-        }
-
-        if (outputConfig.standardDeviation())
-        {
-            headerRow.append("Std dev");
-        }
-
-        if (outputConfig.percentiles() != null)
-        {
-            for (double percentile : outputConfig.percentiles())
-            {
-                headerRow.append(percentile + "th pctl");
-            }
-        }
 
         if (outputConfig.total())
         {
@@ -192,6 +162,43 @@ public class Report
         {
             headerRow.append("%");
         }
+
+        if (outputConfig.median())
+        {
+            headerRow.append("Median");
+        }
+
+        if (outputConfig.standardDeviation())
+        {
+            headerRow.append("Std dev");
+        }
+
+        if (outputConfig.average())
+        {
+            headerRow.append("Mean");
+        }
+
+        if (outputConfig.min())
+        {
+            headerRow.append("Min");
+        }
+
+        if (outputConfig.max())
+        {
+            headerRow.append("Max");
+        }
+
+        if (outputConfig.percentiles() != null)
+        {
+            final NumberFormat nf = NumberFormat.getNumberInstance();
+            nf.setMinimumFractionDigits(0);
+
+            for (double percentile : outputConfig.percentiles())
+            {
+                headerRow.append(nf.format(percentile) + " pctl");
+            }
+        }
+
         return headerRow;
     }
 
