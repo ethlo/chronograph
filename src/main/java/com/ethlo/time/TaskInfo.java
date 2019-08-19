@@ -26,10 +26,11 @@ import java.time.Duration;
 
 import com.ethlo.util.LongList;
 
-class TaskInfo
+public class TaskInfo
 {
     private final String name;
-    private final LongList data = new LongList();
+    private final LongList data;
+
     private long invocationCounts;
     private long totalTaskTime;
     private long taskStartTimestamp;
@@ -37,9 +38,10 @@ class TaskInfo
     private long min = Long.MAX_VALUE;
     private long max = Long.MIN_VALUE;
 
-    TaskInfo(final String name)
+    TaskInfo(final String name, CaptureConfig config)
     {
         this.name = name;
+        this.data = config.storeIndividual() ? new LongList() : null;
     }
 
     void start()
@@ -64,9 +66,9 @@ class TaskInfo
         return invocationCounts;
     }
 
-    public long getTotal()
+    public Duration getTotal()
     {
-        return totalTaskTime;
+        return Duration.ofNanos(totalTaskTime);
     }
 
     public Duration getAverage()
@@ -77,17 +79,17 @@ class TaskInfo
             return Duration.ZERO;
         }
 
-        return Duration.ofNanos(BigDecimal.valueOf(getTotal()).divide(BigDecimal.valueOf(getInvocations()), RoundingMode.HALF_UP).longValue());
+        return Duration.ofNanos(BigDecimal.valueOf(getTotal().toNanos()).divide(BigDecimal.valueOf(getInvocations()), RoundingMode.HALF_UP).longValue());
     }
 
-    public double getMedian()
+    public Duration getMedian()
     {
-        return data.getMedian();
+        return data != null ? Duration.ofNanos((long) data.getMedian()) : Duration.ZERO;
     }
 
-    public double getPercentile(double limit)
+    public Duration getPercentile(double limit)
     {
-        return data.getPercentile(limit);
+        return data != null ? Duration.ofNanos((long) data.getPercentile(limit)) : Duration.ZERO;
     }
 
     public boolean isRunning()
@@ -109,24 +111,28 @@ class TaskInfo
             invocationCounts++;
             final long duration = ts - taskStartTimestamp;
             totalTaskTime += duration;
-            data.add(duration);
             min = Math.min(min, duration);
-            max = Math.min(max, duration);
+            max = Math.max(max, duration);
+
+            if (data != null)
+            {
+                data.add(duration);
+            }
         }
     }
 
-    public long getMin()
+    public Duration getMin()
     {
-        return min;
+        return Duration.ofNanos(min);
     }
 
-    public long getMax()
+    public Duration getMax()
     {
-        return max;
+        return Duration.ofNanos(max);
     }
 
-    public double getStandardDeviation()
+    public Duration getStandardDeviation()
     {
-        return data.getStandardDeviation();
+        return data != null ? Duration.ofNanos((long) data.getStandardDeviation()) : Duration.ZERO;
     }
 }

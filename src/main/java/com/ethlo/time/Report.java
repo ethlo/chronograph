@@ -23,48 +23,29 @@ package com.ethlo.time;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.time.Duration;
-import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.ethlo.ascii.Table;
+import com.ethlo.ascii.TableCell;
+import com.ethlo.ascii.TableRow;
+import com.ethlo.ascii.TableTheme;
 
 public class Report
 {
-    public static final String ANSI_RESET = "\u001B[0m";
-    public static final String ANSI_BLACK = "\u001B[30m";
-    public static final String ANSI_RED = "\u001B[31m";
-    public static final String ANSI_GREEN = "\u001B[32m";
-    public static final String ANSI_YELLOW = "\u001B[33m";
-    public static final String ANSI_BLUE = "\u001B[34m";
-    public static final String ANSI_PURPLE = "\u001B[35m";
-    public static final String ANSI_CYAN = "\u001B[36m";
-    public static final String ANSI_WHITE = "\u001B[37m";
+    public static String prettyPrint(Chronograph chronograph, OutputConfig outputConfig)
+    {
+        return prettyPrint(chronograph, outputConfig, TableTheme.NONE);
+    }
 
-    public static final String ANSI_BLACK_BACKGROUND = "\u001B[40m";
-    public static final String ANSI_RED_BACKGROUND = "\u001B[41m";
-    public static final String ANSI_GREEN_BACKGROUND = "\u001B[42m";
-    public static final String ANSI_YELLOW_BACKGROUND = "\u001B[43m";
-    public static final String ANSI_BLUE_BACKGROUND = "\u001B[44m";
-    public static final String ANSI_PURPLE_BACKGROUND = "\u001B[45m";
-    public static final String ANSI_CYAN_BACKGROUND = "\u001B[46m";
-    public static final String ANSI_GRAY_BACKGROUND = "\u001B[47m";
-
-    /**
-     * Generate a string with a table describing all tasks performed.
-     * <p>For custom reporting, call {@link Chronograph#getTaskInfo()} and use the task info
-     * directly.
-     */
-    public static String extendedPrettyPrint(Chronograph chronograph)
+    public static String prettyPrint(Chronograph chronograph, OutputConfig outputConfig, TableTheme theme)
     {
         if (chronograph.getTaskInfo().isEmpty())
         {
             return "No performance data";
         }
 
-        final String color = ""; // ANSI_BLUE
-        final String background = ""; // ANSI_GRAY_BACKGROUND;
-
-        final StringBuilder sb = new StringBuilder(chronograph.getTitle() != null ? chronograph.getTitle() : "");
-        sb.append("\n").append(color).append(background).append(repeat("-", 154)).append("\n");
-        sb.append("| Task                  | Average      | Min          | Max          | Median       | Std dev      | 90th pctl    | Total       | Invocations   | %      |    \n");
-        sb.append(repeat("-", 154)).append("\n");
+        final List<TableRow> rows = new LinkedList<>();
 
         final NumberFormat pf = NumberFormat.getPercentInstance();
         pf.setMinimumFractionDigits(1);
@@ -78,89 +59,144 @@ public class Report
         for (String name : chronograph.getTaskNames())
         {
             final TaskInfo task = chronograph.getTaskInfo(name);
+            final TableRow row = getTableRow(chronograph, outputConfig, pf, nf, task);
+            rows.add(row);
+        }
 
-            final String totalTaskTimeStr = DurationUtil.humanReadable(Duration.ofNanos(task.getTotal()));
+        if (chronograph.getTaskNames().size() > 0)
+        {
+            rows.add(totals(chronograph));
+        }
+
+        return (outputConfig.title() != null ? outputConfig.title() : "")
+                + new Table(theme, getHeaderRow(outputConfig), rows).render();
+    }
+
+    private static TableRow getTableRow(final Chronograph chronograph, final OutputConfig outputConfig, final NumberFormat pf, final NumberFormat nf, final TaskInfo task)
+    {
+        final TableRow row = new TableRow();
+
+        row.append(new TableCell(task.getName()));
+
+        if (outputConfig.average())
+        {
             final String avgTaskTimeStr = DurationUtil.humanReadable(task.getAverage());
+            row.append(new TableCell(avgTaskTimeStr, false));
+        }
+
+        if (outputConfig.min())
+        {
+            final String minStr = DurationUtil.humanReadable(task.getMin());
+            row.append(new TableCell(minStr, false));
+        }
+
+        if (outputConfig.max())
+        {
+            final String maxStr = DurationUtil.humanReadable(task.getMax());
+            row.append(new TableCell(maxStr, false));
+        }
+
+        if (outputConfig.median())
+        {
+            final String medianStr = DurationUtil.humanReadable(task.getMedian());
+            row.append(new TableCell(medianStr, false));
+        }
+
+        if (outputConfig.standardDeviation())
+        {
+            final String deviationStr = DurationUtil.humanReadable(task.getStandardDeviation());
+            row.append(new TableCell(deviationStr, false));
+        }
+
+        if (outputConfig.percentiles() != null)
+        {
+            for (double percentile : outputConfig.percentiles())
+            {
+                final String percentileStr = DurationUtil.humanReadable(task.getPercentile(percentile));
+                row.append(new TableCell(percentileStr, false));
+            }
+        }
+
+        if (outputConfig.total())
+        {
+            final String totalTaskTimeStr = DurationUtil.humanReadable(task.getTotal());
+            row.append(new TableCell(totalTaskTimeStr, false));
+        }
+
+        if (outputConfig.invocations())
+        {
             final String invocationsStr = nf.format(task.getInvocations());
-            final String minStr = DurationUtil.humanReadable(Duration.ofNanos(task.getMin()));
-            final String maxStr = DurationUtil.humanReadable(Duration.ofNanos(task.getMax()));
+            row.append(new TableCell(invocationsStr, false));
+        }
 
-            // TODO: Needs data stored per invocation, make optional
-            final String deviationStr = DurationUtil.humanReadable(Duration.ofNanos((long) task.getStandardDeviation()));
-            final String percentileStr = DurationUtil.humanReadable(Duration.ofNanos((long) task.getPercentile(90)));
-            final String medianStr = DurationUtil.humanReadable(Duration.ofNanos((long) task.getMedian()));
-
-            sb.append("| ");
-            sb.append(adjustPadRight(task.getName(), 21)).append(" | ");
-            sb.append(adjustPadLeft(avgTaskTimeStr, 12)).append(" | ");
-            sb.append(adjustPadLeft(minStr, 12)).append(" | ");
-            sb.append(adjustPadLeft(maxStr, 12)).append(" | ");
-            sb.append(adjustPadLeft(medianStr, 12)).append(" | ");
-            sb.append(adjustPadLeft(deviationStr, 12)).append(" | ");
-            sb.append(adjustPadLeft(percentileStr, 12)).append(" | ");
-            sb.append(adjustPadLeft(totalTaskTimeStr, 11)).append(" | ");
-            sb.append(adjustPadLeft(invocationsStr, 13)).append(" | ");
+        if (outputConfig.percentage())
+        {
             final Duration totalTime = chronograph.getTotalTime();
-            final double pct = totalTime.isZero() ? 0D : task.getTotal() / (double) totalTime.toNanos();
-            sb.append(adjustPadLeft(pf.format(pct), 6)).append(" |");
-            sb.append("\n");
+            final double pct = totalTime.isZero() ? 0D : task.getTotal().toNanos() / (double) totalTime.toNanos();
+            row.append(new TableCell(pf.format(pct), false));
         }
 
-        if (chronograph.getTaskNames().size() > 1)
-        {
-            sb.append(totals(chronograph));
-        }
-
-        return sb.toString();
+        return row;
     }
 
-
-    private static String totals(final Chronograph chronograph)
+    private static TableRow getHeaderRow(final OutputConfig outputConfig)
     {
-        return repeat("-", 154) + "\n" +
-                "| " + adjustPadRight("Total" + ": " + DurationUtil.humanReadable(chronograph.getTotalTime()), 150) + " |" + "\n" +
-                repeat("-", 154) + "\n";
+        final TableRow headerRow = new TableRow();
+
+        headerRow.append("Task");
+
+        if (outputConfig.average())
+        {
+            headerRow.append("Average");
+        }
+
+        if (outputConfig.min())
+        {
+            headerRow.append("Min");
+        }
+
+        if (outputConfig.max())
+        {
+            headerRow.append("Max");
+        }
+
+        if (outputConfig.median())
+        {
+            headerRow.append("Median");
+        }
+
+        if (outputConfig.standardDeviation())
+        {
+            headerRow.append("Std dev");
+        }
+
+        if (outputConfig.percentiles() != null)
+        {
+            for (double percentile : outputConfig.percentiles())
+            {
+                headerRow.append(percentile + "th pctl");
+            }
+        }
+
+        if (outputConfig.total())
+        {
+            headerRow.append("Total");
+        }
+
+        if (outputConfig.invocations())
+        {
+            headerRow.append("Count");
+        }
+
+        if (outputConfig.percentage())
+        {
+            headerRow.append("%");
+        }
+        return headerRow;
     }
 
-    private static String repeat(final String s, final int count)
+    private static TableRow totals(final Chronograph chronograph)
     {
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < count; i++)
-        {
-            sb.append(s);
-        }
-        return sb.toString();
-    }
-
-
-    private static String adjustPadRight(final String s, final int width)
-    {
-        if (s.length() >= width)
-        {
-            return s.substring(0, width);
-        }
-
-        final char[] result = Arrays.copyOf(s.toCharArray(), width);
-        for (int i = s.length(); i < width; i++)
-        {
-            result[i] = ' ';
-        }
-        return new String(result);
-    }
-
-    private static String adjustPadLeft(final String s, final int width)
-    {
-        if (s.length() >= width)
-        {
-            return s.substring(0, width);
-        }
-
-        final char[] result = new char[width];
-        Arrays.fill(result, ' ');
-        for (int i = 0; i < s.length(); i++)
-        {
-            result[i + (width - s.length())] = s.charAt(i);
-        }
-        return new String(result);
+        return new TableRow().append(DurationUtil.humanReadable(chronograph.getTotalTime()));
     }
 }

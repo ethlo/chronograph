@@ -31,7 +31,9 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ethlo.ascii.TableTheme;
 import com.ethlo.time.Chronograph;
+import com.ethlo.time.OutputConfig;
 
 public class LongListTest
 {
@@ -42,36 +44,64 @@ public class LongListTest
     {
         final int size = 100_000;
 
-        final Chronograph c = Chronograph.create();
+        final Chronograph c = Chronograph.createExtended();
 
         for (int i = 0; i < 1_000; i++)
         {
-            c.timed("Add LongList", () -> createList(size, true));
-            c.timed("Add LinkedList", () -> addLinkedList(size));
-            c.timed("Add ArrayList", () -> addArrayList(size));
+            c.timed("LinkedList", () -> addLinkedList(size));
+            c.timed("ArrayList", () -> addArrayList(size));
+            c.timed("LongList", () -> createList(size, true));
         }
 
-        logger.info(c.prettyPrint());
+        logger.info(c.prettyPrint("Medium test (100k entries)", OutputConfig.ALL, TableTheme.COMPACT));
         assertThat(true).isTrue();
     }
 
     @Test
-    public void performanceTestLarge()
+    public void performanceTestLargeLinkedList()
     {
-        final int size = 10_000_000;
+        final int size = 20_000_000;
         final int count = 10;
 
-        final Chronograph c = Chronograph.create();
-        c.title("Add " + size + " long values " + count + " times");
-
+        final Chronograph c = Chronograph.createExtended();
         for (int i = 0; i < count; i++)
         {
-            c.timed("LongList", () -> addLongList(size));
-            c.timed("LinkedList", () -> addLinkedList(size));
-            c.timed("ArrayList", () -> addArrayList(size));
+            c.timed("add", () -> addLinkedList(size));
         }
 
-        logger.info(c.prettyPrint());
+        logger.info(c.prettyPrint("LinkedList", OutputConfig.ALL, TableTheme.STRONG));
+        assertThat(true).isTrue();
+    }
+
+    @Test
+    public void performanceTestLargeArrayList()
+    {
+        final int size = 20_000_000;
+        final int count = 10;
+
+        final Chronograph c = Chronograph.createExtended();
+        for (int i = 0; i < count; i++)
+        {
+            c.timed("add", () -> addArrayList(size));
+        }
+
+        logger.info(c.prettyPrint("ArrayList", OutputConfig.ALL, TableTheme.NONE));
+        assertThat(true).isTrue();
+    }
+
+    @Test
+    public void performanceTestLargeLongList()
+    {
+        final int size = 20_000_000;
+        final int count = 10;
+
+        final Chronograph c = Chronograph.createExtended();
+        for (int i = 0; i < count; i++)
+        {
+            c.timed("add", () -> addLongList(size));
+        }
+
+        logger.info(c.prettyPrint("LongList", OutputConfig.ALL, TableTheme.NONE));
         assertThat(true).isTrue();
     }
 
@@ -135,10 +165,17 @@ public class LongListTest
     }
 
     @Test
-    public void median()
+    public void medianEven()
     {
-        final LongList l = createList(100, true);
-        assertThat(l.getMedian()).isEqualTo(49.5);
+        final LongList l = createList(100_000, true);
+        assertThat(l.getMedian()).isEqualTo(49_999.5);
+    }
+
+    @Test
+    public void medianOdd()
+    {
+        final LongList l = createList(100_001, true);
+        assertThat(l.getMedian()).isEqualTo(50_000);
     }
 
     private LongList createList(int size, boolean reverseSorted)

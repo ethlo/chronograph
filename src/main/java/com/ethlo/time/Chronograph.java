@@ -21,7 +21,6 @@ package com.ethlo.time;
  */
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,20 +31,28 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 
+import com.ethlo.ascii.TableTheme;
+
 public class Chronograph
 {
     private final ConcurrentLinkedQueue<String> order = new ConcurrentLinkedQueue<>();
     private final Map<String, TaskInfo> taskInfos;
-    private String title;
+    private final CaptureConfig config;
 
-    private Chronograph()
+    public Chronograph(CaptureConfig config)
     {
+        this.config = config;
         taskInfos = new ConcurrentHashMap<>(16);
     }
 
     public static Chronograph create()
     {
-        return new Chronograph();
+        return new Chronograph(CaptureConfig.DEFAULT);
+    }
+
+    public static Chronograph createExtended()
+    {
+        return new Chronograph(CaptureConfig.EXTENDED);
     }
 
     public void start(String task)
@@ -57,7 +64,7 @@ public class Chronograph
 
         final TaskInfo taskTiming = taskInfos.computeIfAbsent(task, taskName -> {
             order.add(taskName);
-            return new TaskInfo(taskName);
+            return new TaskInfo(taskName, this.config);
         });
         taskTiming.start();
     }
@@ -92,7 +99,7 @@ public class Chronograph
 
     public Duration getElapsedTime(final String task)
     {
-        return Duration.of(getTaskInfo(task).getTotal(), ChronoUnit.NANOS);
+        return getTaskInfo(task).getTotal();
     }
 
     public TaskInfo getTaskInfo(final String task)
@@ -116,19 +123,14 @@ public class Chronograph
         return taskInfo != null && taskInfo.isRunning();
     }
 
-    /**
-     * See {@link Report#extendedPrettyPrint(Chronograph)}
-     *
-     * @return A formatted string with the task details
-     */
     public String prettyPrint()
     {
-        return Report.extendedPrettyPrint(this);
+        return Report.prettyPrint(this, this.getConfig().storeIndividual() ? OutputConfig.EXTENDED : OutputConfig.DEFAULT);
     }
 
     public Duration getTotalTime()
     {
-        return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotal).reduce(0L, Long::sum));
+        return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotal).map(Duration::toNanos).reduce(0L, Long::sum));
     }
 
     public void timed(final String taskName, final Runnable task)
@@ -155,14 +157,13 @@ public class Chronograph
         }
     }
 
-
-    public void title(final String title)
+    public CaptureConfig getConfig()
     {
-        this.title = title;
+        return this.config;
     }
 
-    public String getTitle()
+    public String prettyPrint(final String title, final OutputConfig config, TableTheme theme)
     {
-        return this.title;
+        return Report.prettyPrint(this, config.begin().title(title).build(), theme);
     }
 }

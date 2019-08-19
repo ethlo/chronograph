@@ -160,15 +160,15 @@ public class ChronographTest
     @Test
     public void testGranularity()
     {
-        final Chronograph chronograph = Chronograph.create();
+        final Chronograph chronograph = Chronograph.createExtended();
         for (int i = 0; i < 1_000_000; i++)
         {
             chronograph.start(taskName);
             chronograph.stop(taskName);
         }
-        final long avg = chronograph.getTaskInfo(taskName).getAverage().getNano();
-        logger.info("Granularity: {}", avg + " nanos");
-        assertThat(avg).isGreaterThan(0);
+        final Duration median = chronograph.getTaskInfo(taskName).getMedian();
+        logger.info("Granularity: {}", DurationUtil.humanReadable(median));
+        assertThat(median.toNanos()).isGreaterThan(0);
     }
 
     @Test
