@@ -31,22 +31,7 @@ public class TableRow
     {
         return cells;
     }
-
-    public int getLength()
-    {
-        return cells.stream().map(this::getLength).reduce(0, Integer::sum);
-    }
-
-    private int getLength(TableCell cell)
-    {
-        return Math.min(cell.getValue().length(), cell.getLength());
-    }
-
-    public int getLength(int column)
-    {
-        return getLength(cells.get(column));
-    }
-
+    
     public TableRow append(final TableCell cell)
     {
         cells.add(cell);

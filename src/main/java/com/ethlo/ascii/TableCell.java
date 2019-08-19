@@ -54,9 +54,4 @@ public class TableCell
     {
         return left ? StringUtil.adjustPadRight(value, minWidth) : StringUtil.adjustPadLeft(value, minWidth);
     }
-
-    public int getLength()
-    {
-        return Math.min(value.length(), length);
-    }
 }

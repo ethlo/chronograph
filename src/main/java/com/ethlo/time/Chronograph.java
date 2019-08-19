@@ -31,6 +31,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 
+import com.ethlo.ascii.TableTheme;
+
 public class Chronograph
 {
     private final ConcurrentLinkedQueue<String> order = new ConcurrentLinkedQueue<>();
@@ -121,17 +123,6 @@ public class Chronograph
         return taskInfo != null && taskInfo.isRunning();
     }
 
-    /**
-     * See {@link Report#prettyPrint(Chronograph, OutputConfig)}
-     *
-     * @param outputConfig
-     * @return A formatted string with the task details
-     */
-    public String prettyPrint(final OutputConfig outputConfig)
-    {
-        return Report.prettyPrint(this, outputConfig);
-    }
-
     public String prettyPrint()
     {
         return Report.prettyPrint(this, this.getConfig().storeIndividual() ? OutputConfig.EXTENDED : OutputConfig.DEFAULT);
@@ -171,8 +162,8 @@ public class Chronograph
         return this.config;
     }
 
-    public String prettyPrint(final String title, final OutputConfig config)
+    public String prettyPrint(final String title, final OutputConfig config, TableTheme theme)
     {
-        return Report.prettyPrint(this, config.begin().title(title).build());
+        return Report.prettyPrint(this, config.begin().title(title).build(), theme);
     }
 }

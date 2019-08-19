@@ -29,15 +29,16 @@ import java.util.List;
 import com.ethlo.ascii.Table;
 import com.ethlo.ascii.TableCell;
 import com.ethlo.ascii.TableRow;
+import com.ethlo.ascii.TableTheme;
 
 public class Report
 {
-    /**
-     * Generate a string with a table describing all tasks performed.
-     * <p>For custom reporting, call {@link Chronograph#getTaskInfo()} and use the task info
-     * directly.
-     */
     public static String prettyPrint(Chronograph chronograph, OutputConfig outputConfig)
+    {
+        return prettyPrint(chronograph, outputConfig, TableTheme.NONE);
+    }
+
+    public static String prettyPrint(Chronograph chronograph, OutputConfig outputConfig, TableTheme theme)
     {
         if (chronograph.getTaskInfo().isEmpty())
         {
@@ -67,7 +68,8 @@ public class Report
             rows.add(totals(chronograph));
         }
 
-        return new Table(outputConfig.getTheme(), getHeaderRow(outputConfig), rows).render();
+        return (outputConfig.title() != null ? outputConfig.title() : "")
+                + new Table(theme, getHeaderRow(outputConfig), rows).render();
     }
 
     private static TableRow getTableRow(final Chronograph chronograph, final OutputConfig outputConfig, final NumberFormat pf, final NumberFormat nf, final TaskInfo task)

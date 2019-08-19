@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import com.ethlo.ascii.TableTheme;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.OutputConfig;
+import com.ethlo.time.Report;
 
 public class LongListTest
 {
@@ -48,12 +49,12 @@ public class LongListTest
 
         for (int i = 0; i < 1_000; i++)
         {
-            c.timed("Add LongList", () -> createList(size, true));
-            c.timed("Add LinkedList", () -> addLinkedList(size));
-            c.timed("Add ArrayList", () -> addArrayList(size));
+            c.timed("LinkedList", () -> addLinkedList(size));
+            c.timed("ArrayList", () -> addArrayList(size));
+            c.timed("LongList", () -> createList(size, true));
         }
 
-        logger.info(c.prettyPrint(OutputConfig.ALL.begin().theme(TableTheme.MINIMAL).build()));
+        logger.info(c.prettyPrint("Medium test (100k entries)", OutputConfig.ALL, TableTheme.COMPACT));
         assertThat(true).isTrue();
     }
 
@@ -69,7 +70,7 @@ public class LongListTest
             c.timed("add", () -> addLinkedList(size));
         }
 
-        logger.info(c.prettyPrint("LinkedList", OutputConfig.ALL));
+        logger.info(c.prettyPrint("LinkedList", OutputConfig.ALL, TableTheme.STRONG));
         assertThat(true).isTrue();
     }
 
@@ -85,7 +86,7 @@ public class LongListTest
             c.timed("add", () -> addArrayList(size));
         }
 
-        logger.info(c.prettyPrint("ArrayList", OutputConfig.ALL));
+        logger.info(c.prettyPrint("ArrayList", OutputConfig.ALL, TableTheme.NONE));
         assertThat(true).isTrue();
     }
 
@@ -101,7 +102,7 @@ public class LongListTest
             c.timed("add", () -> addLongList(size));
         }
 
-        logger.info(c.prettyPrint("LongList", OutputConfig.ALL));
+        logger.info(c.prettyPrint("LongList", OutputConfig.ALL, TableTheme.NONE));
         assertThat(true).isTrue();
     }
 
@@ -165,10 +166,17 @@ public class LongListTest
     }
 
     @Test
-    public void median()
+    public void medianEven()
     {
-        final LongList l = createList(100, true);
-        assertThat(l.getMedian()).isEqualTo(49.5);
+        final LongList l = createList(100_000, true);
+        assertThat(l.getMedian()).isEqualTo(49_999.5);
+    }
+
+    @Test
+    public void medianOdd()
+    {
+        final LongList l = createList(100_001, true);
+        assertThat(l.getMedian()).isEqualTo(50_000);
     }
 
     private LongList createList(int size, boolean reverseSorted)

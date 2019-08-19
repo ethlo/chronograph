@@ -9,9 +9,9 @@ package com.ethlo.time;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -19,8 +19,6 @@ package com.ethlo.time;
  * limitations under the License.
  * #L%
  */
-
-import com.ethlo.ascii.TableTheme;
 
 public class OutputConfig
 {
@@ -58,7 +56,6 @@ public class OutputConfig
             .build();
 
     private final String title;
-    private final boolean latencyMode = true; // TODO: Latency or throughput mode
     private final double[] percentiles;
     private final boolean median;
     private final boolean average;
@@ -68,11 +65,9 @@ public class OutputConfig
     private final boolean standardDeviation;
     private final boolean total;
     private final boolean percentage;
-    private TableTheme theme;
 
     private OutputConfig(Builder builder)
     {
-        this.theme = builder.theme;
         this.title = builder.title;
         this.percentiles = builder.percentiles;
         this.median = builder.median;
@@ -154,18 +149,11 @@ public class OutputConfig
         b.invocations = invocations;
         b.average = average;
         b.title = title;
-        b.theme = theme;
         return b;
-    }
-
-    public TableTheme getTheme()
-    {
-        return theme;
     }
 
     public static class Builder
     {
-        private TableTheme theme = TableTheme.NONE;
         private String title;
         private double[] percentiles;
         private boolean median;
@@ -176,12 +164,6 @@ public class OutputConfig
         private boolean standardDeviation;
         private boolean total;
         private boolean percentage;
-
-        public Builder theme(final TableTheme theme)
-        {
-            this.theme = theme;
-            return this;
-        }
 
         public Builder title(final String title)
         {
