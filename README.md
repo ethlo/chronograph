@@ -42,25 +42,29 @@ Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
 
 ### Functional style with lamdas
 
+#### Sample code
 ```java
-// Static setup of ANSI color theme
-Chronograph.setTheme(TableTheme.SIMPLE);
+final int size = 500_000;
 
-final int size = 10_000_000;
-final int count = 10;
+final Chronograph c = Chronograph.createExtended();
 
-final Chronograph c = Chronograph.create();
-for (int i = 0; i < count; i++)
+for (int i = 0; i < 200; i++)
 {
-    c.timed("LongList", () -> addLongList(size));
-    c.timed("LinkedList", () -> addLinkedList(size));
-    c.timed("ArrayList", () -> addArrayList(size));
+    final List<Long> linkedList = c.timedFunction("LinkedList add", this::addLinkedList, size);
+    c.timed("Linkedlist sort", () -> linkedList.sort(Comparator.naturalOrder()));
+
+    final List<Long> arrayList = c.timedFunction("ArrayList add", this::addArrayList, size);
+    c.timed("Arraylist sort", () -> arrayList.sort(Comparator.naturalOrder()));
+
+    final LongList longList = c.timedFunction("LongList add", this::addLongList, size);
+    c.timed("LongList sort", longList::sort);
 }
 
-System.out.println(c.prettyPrint());
+System.out.println(c.prettyPrint("List performance comparison", OutputConfig.ALL, TableTheme.NONE));
 ```
-
-```bash
+#### Output
+```console
+List performance comparison
 ----------------------------------------------------------------------------------------------------------------------------------------------
   Task              Total      Count   %       Median      Std dev     Mean        Min         Max         50 pctl     95 pctl     99.9 pctl  
 ----------------------------------------------------------------------------------------------------------------------------------------------
