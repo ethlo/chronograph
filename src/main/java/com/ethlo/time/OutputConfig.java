@@ -81,6 +81,11 @@ public class OutputConfig
 
     }
 
+    public static Builder builder()
+    {
+        return new Builder();
+    }
+
     public String title()
     {
         return title;
@@ -129,11 +134,6 @@ public class OutputConfig
     public boolean percentage()
     {
         return percentage;
-    }
-
-    public static Builder builder()
-    {
-        return new Builder();
     }
 
     public Builder begin()

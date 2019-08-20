@@ -9,9 +9,9 @@ package com.ethlo.ascii;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ public enum AnsiColor
     YELLOW("\u001B[33m"),
     BLUE("\u001B[34m"),
     PURPLE("\u001B[35m"),
-    CYAN( "\u001B[36m"),
+    CYAN("\u001B[36m"),
     GRAY("\u001B[37m"),
     BRIGH_BLACK("\u001b[30;1m"),
     BRIGHT_RED("\u001b[31;1m"),
@@ -42,7 +42,7 @@ public enum AnsiColor
     BRIGHT_WHITE("\u001b[37;1m");
 
     private String s;
-    
+
     AnsiColor(String s)
     {
         this.s = s;

@@ -9,9 +9,9 @@ package com.ethlo.util;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -39,8 +39,8 @@ public class ListPerformanceTest
 {
     private static final Logger logger = LoggerFactory.getLogger(ListPerformanceTest.class);
 
-    private final int size = 2_000_000;
-    private final int count = 25;
+    private final int size = 5_000_000;
+    private final int count = 10;
 
     @Test
     public void performanceTestLargeLinkedList()
@@ -91,13 +91,13 @@ public class ListPerformanceTest
 
         final Chronograph c = Chronograph.createExtended();
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 200; i++)
         {
             final List<Long> linkedList = c.timedFunction("LinkedList add", this::addLinkedList, size);
-            c.timed("Linkedlist sort", ()->linkedList.sort(Comparator.naturalOrder()));
+            c.timed("Linkedlist sort", () -> linkedList.sort(Comparator.naturalOrder()));
 
             final List<Long> arrayList = c.timedFunction("ArrayList add", this::addArrayList, size);
-            c.timed("Arraylist sort", ()->arrayList.sort(Comparator.naturalOrder()));
+            c.timed("Arraylist sort", () -> arrayList.sort(Comparator.naturalOrder()));
 
             final LongList longList = c.timedFunction("LongList add", this::addLongList, size);
             c.timed("LongList sort", longList::sort);

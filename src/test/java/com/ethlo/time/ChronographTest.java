@@ -163,7 +163,8 @@ public class ChronographTest
         final Chronograph chronograph = Chronograph.create();
         for (int i = 0; i < 10; i++)
         {
-            chronograph.timed("Task-" + i, ()->{});
+            chronograph.timed("Task-" + i, () -> {
+            });
         }
         logger.info(chronograph.prettyPrint());
     }

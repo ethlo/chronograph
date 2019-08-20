@@ -33,6 +33,17 @@ public class LongListTest
 {
     private static final Logger logger = LoggerFactory.getLogger(LongListTest.class);
 
+    private static void assertSorted(LongList a)
+    {
+        for (int i = 1; i < a.size(); i++)
+        {
+            if (a.get(i) < a.get(i - 1))
+            {
+                throw new IllegalArgumentException("Index " + (i - 1) + " should have " + a.get(i) + " < " + a.get(i - 1));
+            }
+        }
+    }
+
     @Test
     public void averageSmall()
     {
@@ -56,13 +67,27 @@ public class LongListTest
     }
 
     @Test
-    public void sort()
+    public void sortUneven()
     {
-        final LongList l = createList(1_000_000, true);
-        final Chronograph c = Chronograph.create();
-        c.timed("sort", l::sort);
-        assertThat(isSorted(l)).isTrue();
-        logger.info(c.prettyPrint());
+        final LongList l = createList(100_101, true);
+        l.sort();
+        assertSorted(l);
+    }
+
+    @Test
+    public void testSet()
+    {
+        final LongList l = createList(100_101, true);
+        l.set(100_000, 42);
+        assertThat(l.get(100_000)).isEqualTo(42);
+    }
+
+    @Test
+    public void sortEven()
+    {
+        final LongList l = createList(100_000, true);
+        l.sort();
+        assertSorted(l);
     }
 
     @Test
@@ -92,8 +117,8 @@ public class LongListTest
     @Test
     public void percentile()
     {
-        final LongList l = createList(100, true);
-        assertThat(l.getPercentile(90D)).isEqualTo(89);
+        final LongList l = createList(100_001, true);
+        assertThat(l.getPercentile(90D)).isEqualTo(90_000);
     }
 
     @Test(expected = ArrayIndexOutOfBoundsException.class)
@@ -136,17 +161,5 @@ public class LongListTest
             count++;
         }
         assertThat(count).isEqualTo(10);
-    }
-
-    private static boolean isSorted(LongList a)
-    {
-        for (int i = 1; i < a.size(); i++)
-        {
-            if (a.get(i) < a.get(i - 1))
-            {
-                return false;
-            }
-        }
-        return true;
     }
 }

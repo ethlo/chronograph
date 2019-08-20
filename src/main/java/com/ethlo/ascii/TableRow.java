@@ -31,7 +31,7 @@ public class TableRow
     {
         return cells;
     }
-    
+
     public TableRow append(final TableCell cell)
     {
         cells.add(cell);

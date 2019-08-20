@@ -51,19 +51,6 @@ public class Table
         this.tableWidth = calculateTotalWidth(minColumnWidths);
     }
 
-    private Map<Integer, Boolean> getHasColumnContent(final List<TableRow> rows)
-    {
-        final Map<Integer, Boolean> result = new HashMap<>();
-        for (TableRow row : rows)
-        {
-            for (int i = 0; i < row.getCells().size(); i++)
-            {
-                result.compute(i, (key, value) -> row.getCells().get(key).getValue().length() > 0);
-            }
-        }
-        return result;
-    }
-
     private static Map<Integer, Integer> getMaxContentLengths(final List<TableRow> rows, final Map<Integer, Boolean> hasContent)
     {
         final Map<Integer, Integer> maxLengths = new HashMap<>();
@@ -84,6 +71,19 @@ public class Table
         });
 
         return maxLengths;
+    }
+
+    private Map<Integer, Boolean> getHasColumnContent(final List<TableRow> rows)
+    {
+        final Map<Integer, Boolean> result = new HashMap<>();
+        for (TableRow row : rows)
+        {
+            for (int i = 0; i < row.getCells().size(); i++)
+            {
+                result.compute(i, (key, value) -> row.getCells().get(key).getValue().length() > 0);
+            }
+        }
+        return result;
     }
 
     private int calculateTotalWidth(final Map<Integer, Integer> maxLengths)

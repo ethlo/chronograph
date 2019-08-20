@@ -170,7 +170,6 @@ public class Chronograph
         }
     }
 
-
     public CaptureConfig getConfig()
     {
         return this.config;

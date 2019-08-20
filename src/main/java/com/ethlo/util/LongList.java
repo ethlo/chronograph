@@ -25,6 +25,7 @@ import static java.math.BigDecimal.ROUND_HALF_UP;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
@@ -131,21 +132,6 @@ public class LongList implements Iterable<Long>
         return sum.divide(BigInteger.valueOf(index)).doubleValue();
     }
 
-    public void shuffle()
-    {
-        final int size = size();
-        for (int i = 0; i < size; i++)
-        {
-            int from = (int) (Math.random() * size);
-            final long a = get(from);
-            final long b = get(i);
-            set(i, a);
-            set(from, b);
-        }
-
-        isSorted = false;
-    }
-
     public double getPercentile(double percentile)
     {
         sort();
@@ -171,8 +157,26 @@ public class LongList implements Iterable<Long>
     {
         if (!isSorted)
         {
-            shuffle();
-            QuickDualPivot.sort(this);
+            final long[] all = new long[size()];
+            for (int i = 0; i < blocks.size(); i++)
+            {
+                final long[] src = blocks.get(i);
+                final int offset = i * blockSize;
+                final boolean isLast = i == blocks.size() - 1;
+                final int size = isLast ? index % blockSize == 0 ? blockSize : index % blockSize : blockSize;
+                System.arraycopy(src, 0, all, offset, size);
+            }
+            Arrays.sort(all);
+
+            for (int i = 0; i < blocks.size(); i++)
+            {
+                final long[] target = blocks.get(i);
+                final int offset = i * blockSize;
+                final boolean isLast = i == blocks.size() - 1;
+                final int size = isLast ? index % blockSize == 0 ? blockSize : index % blockSize : blockSize;
+                System.arraycopy(all, offset, target, 0, size);
+            }
+
             this.isSorted = true;
         }
     }

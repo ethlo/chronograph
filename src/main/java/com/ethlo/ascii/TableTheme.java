@@ -84,69 +84,15 @@ public class TableTheme
         return padding;
     }
 
+    public TableTheme setPadding(final String padding)
+    {
+        this.padding = padding;
+        return this;
+    }
+
     public String getHorizontalSeparator()
     {
         return horizontalSeparator;
-    }
-
-    public AnsiColor getHorizontalSpacerColor()
-    {
-        return horizontalSpacerColor;
-    }
-
-    public AnsiColor getVerticalSpacerColor()
-    {
-        return verticalSpacerColor;
-    }
-
-    public AnsiColor getStringColor()
-    {
-        return stringColor;
-    }
-
-    public AnsiColor getNumericColor()
-    {
-        return numericColor;
-    }
-
-    public String getVerticalSeparator()
-    {
-        return verticalSeparator;
-    }
-
-    public AnsiBackgroundColor getCellBackground()
-    {
-        return cellBackground;
-    }
-
-    public TableTheme setStringColor(final AnsiColor stringColor)
-    {
-        this.stringColor = stringColor;
-        return this;
-    }
-
-    public TableTheme setNumericColor(final AnsiColor numericColor)
-    {
-        this.numericColor = numericColor;
-        return this;
-    }
-
-    public TableTheme setHorizontalSpacerColor(final AnsiColor horizontalSpacerColor)
-    {
-        this.horizontalSpacerColor = horizontalSpacerColor;
-        return this;
-    }
-
-    public TableTheme setVerticalSpacerColor(final AnsiColor verticalSpacerColor)
-    {
-        this.verticalSpacerColor = verticalSpacerColor;
-        return this;
-    }
-
-    public TableTheme setCellBackground(final AnsiBackgroundColor cellBackground)
-    {
-        this.cellBackground = cellBackground;
-        return this;
     }
 
     public TableTheme setHorizontalSeparator(final String sep)
@@ -155,15 +101,69 @@ public class TableTheme
         return this;
     }
 
+    public AnsiColor getHorizontalSpacerColor()
+    {
+        return horizontalSpacerColor;
+    }
+
+    public TableTheme setHorizontalSpacerColor(final AnsiColor horizontalSpacerColor)
+    {
+        this.horizontalSpacerColor = horizontalSpacerColor;
+        return this;
+    }
+
+    public AnsiColor getVerticalSpacerColor()
+    {
+        return verticalSpacerColor;
+    }
+
+    public TableTheme setVerticalSpacerColor(final AnsiColor verticalSpacerColor)
+    {
+        this.verticalSpacerColor = verticalSpacerColor;
+        return this;
+    }
+
+    public AnsiColor getStringColor()
+    {
+        return stringColor;
+    }
+
+    public TableTheme setStringColor(final AnsiColor stringColor)
+    {
+        this.stringColor = stringColor;
+        return this;
+    }
+
+    public AnsiColor getNumericColor()
+    {
+        return numericColor;
+    }
+
+    public TableTheme setNumericColor(final AnsiColor numericColor)
+    {
+        this.numericColor = numericColor;
+        return this;
+    }
+
+    public String getVerticalSeparator()
+    {
+        return verticalSeparator;
+    }
+
     public TableTheme setVerticalSeparator(final String sep)
     {
         this.verticalSeparator = sep;
         return this;
     }
 
-    public TableTheme setPadding(final String padding)
+    public AnsiBackgroundColor getCellBackground()
     {
-        this.padding = padding;
+        return cellBackground;
+    }
+
+    public TableTheme setCellBackground(final AnsiBackgroundColor cellBackground)
+    {
+        this.cellBackground = cellBackground;
         return this;
     }
 }
