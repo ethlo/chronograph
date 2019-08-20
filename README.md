@@ -9,13 +9,22 @@
 Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
 
 ## Features
-  * The same task name can be timed multiple times and the times are being accumulated.
-  * Support for showing total and average timings for one or more tasks.
-  * Human readable durations
-  * Tuned code for minimal overhead
-  * ASCII table support for detailed result output on the console or in a log file
+  * The same task name can be timed multiple times.
+  * Supports numerous metrics:
+     - mean
+     - median
+     - min/max
+     - max
+     - standard deviation
+     - percentiles
+     - percentage
+     - count
+     - total time
+  * Human-readable durations
+  * Tuned code for minimal overhead. Custom list for capturing results with as low overhead as possible.
+  * Dynamic ASCII table support for detailed result output on the console or in a log file
   * Easy to fetch the underlying data for when you need your own output format
-  * No dependencies (~11KB jar file)
+  * No dependencies (~33KB jar file)
 
 ## Getting started
 
@@ -61,10 +70,10 @@ System.out.println(c.prettyPrint());
 ```
 
 ## Themes
-![Themes](doc/themes01.png "Themes")
 
-![Themes](doc/themes02.png "Themes")
+You can choose to output the results using different styles and colors. Below are a few examples.
 
+![Themes](doc/themes.png "Themes")
 
 
 ## Limitations
