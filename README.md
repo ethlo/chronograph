@@ -9,7 +9,7 @@
 Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
 
 ## Features
-  * The same task name can be timed multiple times.
+  * The same task can be timed multiple times for aggregated/cumulative data.
   * Supports numerous metrics:
      - mean
      - median
@@ -21,8 +21,9 @@ Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
      - count
      - total time
   * Human-readable durations
-  * Tuned code for minimal overhead. Custom list for capturing results with as low overhead as possible.
-  * Dynamic ASCII table support for detailed result output on the console or in a log file
+  * Highly tweaked code for minimal overhead. Custom list for capturing results with as low overhead as possible.
+  * Dynamic ASCII table support for detailed result output on the console or in logs
+  * Support for colored output (ANSI console)
   * Easy to fetch the underlying data for when you need your own output format
   * No dependencies (~33KB jar file)
 
@@ -42,6 +43,9 @@ Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
 ### Functional style with lamdas
 
 ```java
+// Static setup of ANSI color theme
+Chronograph.setTheme(TableTheme.SIMPLE);
+
 final int size = 10_000_000;
 final int count = 10;
 
@@ -56,17 +60,19 @@ for (int i = 0; i < count; i++)
 System.out.println(c.prettyPrint());
 ```
 
-*Add 10,000,000 long values 10 times*
 ```bash
-----------------------------------------------------------------------------------------------------------------------------------------------------------
-| Task                  | Average      | Min          | Max          | Median       | Std dev      | 90th pctl    | Total       | Invocations   | %      |    
-----------------------------------------------------------------------------------------------------------------------------------------------------------
-| LongList              |     76.56 ms |     70.12 ms |    145.22 ms |     72.83 ms |      2.15 ms |     85.84 ms |   765.65 ms |            10 |   6.5% |
-| LinkedList            |    647.19 ms |     72.84 ms |    145.22 ms |    279.40 ms |    199.95 ms |      1.244 s |     6.472 s |            10 |  55.0% |
-| ArrayList             |    453.46 ms |     81.07 ms |    145.22 ms |     84.41 ms |    337.66 ms |    163.18 ms |     4.535 s |            10 |  38.5% |
-----------------------------------------------------------------------------------------------------------------------------------------------------------
-| Total: 11.772 s                                                                                                                                        |
-----------------------------------------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------------------------------------------------------
+  Task              Total      Count   %       Median      Std dev     Mean        Min         Max         50 pctl     95 pctl     99.9 pctl  
+----------------------------------------------------------------------------------------------------------------------------------------------
+  LinkedList add     2.989 s     200    4.7%    12.64 ms   502.67 μs    14.94 ms    12.12 ms    69.54 ms    12.64 ms    20.00 ms    69.54 ms  
+  Linkedlist sort   26.095 s     200   41.5%   123.93 ms     2.03 ms   130.47 ms   114.42 ms   374.62 ms   123.85 ms   149.81 ms   374.62 ms  
+  ArrayList add      2.689 s     200    4.3%    11.95 ms   401.58 μs    13.45 ms    11.44 ms    86.93 ms    11.95 ms    17.09 ms    86.93 ms  
+  Arraylist sort    21.602 s     200   34.3%   104.28 ms     1.04 ms   108.01 ms    98.44 ms   252.47 ms   104.23 ms   120.18 ms   252.47 ms  
+  LongList add       2.824 s     200    4.5%    13.09 ms   517.37 μs    14.12 ms    12.53 ms    87.46 ms    13.09 ms    14.76 ms    87.46 ms  
+  LongList sort      6.736 s     200   10.7%    33.20 ms   145.19 μs    33.68 ms    31.62 ms    46.93 ms    33.20 ms    36.77 ms    46.93 ms  
+----------------------------------------------------------------------------------------------------------------------------------------------
+  01:02.935                                                                                                                                   
+----------------------------------------------------------------------------------------------------------------------------------------------
 ```
 
 ## Themes
