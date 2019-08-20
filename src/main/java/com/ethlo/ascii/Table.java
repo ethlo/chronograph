@@ -35,6 +35,7 @@ public class Table
     private final int tableWidth;
 
     private final TableTheme theme;
+    private final Map<Integer, Boolean> hasContent;
 
     public Table(TableTheme theme, final TableRow header, final List<TableRow> rows)
     {
@@ -45,11 +46,25 @@ public class Table
         final List<TableRow> all = new LinkedList<>();
         all.add(header);
         all.addAll(rows);
-        this.minColumnWidths = getMaxLengths(all);
+        this.hasContent = getHasColumnContent(rows);
+        this.minColumnWidths = getMaxContentLengths(all, hasContent);
         this.tableWidth = calculateTotalWidth(minColumnWidths);
     }
 
-    private static Map<Integer, Integer> getMaxLengths(final List<TableRow> rows)
+    private Map<Integer, Boolean> getHasColumnContent(final List<TableRow> rows)
+    {
+        final Map<Integer, Boolean> result = new HashMap<>();
+        for (TableRow row : rows)
+        {
+            for (int i = 0; i < row.getCells().size(); i++)
+            {
+                result.compute(i, (key, value) -> row.getCells().get(key).getValue().length() > 0);
+            }
+        }
+        return result;
+    }
+
+    private static Map<Integer, Integer> getMaxContentLengths(final List<TableRow> rows, final Map<Integer, Boolean> hasContent)
     {
         final Map<Integer, Integer> maxLengths = new HashMap<>();
         for (TableRow row : rows)
@@ -63,6 +78,11 @@ public class Table
                 });
             }
         }
+
+        hasContent.entrySet().stream().filter(e -> !e.getValue()).forEach(e -> {
+            maxLengths.remove(e.getKey());
+        });
+
         return maxLengths;
     }
 
@@ -134,9 +154,13 @@ public class Table
             // Normal row
             for (int i = 0; i < row.getCells().size(); i++)
             {
-                final String value = row.getCells().get(i).getRendered(minColumnWidths.get(i));
-                final String cellValue = color(theme.getHorizontalSeparator() + theme.getPadding(), theme.getHorizontalSpacerColor()) + color(value, isNumeric(value) ? theme.getNumericColor() : theme.getStringColor()) + padding();
-                sb.append(cellValue);
+                final Integer minWidth = minColumnWidths.get(i);
+                if (minWidth != null)
+                {
+                    final String value = row.getCells().get(i).getRendered(minWidth);
+                    final String cellValue = color(theme.getHorizontalSeparator() + theme.getPadding(), theme.getHorizontalSpacerColor()) + color(value, isNumeric(value) ? theme.getNumericColor() : theme.getStringColor()) + padding();
+                    sb.append(cellValue);
+                }
             }
             return sb.append(horisontalSep()).toString();
         }

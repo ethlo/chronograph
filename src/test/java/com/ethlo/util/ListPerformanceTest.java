@@ -91,18 +91,24 @@ public class ListPerformanceTest
 
         final Chronograph c = Chronograph.createExtended();
 
-        for (int i = 0; i < 200; i++)
+        for (int i = 0; i < 100; i++)
         {
-            c.timed("LinkedList", () -> addLinkedList(size));
-            c.timed("ArrayList", () -> addArrayList(size));
-            c.timed("LongList", () -> addLongList(size));
+            final List<Long> linkedList = c.timedFunction("LinkedList add", this::addLinkedList, size);
+            c.timed("Linkedlist sort", ()->linkedList.sort(Comparator.naturalOrder()));
+
+            final List<Long> arrayList = c.timedFunction("ArrayList add", this::addArrayList, size);
+            c.timed("Arraylist sort", ()->arrayList.sort(Comparator.naturalOrder()));
+
+            final LongList longList = c.timedFunction("LongList add", this::addLongList, size);
+            c.timed("LongList sort", longList::sort);
         }
 
-        logger.info(c.prettyPrint("None", OutputConfig.ALL, TableTheme.NONE));
-        logger.info(c.prettyPrint("Compact", OutputConfig.ALL, TableTheme.COMPACT));
-        logger.info(c.prettyPrint("Strong", OutputConfig.ALL, TableTheme.STRONG));
-        logger.info(c.prettyPrint("Minimal", OutputConfig.ALL, TableTheme.MINIMAL));
-        logger.info(c.prettyPrint("Simple", OutputConfig.ALL, TableTheme.SIMPLE));
+        System.out.println(c.prettyPrint("None", OutputConfig.ALL, TableTheme.NONE));
+        System.out.println(c.prettyPrint("Compact", OutputConfig.ALL, TableTheme.COMPACT));
+        System.out.println(c.prettyPrint("Strong", OutputConfig.ALL, TableTheme.STRONG));
+        System.out.println(c.prettyPrint("Bright", OutputConfig.ALL, TableTheme.BRIGHT));
+        System.out.println(c.prettyPrint("Minimal", OutputConfig.ALL, TableTheme.MINIMAL));
+        System.out.println(c.prettyPrint("Simple", OutputConfig.ALL, TableTheme.SIMPLE));
         assertThat(true).isTrue();
     }
 

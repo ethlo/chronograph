@@ -158,6 +158,17 @@ public class ChronographTest
     }
 
     @Test
+    public void testSimpleSingleInvocations()
+    {
+        final Chronograph chronograph = Chronograph.create();
+        for (int i = 0; i < 10; i++)
+        {
+            chronograph.timed("Task-" + i, ()->{});
+        }
+        logger.info(chronograph.prettyPrint());
+    }
+
+    @Test
     public void testGranularity()
     {
         final Chronograph chronograph = Chronograph.createExtended();

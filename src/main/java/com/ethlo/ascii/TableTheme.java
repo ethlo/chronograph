@@ -33,6 +33,15 @@ public class TableTheme
             .setHorizontalSpacerColor(AnsiColor.RED)
             .setCellBackground(AnsiBackgroundColor.BLACK);
 
+    public static final TableTheme BRIGHT = new TableTheme()
+            .setStringColor(AnsiColor.BRIGH_BLACK)
+            .setNumericColor(AnsiColor.PURPLE)
+            .setVerticalSeparator("-")
+            .setHorizontalSeparator(" ")
+            .setVerticalSpacerColor(AnsiColor.RED)
+            .setHorizontalSpacerColor(AnsiColor.RED)
+            .setCellBackground(AnsiBackgroundColor.BRIGHT_WHITE);
+
     public static final TableTheme SIMPLE = new TableTheme()
             .setStringColor(AnsiColor.GRAY)
             .setNumericColor(AnsiColor.GREEN)

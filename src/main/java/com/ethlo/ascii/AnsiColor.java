@@ -31,7 +31,15 @@ public enum AnsiColor
     BLUE("\u001B[34m"),
     PURPLE("\u001B[35m"),
     CYAN( "\u001B[36m"),
-    GRAY("\u001B[37m");
+    GRAY("\u001B[37m"),
+    BRIGH_BLACK("\u001b[30;1m"),
+    BRIGHT_RED("\u001b[31;1m"),
+    BRIGHT_GREEN("\u001b[32;1m"),
+    BRIGHT_YELLOW("\u001b[33;1m"),
+    BRIGHT_BLUE("\u001b[34;1m"),
+    BRIGHT_MAGENTA("\u001b[35;1m"),
+    BRIGHT_CYAN("\u001b[36;1m"),
+    BRIGHT_WHITE("\u001b[37;1m");
 
     private String s;
     
