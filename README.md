@@ -61,7 +61,9 @@ System.out.println(c.prettyPrint());
 ```
 
 ## Themes
-[Themes](doc/themes01.png "Themes")
+![Themes](doc/themes01.png "Themes")
+
+![Themes](doc/themes02.png "Themes")
 
 
 
