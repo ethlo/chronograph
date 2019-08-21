@@ -46,7 +46,7 @@ Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
 ```java
 final int size = 500_000;
 
-final Chronograph c = Chronograph.createExtended();
+final Chronograph c = Chronograph.create();
 
 for (int i = 0; i < 200; i++)
 {
@@ -79,10 +79,31 @@ List performance comparison
 ----------------------------------------------------------------------------------------------------------------------------------------------
 ```
 
+## Output columns
+Empty columns will be dropped automatically. Included columns can be configured.
+
+Begin from scratch:
+```java
+Chronograph.configure(OutputConfig.builder()
+  .median(true)
+  .standardDeviation(true)
+  .build());
+``` 
+
+Begin from DEFAULT configuration:
+```java
+Chronograph.configure(OutputConfig.DEFAULT.begin()
+  .percentiles(75, 90, 99, 99.9, 99.99)
+  .build());
+``` 
+
 ## Themes
 
 You can choose to output the results using different styles and colors. Below are a few examples.
 
+```java 
+Chronograph.configure(TableTheme.SIMPLE);
+```
 ![Themes](doc/themes.png "Themes")
 
 

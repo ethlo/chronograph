@@ -104,7 +104,7 @@ public class ListPerformanceTest
             c.timed("LongList sort", longList::sort);
         }
 
-        Chronograph.configure(TableTheme.NONE);
+        Chronograph.configure(TableTheme.NONE, OutputConfig.builder().median(true).standardDeviation(true).build());
         System.out.println(c.prettyPrint("None"));
         Chronograph.configure(TableTheme.COMPACT);
         System.out.println(c.prettyPrint("Compact"));

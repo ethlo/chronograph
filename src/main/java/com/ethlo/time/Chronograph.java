@@ -164,12 +164,17 @@ public class Chronograph
 
     public static void configure(TableTheme theme, OutputConfig outputConfig)
     {
-        Chronograph.theme = Objects.requireNonNull(theme, "theme cannot be null");
-        Chronograph.outputConfig = Objects.requireNonNull(outputConfig, "outputConfig cannot be null");
+        configure(theme);
+        configure(outputConfig);
     }
 
     public static void configure(final TableTheme theme)
     {
         Chronograph.theme = Objects.requireNonNull(theme, "theme cannot be null");
+    }
+
+    public static void configure(final OutputConfig outputConfig)
+    {
+        Chronograph.outputConfig = Objects.requireNonNull(outputConfig, "outputConfig cannot be null");
     }
 }
