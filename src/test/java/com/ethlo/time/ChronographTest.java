@@ -178,7 +178,7 @@ public class ChronographTest
             chronograph.start(taskName);
             chronograph.stop(taskName);
         }
-        final Duration median = chronograph.getTasks(taskName).getMedian();
+        final Duration median = chronograph.getTasks(taskName).getStatistics().getMedian();
         logger.info("Granularity: {}", DurationUtil.humanReadable(median));
         assertThat(median.toNanos()).isGreaterThan(0);
     }
@@ -189,7 +189,6 @@ public class ChronographTest
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
         chronograph.stop(taskName);
-        chronograph.getElapsedTime(taskName);
         assertThat(chronograph.getTasks().stream().map(TaskInfo::getName)).containsExactly(taskName);
         chronograph.resetAll();
         assertThat(chronograph.getTasks()).isEmpty();
@@ -243,6 +242,6 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        assertThat(chronograph.getTasks(taskName).getAverage()).isEqualTo(Duration.ZERO);
+        assertThat(chronograph.getTasks(taskName).getStatistics().getAverage()).isEqualTo(Duration.ZERO);
     }
 }

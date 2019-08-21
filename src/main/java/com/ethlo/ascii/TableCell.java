@@ -40,6 +40,11 @@ public class TableCell
         this.isNumeric = isNumeric;
     }
 
+    public static String color(final String value, AnsiColor color, AnsiBackgroundColor backgroundColor)
+    {
+        return color.value() + backgroundColor.value() + value + AnsiColor.RESET.value();
+    }
+
     public String getValue()
     {
         return value;
@@ -49,11 +54,6 @@ public class TableCell
     {
         final String paddedValue = left ? StringUtil.adjustPadRight(value, minWidth) : StringUtil.adjustPadLeft(value, minWidth);
         return color(theme.getHorizontalSeparator() + theme.getPadding(), theme.getHorizontalSpacerColor(), theme.getCellBackground()) + color(paddedValue, isNumeric ? theme.getNumericColor() : theme.getStringColor(), theme.getCellBackground()) + padding(theme);
-    }
-
-    public static String color(final String value, AnsiColor color, AnsiBackgroundColor backgroundColor)
-    {
-        return color.value() + backgroundColor.value() + value + AnsiColor.RESET.value();
     }
 
     private String padding(TableTheme theme)

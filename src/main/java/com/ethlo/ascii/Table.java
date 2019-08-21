@@ -97,13 +97,25 @@ public class Table
     {
         final StringBuilder sb = new StringBuilder();
 
-        for (TableRow row : rows)
+        final boolean hasVerticalSeparator = theme.getVerticalSeparator().length() != 0;
+
+        for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++)
         {
+            final TableRow row = rows.get(rowIndex);
+
             if (row instanceof SeparatorRow)
             {
-                if (theme.getVerticalSeparator().length() != 0)
+                if (hasVerticalSeparator)
                 {
-                    sb.append(StringUtil.repeat(verticalSep(), tableWidth)).append(NEWLINE);
+                    for (Map.Entry<Integer, Integer> entry : minColumnWidths.entrySet())
+                    {
+                        sb.append(theme.getVerticalSpacerColor().value()).append(theme.getCellBackground().value());
+                        sb.append(getCellStart(entry.getKey(), rowIndex));
+                        final int width = entry.getValue() + (2 * theme.getPadding().length());
+                        sb.append(StringUtil.repeat(verticalSep(), width));
+                    }
+                    sb.append(theme.getVerticalSpacerColor().value()).append(theme.getCellBackground().value());
+                    sb.append(getCellEnd(rowIndex)).append(AnsiColor.RESET.value()).append(NEWLINE);
                 }
             }
             else
@@ -115,19 +127,79 @@ public class Table
         return sb.toString();
     }
 
+    private String getCellEnd(final int rowIndex)
+    {
+        if (rowIndex == 0)
+        {
+           return theme.getRightTop();
+        }
+        else if (rowIndex == rows.size() - 1)
+        {
+            return theme.getRightBottom();
+        }
+        return theme.getRightCross();
+    }
+
+    private String getCellStart(final Integer columnIndex, final int rowIndex)
+    {
+        final boolean lastColumn = columnIndex == minColumnWidths.size();
+        final boolean firstColumn = columnIndex == 0;
+        final boolean firstRow = rowIndex == 0;
+        final boolean lastRow = rowIndex == rows.size() - 1;
+
+        if (firstColumn && firstRow)
+        {
+            return theme.getLeftTop();
+        }
+        else if (firstColumn && lastRow)
+        {
+            return theme.getLeftBottom();
+        }
+        else if (lastColumn && lastRow)
+        {
+            return theme.getRightBottom();
+        }
+        else if (lastColumn && firstRow)
+        {
+            return theme.getRightTop();
+        }
+        else if (firstColumn)
+        {
+            return theme.getLeftCross();
+        }
+        else if (firstRow)
+        {
+            return theme.getTopCross();
+        }
+        else if (lastRow)
+        {
+            return theme.getBottomCross();
+        }
+
+        return theme.getCross();
+    }
+
 
     private String toString(final TableRow row)
     {
+        final int totalColumns = minColumnWidths.size();
         final StringBuilder sb = new StringBuilder();
-        for (int colIndex = 0; colIndex < row.getCells().size(); colIndex++)
+
+        for (Map.Entry<Integer, Integer> entry : minColumnWidths.entrySet())
         {
+            final int colIndex = entry.getKey();
             final Integer minWidth = minColumnWidths.get(colIndex);
-            if (minWidth != null)
+            if (colIndex < row.getCells().size())
             {
                 final TableCell cell = row.getCells().get(colIndex);
                 sb.append(cell.render(theme, minWidth));
             }
+            else
+            {
+                sb.append(new TableCell(" ").render(theme, minWidth));
+            }
         }
+
         return sb.append(horisontalSep()).toString();
     }
 

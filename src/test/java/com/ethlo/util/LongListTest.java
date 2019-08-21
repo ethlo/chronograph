@@ -24,15 +24,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.fail;
 
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.ethlo.time.Chronograph;
 
 public class LongListTest
 {
-    private static final Logger logger = LoggerFactory.getLogger(LongListTest.class);
-
     private static void assertSorted(LongList a)
     {
         for (int i = 1; i < a.size(); i++)
@@ -50,9 +44,9 @@ public class LongListTest
         final LongList l = new LongList();
         for (int i = 1; i <= 1000; i++)
         {
-            l.add((long) i);
+            l.add(i);
         }
-        assertThat(l.getAverage()).isEqualTo(500.0D);
+        assertThat(new IndexedCollectionStatistics(l).getAverage()).isEqualTo(500.0D);
     }
 
     @Test
@@ -63,7 +57,7 @@ public class LongListTest
         {
             l.add((long) Integer.MAX_VALUE);
         }
-        assertThat(l.getAverage()).isEqualTo(Integer.MAX_VALUE);
+        assertThat(new IndexedCollectionStatistics(l).getAverage()).isEqualTo(Integer.MAX_VALUE);
     }
 
     @Test
@@ -78,8 +72,8 @@ public class LongListTest
     public void testSet()
     {
         final LongList l = createList(100_101, true);
-        l.set(100_000, 42);
-        assertThat(l.get(100_000)).isEqualTo(42);
+        l.set(100_000, 42L);
+        assertThat(l.get(100_000)).isEqualTo(42L);
     }
 
     @Test
@@ -94,14 +88,14 @@ public class LongListTest
     public void medianEven()
     {
         final LongList l = createList(100_000, true);
-        assertThat(l.getMedian()).isEqualTo(49_999.5);
+        assertThat(new IndexedCollectionStatistics(l).getMedian()).isEqualTo(49_999.5);
     }
 
     @Test
     public void medianOdd()
     {
         final LongList l = createList(100_001, true);
-        assertThat(l.getMedian()).isEqualTo(50_000);
+        assertThat(new IndexedCollectionStatistics(l).getMedian()).isEqualTo(50_000);
     }
 
     private LongList createList(int size, boolean reverseSorted)
@@ -118,7 +112,7 @@ public class LongListTest
     public void percentile()
     {
         final LongList l = createList(100_001, true);
-        assertThat(l.getPercentile(90D)).isEqualTo(90_000);
+        assertThat(new IndexedCollectionStatistics(l).getPercentile(90D)).isEqualTo(90_000);
     }
 
     @Test(expected = ArrayIndexOutOfBoundsException.class)

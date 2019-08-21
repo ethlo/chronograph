@@ -35,21 +35,35 @@ import com.ethlo.ascii.TableTheme;
 
 public class Chronograph
 {
-    private static TableTheme theme = TableTheme.NONE;
+    private static TableTheme theme = TableTheme.DEFAULT;
     private static OutputConfig outputConfig = OutputConfig.DEFAULT;
 
     private final Map<String, TaskInfo> taskInfos;
-    private final CaptureConfig config;
 
-    public Chronograph(CaptureConfig config)
+    private Chronograph()
     {
-        this.config = config;
         taskInfos = new LinkedHashMap<>();
     }
 
     public static Chronograph create()
     {
-        return new Chronograph(CaptureConfig.EXTENDED);
+        return new Chronograph();
+    }
+
+    public static void configure(TableTheme theme, OutputConfig outputConfig)
+    {
+        configure(theme);
+        configure(outputConfig);
+    }
+
+    public static void configure(final TableTheme theme)
+    {
+        Chronograph.theme = Objects.requireNonNull(theme, "theme cannot be null");
+    }
+
+    public static void configure(final OutputConfig outputConfig)
+    {
+        Chronograph.outputConfig = Objects.requireNonNull(outputConfig, "outputConfig cannot be null");
     }
 
     public void start(String task)
@@ -59,7 +73,7 @@ public class Chronograph
             throw new IllegalArgumentException("task cannot be null");
         }
 
-        final TaskInfo taskTiming = taskInfos.computeIfAbsent(task, taskName -> new TaskInfo(taskName, this.config));
+        final TaskInfo taskTiming = taskInfos.computeIfAbsent(task, TaskInfo::new);
         taskTiming.start();
     }
 
@@ -88,11 +102,6 @@ public class Chronograph
     public synchronized void resetAll()
     {
         taskInfos.clear();
-    }
-
-    public Duration getElapsedTime(final String task)
-    {
-        return getTasks(task).getTotal();
     }
 
     public TaskInfo getTasks(final String task)
@@ -160,21 +169,5 @@ public class Chronograph
     public String prettyPrint(final String title)
     {
         return Report.prettyPrint(this, outputConfig.begin().title(title).build(), theme);
-    }
-
-    public static void configure(TableTheme theme, OutputConfig outputConfig)
-    {
-        configure(theme);
-        configure(outputConfig);
-    }
-
-    public static void configure(final TableTheme theme)
-    {
-        Chronograph.theme = Objects.requireNonNull(theme, "theme cannot be null");
-    }
-
-    public static void configure(final OutputConfig outputConfig)
-    {
-        Chronograph.outputConfig = Objects.requireNonNull(outputConfig, "outputConfig cannot be null");
     }
 }

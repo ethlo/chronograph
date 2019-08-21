@@ -64,14 +64,4 @@ public class StringUtil
         }
         return new String(result);
     }
-
-    public static String stripAll(final String value, final String... remove)
-    {
-        String result = value;
-        for (String r : remove)
-        {
-            result = result.replace(r, "");
-        }
-        return result;
-    }
 }

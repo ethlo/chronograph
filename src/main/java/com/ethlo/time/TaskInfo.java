@@ -20,28 +20,23 @@ package com.ethlo.time;
  * #L%
  */
 
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Duration;
 
+import com.ethlo.util.IndexedCollection;
+import com.ethlo.util.IndexedCollectionStatistics;
 import com.ethlo.util.LongList;
 
 public class TaskInfo
 {
     private final String name;
-    private final LongList data;
-
-    private long invocationCounts;
-    private long totalTaskTime;
+    private final IndexedCollection<Long> data;
     private long taskStartTimestamp;
     private boolean running = false;
-    private long min = Long.MAX_VALUE;
-    private long max = Long.MIN_VALUE;
 
-    TaskInfo(final String name, CaptureConfig config)
+    TaskInfo(final String name)
     {
         this.name = name;
-        this.data = config.storeIndividual() ? new LongList() : null;
+        this.data = new LongList();
     }
 
     void start()
@@ -63,33 +58,7 @@ public class TaskInfo
 
     public long getInvocations()
     {
-        return invocationCounts;
-    }
-
-    public Duration getTotal()
-    {
-        return Duration.ofNanos(totalTaskTime);
-    }
-
-    public Duration getAverage()
-    {
-        final long invocations = getInvocations();
-        if (invocations == 0)
-        {
-            return Duration.ZERO;
-        }
-
-        return Duration.ofNanos(BigDecimal.valueOf(getTotal().toNanos()).divide(BigDecimal.valueOf(getInvocations()), RoundingMode.HALF_UP).longValue());
-    }
-
-    public Duration getMedian()
-    {
-        return data != null ? Duration.ofNanos((long) data.getMedian()) : Duration.ZERO;
-    }
-
-    public Duration getPercentile(double limit)
-    {
-        return data != null ? Duration.ofNanos((long) data.getPercentile(limit)) : Duration.ZERO;
+        return data.size();
     }
 
     public boolean isRunning()
@@ -107,32 +76,18 @@ public class TaskInfo
         if (running)
         {
             running = false;
-
-            invocationCounts++;
             final long duration = ts - taskStartTimestamp;
-            totalTaskTime += duration;
-            min = Math.min(min, duration);
-            max = Math.max(max, duration);
-
-            if (data != null)
-            {
-                data.add(duration);
-            }
+            data.add(duration);
         }
     }
 
-    public Duration getMin()
+    public DurationStatistics getStatistics()
     {
-        return Duration.ofNanos(min);
+        return new DurationStatistics(new IndexedCollectionStatistics(data));
     }
 
-    public Duration getMax()
+    public Duration getTotal()
     {
-        return Duration.ofNanos(max);
-    }
-
-    public Duration getStandardDeviation()
-    {
-        return data != null ? Duration.ofNanos((long) data.getStandardDeviation()) : Duration.ZERO;
+        return Duration.ofNanos(data.stream().reduce(0L, Long::sum));
     }
 }

@@ -99,7 +99,7 @@ public class OutputConfig
         return median;
     }
 
-    public boolean average()
+    public boolean mean()
     {
         return average;
     }

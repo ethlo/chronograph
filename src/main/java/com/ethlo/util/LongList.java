@@ -20,16 +20,15 @@ package com.ethlo.util;
  * #L%
  */
 
-import static java.math.BigDecimal.ROUND_HALF_UP;
-
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
-public class LongList implements Iterable<Long>
+public class LongList implements IndexedCollection<Long>
 {
     private static final int DEFAULT_BLOCK_SIZE = 1_000;
 
@@ -48,6 +47,7 @@ public class LongList implements Iterable<Long>
         this.blockSize = blockSize;
     }
 
+    @Override
     public void add(long l)
     {
         if (index % blockSize == 0)
@@ -61,7 +61,8 @@ public class LongList implements Iterable<Long>
         isSorted = false;
     }
 
-    public long get(int index)
+    @Override
+    public Long get(int index)
     {
         if (index < 0 || index >= this.index)
         {
@@ -71,15 +72,17 @@ public class LongList implements Iterable<Long>
         return blocks.get(blockIndex)[index % blockSize];
     }
 
+    @Override
     public int size()
     {
         return this.index;
     }
 
-    public void set(final int index, final long l)
+    @Override
+    public void set(final int index, final Long l)
     {
         final int blockIndex = index / blockSize;
-        blocks.get(blockIndex)[index % blockSize] = l;
+        blocks.get(blockIndex)[index % blockSize] = Objects.requireNonNull(l);
         isSorted = false;
     }
 
@@ -104,67 +107,7 @@ public class LongList implements Iterable<Long>
         };
     }
 
-    public double getStandardDeviation()
-    {
-        final int count = size();
-        final double average = getAverage();
-        BigDecimal sd = BigDecimal.valueOf(0);
-        for (long l : this)
-        {
-            final double val = Math.pow((l - average) / (double) count, 2);
-            sd = sd.add(BigDecimal.valueOf(val));
-        }
-        return sqrt(sd, 10).doubleValue();
-    }
-
-    private BigDecimal sqrt(BigDecimal value, final int SCALE)
-    {
-        BigDecimal TWO = BigDecimal.valueOf(2);
-        BigDecimal x0 = BigDecimal.ZERO;
-        BigDecimal x1 = new BigDecimal(Math.sqrt(value.doubleValue()));
-        while (!x0.equals(x1))
-        {
-            x0 = x1;
-            x1 = value.divide(x0, SCALE, ROUND_HALF_UP);
-            x1 = x1.add(x0);
-            x1 = x1.divide(TWO, SCALE, ROUND_HALF_UP);
-
-        }
-        return x1;
-    }
-
-    public double getAverage()
-    {
-        BigInteger sum = BigInteger.ZERO;
-        for (final Long aLong : this)
-        {
-            final BigInteger bi = BigInteger.valueOf(aLong);
-            sum = sum.add(bi);
-        }
-        return sum.divide(BigInteger.valueOf(index)).doubleValue();
-    }
-
-    public double getPercentile(double percentile)
-    {
-        sort();
-
-        final int index = (int) Math.ceil((percentile / 100) * size());
-        return get(index - 1);
-    }
-
-    public double getMedian()
-    {
-        sort();
-
-        final int pivot = size() / 2;
-        if (pivot * 2 == size())
-        {
-            // Average of two middle elements
-            return (get(pivot - 1) + get(pivot)) / 2D;
-        }
-        return get(pivot);
-    }
-
+    @Override
     public void sort()
     {
         if (!isSorted)
@@ -191,5 +134,12 @@ public class LongList implements Iterable<Long>
 
             this.isSorted = true;
         }
+    }
+
+    @Override
+    public Stream<Long> stream()
+    {
+        final Iterable<Long> iterable = LongList.this::iterator;
+        return StreamSupport.stream(iterable.spliterator(), false);
     }
 }

@@ -87,12 +87,12 @@ public class ListPerformanceTest
     @Test
     public void performanceTestMedium()
     {
-        Chronograph.configure(TableTheme.SIMPLE, OutputConfig.EXTENDED);
-        final int size = 50_000;
+        Chronograph.configure(TableTheme.RED_GREEN, OutputConfig.EXTENDED);
+        final int size = 500_000;
 
         final Chronograph c = Chronograph.create();
 
-        for (int i = 0; i < 10; i++)
+        for (int i = 0; i < 5; i++)
         {
             final List<Long> linkedList = c.timedFunction("LinkedList add", this::addLinkedList, size);
             c.timed("Linkedlist sort", () -> linkedList.sort(Comparator.naturalOrder()));
@@ -104,20 +104,19 @@ public class ListPerformanceTest
             c.timed("LongList sort", longList::sort);
         }
 
-        Chronograph.configure(TableTheme.NONE);
-        System.out.println(c.prettyPrint("None"));
-        Chronograph.configure(TableTheme.COMPACT);
-        System.out.println(c.prettyPrint("Compact"));
-        Chronograph.configure(TableTheme.STRONG);
-        System.out.println(c.prettyPrint("Strong"));
-        Chronograph.configure(TableTheme.SIMPLE);
-        System.out.println(c.prettyPrint("Simple"));
-        Chronograph.configure(TableTheme.BRIGHT);
-        System.out.println(c.prettyPrint("Bright"));
-        Chronograph.configure(TableTheme.MINIMAL);
-        System.out.println(c.prettyPrint("Minimal"));
+        output(c, TableTheme.DEFAULT);
+        output(c, TableTheme.DOUBLE);
+        output(c, TableTheme.RED_GREEN);
+        output(c, TableTheme.MINIMAL);
+        output(c, TableTheme.COMPACT);
 
         assertThat(true).isTrue();
+    }
+
+    private void output(final Chronograph c, TableTheme theme)
+    {
+        Chronograph.configure(theme);
+        System.out.println(c.prettyPrint());
     }
 
     private LongList addLongList(int count)
