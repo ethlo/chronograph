@@ -88,11 +88,11 @@ public class ListPerformanceTest
     public void performanceTestMedium()
     {
         Chronograph.configure(TableTheme.SIMPLE, OutputConfig.EXTENDED);
-        final int size = 500_000;
+        final int size = 50_000;
 
         final Chronograph c = Chronograph.create();
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < 10; i++)
         {
             final List<Long> linkedList = c.timedFunction("LinkedList add", this::addLinkedList, size);
             c.timed("Linkedlist sort", () -> linkedList.sort(Comparator.naturalOrder()));
@@ -104,7 +104,7 @@ public class ListPerformanceTest
             c.timed("LongList sort", longList::sort);
         }
 
-        Chronograph.configure(TableTheme.NONE, OutputConfig.builder().median(true).standardDeviation(true).build());
+        Chronograph.configure(TableTheme.NONE);
         System.out.println(c.prettyPrint("None"));
         Chronograph.configure(TableTheme.COMPACT);
         System.out.println(c.prettyPrint("Compact"));

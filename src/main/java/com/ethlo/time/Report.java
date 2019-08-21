@@ -26,6 +26,7 @@ import java.time.Duration;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ethlo.ascii.SeparatorRow;
 import com.ethlo.ascii.Table;
 import com.ethlo.ascii.TableCell;
 import com.ethlo.ascii.TableRow;
@@ -56,19 +57,23 @@ public class Report
         nf.setRoundingMode(RoundingMode.HALF_UP);
         nf.setGroupingUsed(true);
 
+        rows.add(new SeparatorRow());
+        rows.add(getHeaderRow(outputConfig));
+        rows.add(new SeparatorRow());
+
         for (TaskInfo task : chronograph.getTasks())
         {
             final TableRow row = getTableRow(chronograph, outputConfig, pf, nf, task);
             rows.add(row);
         }
 
-        if (chronograph.getTasks().size() > 0)
-        {
-            rows.add(totals(chronograph));
-        }
+        final int colCount = rows.get(0).getCells().size();
 
-        return (outputConfig.title() != null ? outputConfig.title() : "")
-                + new Table(theme, getHeaderRow(outputConfig), rows).render();
+        rows.add(new SeparatorRow());
+        rows.add(totals(chronograph, colCount));
+        rows.add(new SeparatorRow());
+
+        return new Table(theme, rows).render(outputConfig.title());
     }
 
     private static TableRow getTableRow(final Chronograph chronograph, final OutputConfig outputConfig, final NumberFormat pf, final NumberFormat nf, final TaskInfo task)
@@ -83,50 +88,50 @@ public class Report
         if (outputConfig.total())
         {
             final String totalTaskTimeStr = DurationUtil.humanReadable(task.getTotal());
-            row.append(new TableCell(totalTaskTimeStr, false));
+            row.append(new TableCell(totalTaskTimeStr, false, true));
         }
 
         if (outputConfig.invocations())
         {
             final String invocationsStr = nf.format(invocations);
-            row.append(new TableCell(invocationsStr, false));
+            row.append(new TableCell(invocationsStr, false, true));
         }
 
         if (outputConfig.percentage())
         {
             final Duration totalTime = chronograph.getTotalTime();
             final double pct = totalTime.isZero() ? 0D : task.getTotal().toNanos() / (double) totalTime.toNanos();
-            row.append(new TableCell(pf.format(pct), false));
+            row.append(new TableCell(pf.format(pct), false, true));
         }
 
         if (outputConfig.median())
         {
             final String medianStr = multipleInvocations ? DurationUtil.humanReadable(task.getMedian()) : "";
-            row.append(new TableCell(medianStr, false));
+            row.append(new TableCell(medianStr, false, true));
         }
 
         if (outputConfig.standardDeviation())
         {
             final String deviationStr = multipleInvocations ? DurationUtil.humanReadable(task.getStandardDeviation()) : "";
-            row.append(new TableCell(deviationStr, false));
+            row.append(new TableCell(deviationStr, false, true));
         }
 
         if (outputConfig.average())
         {
             final String avgTaskTimeStr = multipleInvocations ? DurationUtil.humanReadable(task.getAverage()) : "";
-            row.append(new TableCell(avgTaskTimeStr, false));
+            row.append(new TableCell(avgTaskTimeStr, false, true));
         }
 
         if (outputConfig.min())
         {
             final String minStr = multipleInvocations ? DurationUtil.humanReadable(task.getMin()) : "";
-            row.append(new TableCell(minStr, false));
+            row.append(new TableCell(minStr, false, true));
         }
 
         if (outputConfig.max())
         {
             final String maxStr = multipleInvocations ? DurationUtil.humanReadable(task.getMax()) : "";
-            row.append(new TableCell(maxStr, false));
+            row.append(new TableCell(maxStr, false, true));
         }
 
         if (outputConfig.percentiles() != null)
@@ -134,7 +139,7 @@ public class Report
             for (double percentile : outputConfig.percentiles())
             {
                 final String percentileStr = multipleInvocations ? DurationUtil.humanReadable(task.getPercentile(percentile)) : "";
-                row.append(new TableCell(percentileStr, false));
+                row.append(new TableCell(percentileStr, false, true));
             }
         }
 
@@ -201,8 +206,16 @@ public class Report
         return headerRow;
     }
 
-    private static TableRow totals(final Chronograph chronograph)
+    private static TableRow totals(final Chronograph chronograph, final int colCount)
     {
-        return new TableRow().append(DurationUtil.humanReadable(chronograph.getTotalTime()));
+        final TableRow row = new TableRow()
+                .append(new TableCell("Sum", false, false))
+                .append(new TableCell(DurationUtil.humanReadable(chronograph.getTotalTime()), false, true));
+
+        for (int i = row.getCells().size(); i < colCount; i++)
+        {
+            row.append(" ");
+        }
+        return row;
     }
 }

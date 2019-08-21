@@ -35,7 +35,7 @@ public class TableTheme
             .build();
 
     public static final TableTheme BRIGHT = TableTheme.builder()
-            .stringColor(AnsiColor.BRIGH_BLACK)
+            .stringColor(AnsiColor.BRIGHT_BLACK)
             .numericColor(AnsiColor.PURPLE)
             .verticalSeparator("-")
             .horizontalSeparator(" ")

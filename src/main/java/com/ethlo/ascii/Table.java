@@ -21,7 +21,6 @@ package com.ethlo.ascii;
  */
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,25 +28,21 @@ import com.ethlo.util.StringUtil;
 
 public class Table
 {
-    private final TableRow header;
+    private static final String NEWLINE = System.lineSeparator();
+
     private final List<TableRow> rows;
     private final Map<Integer, Integer> minColumnWidths;
     private final int tableWidth;
 
     private final TableTheme theme;
-    private final Map<Integer, Boolean> hasContent;
 
-    public Table(TableTheme theme, final TableRow header, final List<TableRow> rows)
+    public Table(TableTheme theme, final List<TableRow> rows)
     {
         this.theme = theme;
-        this.header = header;
         this.rows = rows;
 
-        final List<TableRow> all = new LinkedList<>();
-        all.add(header);
-        all.addAll(rows);
-        this.hasContent = getHasColumnContent(rows);
-        this.minColumnWidths = getMaxContentLengths(all, hasContent);
+        final Map<Integer, Boolean> hasContent = getHasColumnContent(rows);
+        this.minColumnWidths = getMaxContentLengths(rows, hasContent);
         this.tableWidth = calculateTotalWidth(minColumnWidths);
     }
 
@@ -66,9 +61,7 @@ public class Table
             }
         }
 
-        hasContent.entrySet().stream().filter(e -> !e.getValue()).forEach(e -> {
-            maxLengths.remove(e.getKey());
-        });
+        hasContent.entrySet().stream().filter(e -> !e.getValue()).forEach(e -> maxLengths.remove(e.getKey()));
 
         return maxLengths;
     }
@@ -94,33 +87,29 @@ public class Table
         return cellSpace + paddingSpace + barSpace;
     }
 
-    public String render()
+    public String render(String title)
     {
-        return "\n" + toString(header, rows);
+        final String titleRow = title != null ? (theme.getCellBackground().value() + theme.getStringColor().value() + StringUtil.adjustPadRight(theme.getPadding() + title, tableWidth) + AnsiColor.RESET.value()) : "";
+        return NEWLINE + titleRow + NEWLINE + theme.getCellBackground().value() + toString(rows);
     }
 
-    private String toString(TableRow header, final List<TableRow> rows)
+    private String toString(final List<TableRow> rows)
     {
         final StringBuilder sb = new StringBuilder();
 
-        // Header top bar
-        if (theme.getVerticalSeparator().length() != 0)
-        {
-            sb.append(StringUtil.repeat(verticalSep(), tableWidth)).append("\n");
-        }
-
-        // Header columns
-        sb.append(toString(header));
-
-        // Header bottom bar
-        if (theme.getVerticalSeparator().length() != 0)
-        {
-            sb.append("\n").append(StringUtil.repeat(verticalSep(), tableWidth));
-        }
-
         for (TableRow row : rows)
         {
-            sb.append("\n").append(toString(row));
+            if (row instanceof SeparatorRow)
+            {
+                if (theme.getVerticalSeparator().length() != 0)
+                {
+                    sb.append(StringUtil.repeat(verticalSep(), tableWidth)).append(NEWLINE);
+                }
+            }
+            else
+            {
+                sb.append(toString(row)).append(NEWLINE);
+            }
         }
 
         return sb.toString();
@@ -130,73 +119,25 @@ public class Table
     private String toString(final TableRow row)
     {
         final StringBuilder sb = new StringBuilder();
-
-        if (row.getCells().size() == 1)
+        for (int colIndex = 0; colIndex < row.getCells().size(); colIndex++)
         {
-            // Totals row
-            if (theme.getVerticalSeparator().length() != 0)
+            final Integer minWidth = minColumnWidths.get(colIndex);
+            if (minWidth != null)
             {
-                sb.append(color(StringUtil.repeat(verticalSep(), tableWidth), theme.getVerticalSpacerColor())).append("\n");
+                final TableCell cell = row.getCells().get(colIndex);
+                sb.append(cell.render(theme, minWidth));
             }
-
-            // Totals
-            final int minWidth = tableWidth - ((theme.getPadding().length() * 2) + (theme.getHorizontalSeparator().length() * 2)) + 1;
-            sb.append(horisontalSep()).append(padding()).append(color(row.getCells().get(0).render(minWidth), theme.getStringColor())).append(color(theme.getHorizontalSeparator(), theme.getHorizontalSpacerColor()));
-
-            if (theme.getVerticalSeparator().length() != 0)
-            {
-                sb.append("\n").append(color(StringUtil.repeat(verticalSep(), tableWidth), theme.getVerticalSpacerColor()));
-            }
-            return sb.toString();
         }
-        else
-        {
-            // Normal row
-            for (int i = 0; i < row.getCells().size(); i++)
-            {
-                final Integer minWidth = minColumnWidths.get(i);
-                if (minWidth != null)
-                {
-                    final String value = row.getCells().get(i).render(minWidth);
-                    final String cellValue = color(theme.getHorizontalSeparator() + theme.getPadding(), theme.getHorizontalSpacerColor()) + color(value, isNumeric(value) ? theme.getNumericColor() : theme.getStringColor()) + padding();
-                    sb.append(cellValue);
-                }
-            }
-            return sb.append(horisontalSep()).toString();
-        }
+        return sb.append(horisontalSep()).toString();
     }
 
     private String horisontalSep()
     {
-        return color(theme.getHorizontalSeparator(), theme.getHorizontalSpacerColor());
+        return TableCell.color(theme.getHorizontalSeparator(), theme.getHorizontalSpacerColor(), theme.getCellBackground());
     }
 
     private String verticalSep()
     {
-        return color(theme.getVerticalSeparator(), theme.getVerticalSpacerColor());
-    }
-
-    private String padding()
-    {
-        return color(theme.getPadding(), AnsiColor.BLACK);
-    }
-
-    private boolean isNumeric(final String value)
-    {
-        try
-        {
-            final String stripped = StringUtil.stripAll(value, ",", ".", ":", " ms", " s", " μs", " n", "%");
-            Double.parseDouble(stripped);
-            return true;
-        }
-        catch (NumberFormatException exc)
-        {
-            return false;
-        }
-    }
-
-    private String color(final String value, AnsiColor color)
-    {
-        return color.value() + theme.getCellBackground().value() + value + AnsiColor.RESET.value();
+        return TableCell.color(theme.getVerticalSeparator(), theme.getVerticalSpacerColor(), theme.getCellBackground());
     }
 }

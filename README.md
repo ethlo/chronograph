@@ -60,7 +60,7 @@ for (int i = 0; i < 200; i++)
     c.timed("LongList sort", longList::sort);
 }
 
-System.out.println(c.prettyPrint("List performance comparison", OutputConfig.ALL, TableTheme.NONE));
+System.out.println(c.prettyPrint("List performance comparison"));
 ```
 #### Output
 ```console

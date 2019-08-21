@@ -26,16 +26,18 @@ public class TableCell
 {
     private final String value;
     private final boolean left;
+    private final boolean isNumeric;
 
     public TableCell(final String value)
     {
-        this(value, true);
+        this(value, true, false);
     }
 
-    public TableCell(final String value, final boolean left)
+    public TableCell(final String value, final boolean left, final boolean isNumeric)
     {
         this.value = value;
         this.left = left;
+        this.isNumeric = isNumeric;
     }
 
     public String getValue()
@@ -43,8 +45,19 @@ public class TableCell
         return value;
     }
 
-    public String render(int minWidth)
+    public String render(TableTheme theme, int minWidth)
     {
-        return left ? StringUtil.adjustPadRight(value, minWidth) : StringUtil.adjustPadLeft(value, minWidth);
+        final String paddedValue = left ? StringUtil.adjustPadRight(value, minWidth) : StringUtil.adjustPadLeft(value, minWidth);
+        return color(theme.getHorizontalSeparator() + theme.getPadding(), theme.getHorizontalSpacerColor(), theme.getCellBackground()) + color(paddedValue, isNumeric ? theme.getNumericColor() : theme.getStringColor(), theme.getCellBackground()) + padding(theme);
+    }
+
+    public static String color(final String value, AnsiColor color, AnsiBackgroundColor backgroundColor)
+    {
+        return color.value() + backgroundColor.value() + value + AnsiColor.RESET.value();
+    }
+
+    private String padding(TableTheme theme)
+    {
+        return color(theme.getPadding(), theme.getStringColor(), theme.getCellBackground());
     }
 }
