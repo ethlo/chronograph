@@ -141,7 +141,7 @@ public class Table
 
             // Totals
             final int minWidth = tableWidth - ((theme.getPadding().length() * 2) + (theme.getHorizontalSeparator().length() * 2)) + 1;
-            sb.append(horisontalSep()).append(padding()).append(color(row.getCells().get(0).getRendered(minWidth), theme.getStringColor())).append(color(theme.getHorizontalSeparator(), theme.getHorizontalSpacerColor()));
+            sb.append(horisontalSep()).append(padding()).append(color(row.getCells().get(0).render(minWidth), theme.getStringColor())).append(color(theme.getHorizontalSeparator(), theme.getHorizontalSpacerColor()));
 
             if (theme.getVerticalSeparator().length() != 0)
             {
@@ -157,7 +157,7 @@ public class Table
                 final Integer minWidth = minColumnWidths.get(i);
                 if (minWidth != null)
                 {
-                    final String value = row.getCells().get(i).getRendered(minWidth);
+                    final String value = row.getCells().get(i).render(minWidth);
                     final String cellValue = color(theme.getHorizontalSeparator() + theme.getPadding(), theme.getHorizontalSpacerColor()) + color(value, isNumeric(value) ? theme.getNumericColor() : theme.getStringColor()) + padding();
                     sb.append(cellValue);
                 }

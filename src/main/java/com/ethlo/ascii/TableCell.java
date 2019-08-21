@@ -25,7 +25,6 @@ import com.ethlo.util.StringUtil;
 public class TableCell
 {
     private final String value;
-    private final int length;
     private final boolean left;
 
     public TableCell(final String value)
@@ -35,13 +34,7 @@ public class TableCell
 
     public TableCell(final String value, final boolean left)
     {
-        this(value, value.length(), left);
-    }
-
-    public TableCell(final String value, final int length, final boolean left)
-    {
         this.value = value;
-        this.length = length;
         this.left = left;
     }
 
@@ -50,7 +43,7 @@ public class TableCell
         return value;
     }
 
-    public String getRendered(int minWidth)
+    public String render(int minWidth)
     {
         return left ? StringUtil.adjustPadRight(value, minWidth) : StringUtil.adjustPadLeft(value, minWidth);
     }

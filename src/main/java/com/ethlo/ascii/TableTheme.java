@@ -22,105 +22,78 @@ package com.ethlo.ascii;
 
 public class TableTheme
 {
-    public static final TableTheme NONE = new TableTheme();
+    public static final TableTheme NONE = TableTheme.builder().build();
 
-    public static final TableTheme STRONG = new TableTheme()
-            .setStringColor(AnsiColor.GRAY)
-            .setNumericColor(AnsiColor.GREEN)
-            .setVerticalSeparator("-")
-            .setHorizontalSeparator("|")
-            .setVerticalSpacerColor(AnsiColor.RED)
-            .setHorizontalSpacerColor(AnsiColor.RED)
-            .setCellBackground(AnsiBackgroundColor.BLACK);
+    public static final TableTheme STRONG = TableTheme.builder()
+            .stringColor(AnsiColor.GRAY)
+            .numericColor(AnsiColor.GREEN)
+            .verticalSeparator("-")
+            .horizontalSeparator("|")
+            .verticalSpacerColor(AnsiColor.RED)
+            .horizontalSpacerColor(AnsiColor.RED)
+            .cellBackground(AnsiBackgroundColor.BLACK)
+            .build();
 
-    public static final TableTheme BRIGHT = new TableTheme()
-            .setStringColor(AnsiColor.BRIGH_BLACK)
-            .setNumericColor(AnsiColor.PURPLE)
-            .setVerticalSeparator("-")
-            .setHorizontalSeparator(" ")
-            .setVerticalSpacerColor(AnsiColor.RED)
-            .setHorizontalSpacerColor(AnsiColor.RED)
-            .setCellBackground(AnsiBackgroundColor.BRIGHT_WHITE);
+    public static final TableTheme BRIGHT = TableTheme.builder()
+            .stringColor(AnsiColor.BRIGH_BLACK)
+            .numericColor(AnsiColor.PURPLE)
+            .verticalSeparator("-")
+            .horizontalSeparator(" ")
+            .verticalSpacerColor(AnsiColor.RED)
+            .horizontalSpacerColor(AnsiColor.RED)
+            .cellBackground(AnsiBackgroundColor.BRIGHT_WHITE)
+            .build();
 
-    public static final TableTheme SIMPLE = new TableTheme()
-            .setStringColor(AnsiColor.GRAY)
-            .setNumericColor(AnsiColor.GREEN)
-            .setVerticalSeparator("-")
-            .setHorizontalSeparator(" ")
-            .setVerticalSpacerColor(AnsiColor.RED)
-            .setHorizontalSpacerColor(AnsiColor.RED)
-            .setCellBackground(AnsiBackgroundColor.BLACK);
+    public static final TableTheme SIMPLE = TableTheme.builder()
+            .stringColor(AnsiColor.GRAY)
+            .numericColor(AnsiColor.GREEN)
+            .verticalSeparator("-")
+            .horizontalSeparator(" ")
+            .verticalSpacerColor(AnsiColor.RED)
+            .horizontalSpacerColor(AnsiColor.RED)
+            .cellBackground(AnsiBackgroundColor.BLACK)
+            .build();
 
-    public static final TableTheme MINIMAL = new TableTheme()
-            .setStringColor(AnsiColor.GRAY)
-            .setNumericColor(AnsiColor.GREEN)
-            .setVerticalSeparator(" ")
-            .setHorizontalSeparator(" ")
-            .setVerticalSpacerColor(AnsiColor.GRAY)
-            .setHorizontalSpacerColor(AnsiColor.GRAY)
-            .setCellBackground(AnsiBackgroundColor.BLACK);
+    public static final TableTheme MINIMAL = TableTheme.builder()
+            .stringColor(AnsiColor.GRAY)
+            .numericColor(AnsiColor.GREEN)
+            .verticalSeparator(" ")
+            .horizontalSeparator(" ")
+            .verticalSpacerColor(AnsiColor.GRAY)
+            .horizontalSpacerColor(AnsiColor.GRAY)
+            .cellBackground(AnsiBackgroundColor.BLACK)
+            .build();
 
-    public static final TableTheme COMPACT = new TableTheme()
-            .setStringColor(AnsiColor.GRAY)
-            .setNumericColor(AnsiColor.GREEN)
-            .setVerticalSeparator("")
-            .setHorizontalSeparator("")
-            .setVerticalSpacerColor(AnsiColor.GRAY)
-            .setHorizontalSpacerColor(AnsiColor.GRAY)
-            .setCellBackground(AnsiBackgroundColor.BLACK)
-            .setPadding(" ");
+    public static final TableTheme COMPACT = TableTheme.builder()
+            .stringColor(AnsiColor.GRAY)
+            .numericColor(AnsiColor.GREEN)
+            .verticalSeparator("")
+            .horizontalSeparator("")
+            .verticalSpacerColor(AnsiColor.GRAY)
+            .horizontalSpacerColor(AnsiColor.GRAY)
+            .cellBackground(AnsiBackgroundColor.BLACK)
+            .padding(" ")
+            .build();
 
-    private AnsiColor stringColor = AnsiColor.NONE;
-    private AnsiColor numericColor = AnsiColor.NONE;
-    private AnsiColor horizontalSpacerColor = AnsiColor.NONE;
-    private AnsiColor verticalSpacerColor = AnsiColor.NONE;
-    private AnsiBackgroundColor cellBackground = AnsiBackgroundColor.NONE;
-    private String horizontalSeparator = "|";
-    private String verticalSeparator = "-";
-    private String padding = " ";
+    private final AnsiColor stringColor;
+    private final AnsiColor numericColor;
+    private final AnsiColor horizontalSpacerColor;
+    private final AnsiColor verticalSpacerColor;
+    private final AnsiBackgroundColor cellBackground;
+    private final String horizontalSeparator;
+    private final String verticalSeparator;
+    private final String padding;
 
-    public String getPadding()
+    private TableTheme(Builder builder)
     {
-        return padding;
-    }
-
-    public TableTheme setPadding(final String padding)
-    {
-        this.padding = padding;
-        return this;
-    }
-
-    public String getHorizontalSeparator()
-    {
-        return horizontalSeparator;
-    }
-
-    public TableTheme setHorizontalSeparator(final String sep)
-    {
-        this.horizontalSeparator = sep;
-        return this;
-    }
-
-    public AnsiColor getHorizontalSpacerColor()
-    {
-        return horizontalSpacerColor;
-    }
-
-    public TableTheme setHorizontalSpacerColor(final AnsiColor horizontalSpacerColor)
-    {
-        this.horizontalSpacerColor = horizontalSpacerColor;
-        return this;
-    }
-
-    public AnsiColor getVerticalSpacerColor()
-    {
-        return verticalSpacerColor;
-    }
-
-    public TableTheme setVerticalSpacerColor(final AnsiColor verticalSpacerColor)
-    {
-        this.verticalSpacerColor = verticalSpacerColor;
-        return this;
+        this.stringColor = builder.stringColor;
+        this.numericColor = builder.numericColor;
+        this.horizontalSpacerColor = builder.horizontalSpacerColor;
+        this.verticalSpacerColor = builder.verticalSpacerColor;
+        this.cellBackground = builder.cellBackground;
+        this.horizontalSeparator = builder.horizontalSeparator;
+        this.verticalSeparator = builder.verticalSeparator;
+        this.padding = builder.padding;
     }
 
     public AnsiColor getStringColor()
@@ -128,32 +101,19 @@ public class TableTheme
         return stringColor;
     }
 
-    public TableTheme setStringColor(final AnsiColor stringColor)
-    {
-        this.stringColor = stringColor;
-        return this;
-    }
-
     public AnsiColor getNumericColor()
     {
         return numericColor;
     }
 
-    public TableTheme setNumericColor(final AnsiColor numericColor)
+    public AnsiColor getHorizontalSpacerColor()
     {
-        this.numericColor = numericColor;
-        return this;
+        return horizontalSpacerColor;
     }
 
-    public String getVerticalSeparator()
+    public AnsiColor getVerticalSpacerColor()
     {
-        return verticalSeparator;
-    }
-
-    public TableTheme setVerticalSeparator(final String sep)
-    {
-        this.verticalSeparator = sep;
-        return this;
+        return verticalSpacerColor;
     }
 
     public AnsiBackgroundColor getCellBackground()
@@ -161,9 +121,92 @@ public class TableTheme
         return cellBackground;
     }
 
-    public TableTheme setCellBackground(final AnsiBackgroundColor cellBackground)
+    public String getHorizontalSeparator()
     {
-        this.cellBackground = cellBackground;
-        return this;
+        return horizontalSeparator;
+    }
+
+    public String getVerticalSeparator()
+    {
+        return verticalSeparator;
+    }
+
+    public String getPadding()
+    {
+        return padding;
+    }
+
+    public static Builder builder()
+    {
+        return new Builder();
+    }
+
+    public static final class Builder
+    {
+        private AnsiColor stringColor = AnsiColor.NONE;
+        private AnsiColor numericColor = AnsiColor.NONE;
+        private AnsiColor horizontalSpacerColor = AnsiColor.NONE;
+        private AnsiColor verticalSpacerColor = AnsiColor.NONE;
+        private AnsiBackgroundColor cellBackground = AnsiBackgroundColor.NONE;
+        private String horizontalSeparator = "|";
+        private String verticalSeparator = "-";
+        private String padding = " ";
+
+        private Builder()
+        {
+        }
+
+        public Builder stringColor(AnsiColor stringColor)
+        {
+            this.stringColor = stringColor;
+            return this;
+        }
+
+        public Builder numericColor(AnsiColor numericColor)
+        {
+            this.numericColor = numericColor;
+            return this;
+        }
+
+        public Builder horizontalSpacerColor(AnsiColor horizontalSpacerColor)
+        {
+            this.horizontalSpacerColor = horizontalSpacerColor;
+            return this;
+        }
+
+        public Builder verticalSpacerColor(AnsiColor verticalSpacerColor)
+        {
+            this.verticalSpacerColor = verticalSpacerColor;
+            return this;
+        }
+
+        public Builder cellBackground(AnsiBackgroundColor cellBackground)
+        {
+            this.cellBackground = cellBackground;
+            return this;
+        }
+
+        public Builder horizontalSeparator(String horizontalSeparator)
+        {
+            this.horizontalSeparator = horizontalSeparator;
+            return this;
+        }
+
+        public Builder verticalSeparator(String verticalSeparator)
+        {
+            this.verticalSeparator = verticalSeparator;
+            return this;
+        }
+
+        public Builder padding(String padding)
+        {
+            this.padding = padding;
+            return this;
+        }
+
+        public TableTheme build()
+        {
+            return new TableTheme(this);
+        }
     }
 }

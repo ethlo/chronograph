@@ -22,17 +22,15 @@ package com.ethlo.time;
 
 public class OutputConfig
 {
-    public static final OutputConfig DEFAULT = OutputConfig.builder()
-            .average(true)
-            .min(true)
-            .max(true)
+    public static final OutputConfig COMPACT = OutputConfig.builder()
+            .median(true)
             .invocations(true)
+            .standardDeviation(true)
             .total(true)
             .percentage(true)
             .build();
 
-
-    public static final OutputConfig EXTENDED = OutputConfig.builder()
+    public static final OutputConfig DEFAULT = OutputConfig.builder()
             .average(true)
             .median(true)
             .min(true)
@@ -43,7 +41,7 @@ public class OutputConfig
             .percentage(true)
             .build();
 
-    public static final OutputConfig ALL = OutputConfig.builder()
+    public static final OutputConfig EXTENDED = OutputConfig.builder()
             .average(true)
             .percentiles(50D, 95D, 99.9D)
             .median(true)

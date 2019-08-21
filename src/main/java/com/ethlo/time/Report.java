@@ -40,7 +40,7 @@ public class Report
 
     public static String prettyPrint(Chronograph chronograph, OutputConfig outputConfig, TableTheme theme)
     {
-        if (chronograph.getTaskInfo().isEmpty())
+        if (chronograph.getTasks().isEmpty())
         {
             return "No performance data";
         }
@@ -56,14 +56,13 @@ public class Report
         nf.setRoundingMode(RoundingMode.HALF_UP);
         nf.setGroupingUsed(true);
 
-        for (String name : chronograph.getTaskNames())
+        for (TaskInfo task : chronograph.getTasks())
         {
-            final TaskInfo task = chronograph.getTaskInfo(name);
             final TableRow row = getTableRow(chronograph, outputConfig, pf, nf, task);
             rows.add(row);
         }
 
-        if (chronograph.getTaskNames().size() > 0)
+        if (chronograph.getTasks().size() > 0)
         {
             rows.add(totals(chronograph));
         }

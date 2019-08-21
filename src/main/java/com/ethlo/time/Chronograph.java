@@ -22,13 +22,12 @@ package com.ethlo.time;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -36,22 +35,19 @@ import com.ethlo.ascii.TableTheme;
 
 public class Chronograph
 {
-    private final ConcurrentLinkedQueue<String> order = new ConcurrentLinkedQueue<>();
+    private static TableTheme theme = TableTheme.NONE;
+    private static OutputConfig outputConfig = OutputConfig.DEFAULT;
+
     private final Map<String, TaskInfo> taskInfos;
     private final CaptureConfig config;
 
     public Chronograph(CaptureConfig config)
     {
         this.config = config;
-        taskInfos = new ConcurrentHashMap<>(16);
+        taskInfos = new LinkedHashMap<>();
     }
 
     public static Chronograph create()
-    {
-        return new Chronograph(CaptureConfig.DEFAULT);
-    }
-
-    public static Chronograph createExtended()
     {
         return new Chronograph(CaptureConfig.EXTENDED);
     }
@@ -63,10 +59,7 @@ public class Chronograph
             throw new IllegalArgumentException("task cannot be null");
         }
 
-        final TaskInfo taskTiming = taskInfos.computeIfAbsent(task, taskName -> {
-            order.add(taskName);
-            return new TaskInfo(taskName, this.config);
-        });
+        final TaskInfo taskTiming = taskInfos.computeIfAbsent(task, taskName -> new TaskInfo(taskName, this.config));
         taskTiming.start();
     }
 
@@ -95,25 +88,19 @@ public class Chronograph
     public synchronized void resetAll()
     {
         taskInfos.clear();
-        order.clear();
     }
 
     public Duration getElapsedTime(final String task)
     {
-        return getTaskInfo(task).getTotal();
+        return getTasks(task).getTotal();
     }
 
-    public TaskInfo getTaskInfo(final String task)
+    public TaskInfo getTasks(final String task)
     {
         return Optional.ofNullable(taskInfos.get(task)).orElseThrow(() -> new IllegalStateException("Unknown task " + task));
     }
 
-    public Collection<String> getTaskNames()
-    {
-        return Collections.unmodifiableCollection(order);
-    }
-
-    public List<TaskInfo> getTaskInfo()
+    public List<TaskInfo> getTasks()
     {
         return Collections.unmodifiableList(new ArrayList<>(taskInfos.values()));
     }
@@ -126,7 +113,7 @@ public class Chronograph
 
     public String prettyPrint()
     {
-        return Report.prettyPrint(this, this.getConfig().storeIndividual() ? OutputConfig.EXTENDED : OutputConfig.DEFAULT);
+        return Report.prettyPrint(this, outputConfig, theme);
     }
 
     public Duration getTotalTime()
@@ -170,13 +157,19 @@ public class Chronograph
         }
     }
 
-    public CaptureConfig getConfig()
+    public String prettyPrint(final String title)
     {
-        return this.config;
+        return Report.prettyPrint(this, outputConfig.begin().title(title).build(), theme);
     }
 
-    public String prettyPrint(final String title, final OutputConfig config, TableTheme theme)
+    public static void configure(TableTheme theme, OutputConfig outputConfig)
     {
-        return Report.prettyPrint(this, config.begin().title(title).build(), theme);
+        Chronograph.theme = Objects.requireNonNull(theme, "theme cannot be null");
+        Chronograph.outputConfig = Objects.requireNonNull(outputConfig, "outputConfig cannot be null");
+    }
+
+    public static void configure(final TableTheme theme)
+    {
+        Chronograph.theme = Objects.requireNonNull(theme, "theme cannot be null");
     }
 }

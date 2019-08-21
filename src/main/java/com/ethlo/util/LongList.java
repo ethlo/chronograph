@@ -31,10 +31,22 @@ import java.util.List;
 
 public class LongList implements Iterable<Long>
 {
-    private final int blockSize = 10000;
-    private final List<long[]> blocks = new ArrayList<>(1);
+    private static final int DEFAULT_BLOCK_SIZE = 1_000;
+
+    private final int blockSize;
+    private final List<long[]> blocks = new ArrayList<>(16);
     private int index = 0;
     private boolean isSorted = false;
+
+    public LongList()
+    {
+        this(DEFAULT_BLOCK_SIZE);
+    }
+
+    public LongList(int blockSize)
+    {
+        this.blockSize = blockSize;
+    }
 
     public void add(long l)
     {

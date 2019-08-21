@@ -75,7 +75,7 @@ public class ChronographTest
             chronograph.timed("baz baz baz baz baz baz", this::microsecondTask);
         }
 
-        assertThat(chronograph.getTaskInfo()).hasSize(3);
+        assertThat(chronograph.getTasks()).hasSize(3);
         logger.info(chronograph.prettyPrint());
     }
 
@@ -172,13 +172,13 @@ public class ChronographTest
     @Test
     public void testGranularity()
     {
-        final Chronograph chronograph = Chronograph.createExtended();
+        final Chronograph chronograph = Chronograph.create();
         for (int i = 0; i < 1_000_000; i++)
         {
             chronograph.start(taskName);
             chronograph.stop(taskName);
         }
-        final Duration median = chronograph.getTaskInfo(taskName).getMedian();
+        final Duration median = chronograph.getTasks(taskName).getMedian();
         logger.info("Granularity: {}", DurationUtil.humanReadable(median));
         assertThat(median.toNanos()).isGreaterThan(0);
     }
@@ -190,9 +190,9 @@ public class ChronographTest
         chronograph.start(taskName);
         chronograph.stop(taskName);
         chronograph.getElapsedTime(taskName);
-        assertThat(chronograph.getTaskNames()).containsExactly(taskName);
+        assertThat(chronograph.getTasks().stream().map(TaskInfo::getName)).containsExactly(taskName);
         chronograph.resetAll();
-        assertThat(chronograph.getTaskNames()).isEmpty();
+        assertThat(chronograph.getTasks()).isEmpty();
     }
 
     @Test
@@ -214,7 +214,7 @@ public class ChronographTest
         chronograph.start("b");
         chronograph.start("c");
         chronograph.stop();
-        assertThat(chronograph.getTaskInfo()).hasSize(3);
+        assertThat(chronograph.getTasks()).hasSize(3);
     }
 
     @Test
@@ -243,6 +243,6 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        assertThat(chronograph.getTaskInfo(taskName).getAverage()).isEqualTo(Duration.ZERO);
+        assertThat(chronograph.getTasks(taskName).getAverage()).isEqualTo(Duration.ZERO);
     }
 }
