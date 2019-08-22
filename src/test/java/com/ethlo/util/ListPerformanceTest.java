@@ -87,7 +87,7 @@ public class ListPerformanceTest
     @Test
     public void performanceTestMedium()
     {
-        Chronograph.configure(TableTheme.RED_GREEN, OutputConfig.EXTENDED);
+        Chronograph.configure(TableTheme.RED_HERRING, OutputConfig.EXTENDED);
         final int size = 500_000;
 
         final Chronograph c = Chronograph.create();
@@ -106,11 +106,13 @@ public class ListPerformanceTest
 
         output(c, TableTheme.DEFAULT);
         output(c, TableTheme.DOUBLE);
-        output(c, TableTheme.RED_GREEN);
+        output(c, TableTheme.RED_HERRING);
         output(c, TableTheme.MINIMAL);
         output(c, TableTheme.COMPACT);
 
         assertThat(true).isTrue();
+
+        Chronograph.configure(TableTheme.DEFAULT);
     }
 
     private void output(final Chronograph c, TableTheme theme)
