@@ -131,7 +131,7 @@ public class Table
     {
         if (rowIndex == 0)
         {
-           return theme.getRightTop();
+            return theme.getRightTop();
         }
         else if (rowIndex == rows.size() - 1)
         {
