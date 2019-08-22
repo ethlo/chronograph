@@ -26,13 +26,16 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ethlo.ascii.TableTheme;
-import com.ethlo.time.Chronograph;
+import com.ethlo.time.ChronographImpl;
 import com.ethlo.time.OutputConfig;
 
 public class ListPerformanceTest
@@ -45,7 +48,7 @@ public class ListPerformanceTest
     @Test
     public void performanceTestLargeLinkedList()
     {
-        final Chronograph c = Chronograph.create();
+        final ChronographImpl c = ChronographImpl.create();
         for (int i = 0; i < count; i++)
         {
             final List<Long> list = c.timedSupplier("add", () -> addLinkedList(size));
@@ -59,7 +62,7 @@ public class ListPerformanceTest
     @Test
     public void performanceTestLargeArrayList()
     {
-        final Chronograph c = Chronograph.create();
+        final ChronographImpl c = ChronographImpl.create();
         for (int i = 0; i < count; i++)
         {
             final List<Long> list = c.timedSupplier("add", () -> addArrayList(size));
@@ -73,7 +76,7 @@ public class ListPerformanceTest
     @Test
     public void performanceTestLargeLongList()
     {
-        final Chronograph c = Chronograph.create();
+        final ChronographImpl c = ChronographImpl.create();
         for (int i = 0; i < count; i++)
         {
             final LongList list = c.timedSupplier("add", () -> addLongList(size));
@@ -85,14 +88,39 @@ public class ListPerformanceTest
     }
 
     @Test
+    public void performanceTestMultiThreaded() throws InterruptedException
+    {
+        final ChronographImpl c = ChronographImpl.create();
+        final ExecutorService service = Executors.newFixedThreadPool(50);
+        for (int i = 0; i < 1000; i++)
+        {
+            service.submit(() -> c.timed("parallell", () -> {
+                try
+                {
+                    Thread.sleep(10);
+                }
+                catch (InterruptedException e)
+                {
+                    throw new RuntimeException(e);
+                }
+            }));
+        }
+        service.awaitTermination(10, TimeUnit.SECONDS);
+        service.shutdown();
+
+        logger.info(c.prettyPrint());
+        assertThat(true).isTrue();
+    }
+
+    @Test
     public void performanceTestMedium()
     {
-        Chronograph.configure(TableTheme.RED_GREEN, OutputConfig.EXTENDED);
+        ChronographImpl.configure(TableTheme.RED_HERRING, OutputConfig.EXTENDED);
         final int size = 500_000;
 
-        final Chronograph c = Chronograph.create();
+        final ChronographImpl c = ChronographImpl.create();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 16; i++)
         {
             final List<Long> linkedList = c.timedFunction("LinkedList add", this::addLinkedList, size);
             c.timed("Linkedlist sort", () -> linkedList.sort(Comparator.naturalOrder()));
@@ -105,17 +133,20 @@ public class ListPerformanceTest
         }
 
         output(c, TableTheme.DEFAULT);
+        output(c, TableTheme.ROUNDED);
         output(c, TableTheme.DOUBLE);
-        output(c, TableTheme.RED_GREEN);
+        output(c, TableTheme.RED_HERRING);
         output(c, TableTheme.MINIMAL);
         output(c, TableTheme.COMPACT);
 
         assertThat(true).isTrue();
+
+        ChronographImpl.configure(TableTheme.DEFAULT);
     }
 
-    private void output(final Chronograph c, TableTheme theme)
+    private void output(final ChronographImpl c, TableTheme theme)
     {
-        Chronograph.configure(theme);
+        ChronographImpl.configure(theme);
         System.out.println(c.prettyPrint());
     }
 

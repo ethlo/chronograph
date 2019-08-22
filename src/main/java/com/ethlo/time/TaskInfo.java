@@ -31,7 +31,7 @@ public class TaskInfo
     private final String name;
     private final IndexedCollection<Long> data;
     private long taskStartTimestamp;
-    private boolean running = false;
+    protected boolean running = false;
 
     TaskInfo(final String name)
     {
@@ -39,7 +39,7 @@ public class TaskInfo
         this.data = new LongList();
     }
 
-    void start()
+    long start()
     {
         if (running)
         {
@@ -49,6 +49,7 @@ public class TaskInfo
 
         // The very last operation
         taskStartTimestamp = System.nanoTime();
+        return taskStartTimestamp;
     }
 
     public String getName()
