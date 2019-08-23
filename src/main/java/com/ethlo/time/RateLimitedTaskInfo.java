@@ -6,7 +6,6 @@ public class RateLimitedTaskInfo extends TaskInfo
 {
     private final long nanosInterval;
     private long lastStopped;
-    private boolean recording = true;
 
     RateLimitedTaskInfo(final String name, Duration sampleinterval)
     {
@@ -15,15 +14,15 @@ public class RateLimitedTaskInfo extends TaskInfo
     }
 
     @Override
-    long start()
-    {
-        return super.start();
-    }
-
-    @Override
-    void stopped(final long ts, final boolean ignoreState)
+    boolean stopped(final long ts, final boolean ignoreState)
     {
         super.stopped(ts, ignoreState);
-        lastStopped = ts;
+        final long elapsed = ts - lastStopped;
+        if (lastStopped == 0 || elapsed > nanosInterval)
+        {
+            lastStopped = ts;
+            return true;
+        }
+        return false;
     }
 }

@@ -34,7 +34,7 @@ import com.ethlo.ascii.TableTheme;
 
 public class Report
 {
-    public static String prettyPrint(ChronographImpl chronograph, OutputConfig outputConfig, TableTheme theme)
+    public static String prettyPrint(Chronograph chronograph, OutputConfig outputConfig, TableTheme theme)
     {
         if (chronograph.getTasks().isEmpty())
         {
@@ -72,7 +72,7 @@ public class Report
         return new Table(theme, rows).render(outputConfig.title());
     }
 
-    private static TableRow getTableRow(final ChronographImpl chronograph, final OutputConfig outputConfig, final NumberFormat pf, final NumberFormat nf, final TaskInfo task)
+    private static TableRow getTableRow(final Chronograph chronograph, final OutputConfig outputConfig, final NumberFormat pf, final NumberFormat nf, final TaskInfo task)
     {
         final TableRow row = new TableRow();
 
@@ -204,7 +204,7 @@ public class Report
         return headerRow;
     }
 
-    private static TableRow totals(final ChronographImpl chronograph, final int colCount)
+    private static TableRow totals(final Chronograph chronograph, final int colCount)
     {
         return new TableRow()
                 .append(new TableCell("Sum", false, false))

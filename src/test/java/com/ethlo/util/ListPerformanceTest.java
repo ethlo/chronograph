@@ -35,8 +35,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ethlo.ascii.TableTheme;
+import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographImpl;
 import com.ethlo.time.OutputConfig;
+import com.ethlo.time.Report;
 
 public class ListPerformanceTest
 {
@@ -48,7 +50,7 @@ public class ListPerformanceTest
     @Test
     public void performanceTestLargeLinkedList()
     {
-        final ChronographImpl c = ChronographImpl.create();
+        final Chronograph c = ChronographImpl.create();
         for (int i = 0; i < count; i++)
         {
             final List<Long> list = c.timedSupplier("add", () -> addLinkedList(size));
@@ -62,7 +64,7 @@ public class ListPerformanceTest
     @Test
     public void performanceTestLargeArrayList()
     {
-        final ChronographImpl c = ChronographImpl.create();
+        final Chronograph c = Chronograph.create();
         for (int i = 0; i < count; i++)
         {
             final List<Long> list = c.timedSupplier("add", () -> addArrayList(size));
@@ -76,7 +78,7 @@ public class ListPerformanceTest
     @Test
     public void performanceTestLargeLongList()
     {
-        final ChronographImpl c = ChronographImpl.create();
+        final Chronograph c = Chronograph.create();
         for (int i = 0; i < count; i++)
         {
             final LongList list = c.timedSupplier("add", () -> addLongList(size));
@@ -90,7 +92,7 @@ public class ListPerformanceTest
     @Test
     public void performanceTestMultiThreaded() throws InterruptedException
     {
-        final ChronographImpl c = ChronographImpl.create();
+        final Chronograph c = Chronograph.create();
         final ExecutorService service = Executors.newFixedThreadPool(50);
         for (int i = 0; i < 1000; i++)
         {
@@ -113,12 +115,32 @@ public class ListPerformanceTest
     }
 
     @Test
+    public void rateLimitingTest()
+    {
+        final Chronograph c = Chronograph.create();
+
+        for (int i = 0; i < 100_000_000; i++)
+        {
+            final int finalI = i;
+            boolean b = c.timedSupplier("QuickTask", () -> finalI % 2131231 == 0);
+            foobar(b);
+        }
+
+        System.out.println(Report.prettyPrint(c, OutputConfig.DEFAULT.begin().percentiles(90, 95, 99, 99.9).build(), TableTheme.DEFAULT));
+    }
+
+    private void foobar(final boolean b)
+    {
+    }
+
+    @Test
     public void performanceTestMedium()
     {
-        ChronographImpl.configure(TableTheme.RED_HERRING, OutputConfig.EXTENDED);
+        Chronograph.configure(TableTheme.RED_HERRING, OutputConfig.EXTENDED);
+
         final int size = 500_000;
 
-        final ChronographImpl c = ChronographImpl.create();
+        final Chronograph c = Chronograph.create();
 
         for (int i = 0; i < 16; i++)
         {
@@ -140,14 +162,11 @@ public class ListPerformanceTest
         output(c, TableTheme.COMPACT);
 
         assertThat(true).isTrue();
-
-        ChronographImpl.configure(TableTheme.DEFAULT);
     }
 
-    private void output(final ChronographImpl c, TableTheme theme)
+    private void output(final Chronograph c, TableTheme theme)
     {
-        ChronographImpl.configure(theme);
-        System.out.println(c.prettyPrint());
+        System.out.println(Report.prettyPrint(c, OutputConfig.DEFAULT, theme));
     }
 
     private LongList addLongList(int count)

@@ -26,39 +26,15 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
-import com.ethlo.ascii.TableTheme;
-
-public class ChronographImpl implements Chronograph
+public class ChronographImpl extends Chronograph
 {
-    private static TableTheme theme = TableTheme.DEFAULT;
-    private static OutputConfig outputConfig = OutputConfig.DEFAULT;
-
-    private final CaptureConfig captureConfig = CaptureConfig.builder().sampleRate(Duration.ofMillis(10)).build();
-
     private final Map<String, TaskInfo> taskInfos;
 
     public ChronographImpl()
     {
         taskInfos = new LinkedHashMap<>();
-    }
-
-    public static void configure(TableTheme theme, OutputConfig outputConfig)
-    {
-        configure(theme);
-        configure(outputConfig);
-    }
-
-    public static void configure(final TableTheme theme)
-    {
-        ChronographImpl.theme = Objects.requireNonNull(theme, "theme cannot be null");
-    }
-
-    public static void configure(final OutputConfig outputConfig)
-    {
-        ChronographImpl.outputConfig = Objects.requireNonNull(outputConfig, "outputConfig cannot be null");
     }
 
     @Override
@@ -69,7 +45,7 @@ public class ChronographImpl implements Chronograph
             throw new IllegalArgumentException("task cannot be null");
         }
 
-        final TaskInfo taskInfo = taskInfos.computeIfAbsent(task, TaskInfo::new);
+        final TaskInfo taskInfo = taskInfos.computeIfAbsent(task, t -> new RateLimitedTaskInfo(task, Duration.ofMillis(2)));
         taskInfo.start();
     }
 
@@ -77,7 +53,7 @@ public class ChronographImpl implements Chronograph
     public void stop()
     {
         final long ts = System.nanoTime();
-        taskInfos.values().forEach(task -> task.stopped(ts, true));
+        //taskInfos.values().stream().map(task -> task.stopped(ts, true)).filter(b->b).forEach(super);
     }
 
     @Override
@@ -95,7 +71,11 @@ public class ChronographImpl implements Chronograph
         {
             throw new IllegalStateException("No started task with name " + task);
         }
-        taskInfo.stopped(ts, false);
+
+        if (taskInfo.stopped(ts, false))
+        {
+            taskInfo.logTiming(ts);
+        }
     }
 
     @Override
@@ -121,11 +101,6 @@ public class ChronographImpl implements Chronograph
     {
         final TaskInfo taskInfo = taskInfos.get(task);
         return taskInfo != null && taskInfo.isRunning();
-    }
-
-    public String prettyPrint()
-    {
-        return Report.prettyPrint(this, outputConfig, theme);
     }
 
     @Override

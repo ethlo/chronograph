@@ -2,17 +2,42 @@ package com.ethlo.time;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public interface Chronograph
+import com.ethlo.ascii.TableTheme;
+
+public abstract class Chronograph
 {
-    default Chronograph create()
+    private final CaptureConfig captureConfig = CaptureConfig.builder().sampleRate(Duration.ofMillis(10)).build();
+
+    private static TableTheme theme = TableTheme.DEFAULT;
+    private static OutputConfig outputConfig = OutputConfig.DEFAULT;
+
+    public static void configure(TableTheme theme, OutputConfig outputConfig)
+    {
+        configure(theme);
+        configure(outputConfig);
+    }
+
+    public static void configure(final TableTheme theme)
+    {
+        Chronograph.theme = Objects.requireNonNull(theme, "theme cannot be null");
+    }
+
+    public static void configure(final OutputConfig outputConfig)
+    {
+        Chronograph.outputConfig = Objects.requireNonNull(outputConfig, "outputConfig cannot be null");
+    }
+
+    public static Chronograph create()
     {
         return new ChronographImpl();
     }
 
-    default void timed(final String taskName, final Runnable task)
+
+    public void timed(final String taskName, final Runnable task)
     {
         try
         {
@@ -24,7 +49,7 @@ public interface Chronograph
         }
     }
 
-    default <R, T> R timedFunction(final String taskName, final Function<T, R> task, T input)
+    public <R, T> R timedFunction(final String taskName, final Function<T, R> task, T input)
     {
         try
         {
@@ -36,7 +61,7 @@ public interface Chronograph
         }
     }
 
-    default <R, T> R timedSupplier(final String taskName, final Supplier<R> task)
+    public <R, T> R timedSupplier(final String taskName, final Supplier<R> task)
     {
         try
         {
@@ -49,27 +74,31 @@ public interface Chronograph
         }
     }
 
-    default String prettyPrint(final String title)
+    public String prettyPrint(final String title)
     {
         return Report.prettyPrint(this, outputConfig.begin().title(title).build(), theme);
     }
 
+    public String prettyPrint()
+    {
+        return Report.prettyPrint(this, outputConfig, theme);
+    }
 
-    void start(String task);
+    public abstract void start(String task);
 
-    void stop();
+    public abstract void stop();
 
-    boolean isAnyRunning();
+    public abstract boolean isAnyRunning();
 
-    void stop(String task);
+    public abstract void stop(String task);
 
-    void resetAll();
+    public abstract void resetAll();
 
-    TaskInfo getTasks(String task);
+    public abstract TaskInfo getTasks(String task);
 
-    List<TaskInfo> getTasks();
+    public abstract List<TaskInfo> getTasks();
 
-    boolean isRunning(String task);
+    public abstract boolean isRunning(String task);
 
-    Duration getTotalTime();
+    public abstract Duration getTotalTime();
 }
