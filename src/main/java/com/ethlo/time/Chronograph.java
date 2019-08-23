@@ -2,16 +2,16 @@ package com.ethlo.time;
 
 /*-
  * #%L
- * stopwatch
+ * Chronograph
  * %%
  * Copyright (C) 2019 Morten Haraldsen (ethlo)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,34 +21,17 @@ package com.ethlo.time;
  */
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.ethlo.ascii.TableTheme;
 
-public class Chronograph
+public abstract class Chronograph
 {
     private static TableTheme theme = TableTheme.DEFAULT;
     private static OutputConfig outputConfig = OutputConfig.DEFAULT;
-
-    private final Map<String, TaskInfo> taskInfos;
-
-    private Chronograph()
-    {
-        taskInfos = new LinkedHashMap<>();
-    }
-
-    public static Chronograph create()
-    {
-        return new Chronograph();
-    }
 
     public static void configure(TableTheme theme, OutputConfig outputConfig)
     {
@@ -66,69 +49,16 @@ public class Chronograph
         Chronograph.outputConfig = Objects.requireNonNull(outputConfig, "outputConfig cannot be null");
     }
 
-    public void start(String task)
+    public static Chronograph create()
     {
-        if (task == null)
-        {
-            throw new IllegalArgumentException("task cannot be null");
-        }
-
-        final TaskInfo taskTiming = taskInfos.computeIfAbsent(task, TaskInfo::new);
-        taskTiming.start();
+        return new ChronographImpl();
     }
 
-    public void stop()
+    public static Chronograph create(final CaptureConfig captureConfig)
     {
-        final long ts = System.nanoTime();
-        taskInfos.values().forEach(task -> task.stopped(ts, true));
+        return new ChronographImpl(captureConfig);
     }
 
-    public boolean isAnyRunning()
-    {
-        return taskInfos.values().stream().anyMatch(TaskInfo::isRunning);
-    }
-
-    public void stop(String task)
-    {
-        final long ts = System.nanoTime();
-        final TaskInfo taskInfo = taskInfos.get(task);
-        if (taskInfo == null)
-        {
-            throw new IllegalStateException("No started task with name " + task);
-        }
-        taskInfo.stopped(ts, false);
-    }
-
-    public synchronized void resetAll()
-    {
-        taskInfos.clear();
-    }
-
-    public TaskInfo getTasks(final String task)
-    {
-        return Optional.ofNullable(taskInfos.get(task)).orElseThrow(() -> new IllegalStateException("Unknown task " + task));
-    }
-
-    public List<TaskInfo> getTasks()
-    {
-        return Collections.unmodifiableList(new ArrayList<>(taskInfos.values()));
-    }
-
-    public boolean isRunning(String task)
-    {
-        final TaskInfo taskInfo = taskInfos.get(task);
-        return taskInfo != null && taskInfo.isRunning();
-    }
-
-    public String prettyPrint()
-    {
-        return Report.prettyPrint(this, outputConfig, theme);
-    }
-
-    public Duration getTotalTime()
-    {
-        return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotal).map(Duration::toNanos).reduce(0L, Long::sum));
-    }
 
     public void timed(final String taskName, final Runnable task)
     {
@@ -160,7 +90,8 @@ public class Chronograph
         {
             start(taskName);
             return task.get();
-        } finally
+        }
+        finally
         {
             stop(taskName);
         }
@@ -170,4 +101,27 @@ public class Chronograph
     {
         return Report.prettyPrint(this, outputConfig.begin().title(title).build(), theme);
     }
+
+    public String prettyPrint()
+    {
+        return Report.prettyPrint(this, outputConfig, theme);
+    }
+
+    public abstract void start(String task);
+
+    public abstract void stop();
+
+    public abstract boolean isAnyRunning();
+
+    public abstract void stop(String task);
+
+    public abstract void resetAll();
+
+    public abstract TaskInfo getTasks(String task);
+
+    public abstract List<TaskInfo> getTasks();
+
+    public abstract boolean isRunning(String task);
+
+    public abstract Duration getTotalTime();
 }

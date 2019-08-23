@@ -22,6 +22,7 @@ package com.ethlo.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -32,8 +33,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ethlo.ascii.TableTheme;
+import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
+import com.ethlo.time.ChronographImpl;
 import com.ethlo.time.OutputConfig;
+import com.ethlo.time.Report;
 
 public class ListPerformanceTest
 {
@@ -45,7 +49,7 @@ public class ListPerformanceTest
     @Test
     public void performanceTestLargeLinkedList()
     {
-        final Chronograph c = Chronograph.create();
+        final Chronograph c = ChronographImpl.create();
         for (int i = 0; i < count; i++)
         {
             final List<Long> list = c.timedSupplier("add", () -> addLinkedList(size));
@@ -85,14 +89,48 @@ public class ListPerformanceTest
     }
 
     @Test
+    public void rateLimitingTest()
+    {
+        final Chronograph c = Chronograph.create(CaptureConfig.builder().minInterval(Duration.ofMillis(1)).build());
+
+        final IndexedCollection<Long> list = new LongList(100_000);
+        for (int i = 0; i < 10_000_000; i++)
+        {
+            final int finalI = i;
+            c.timed("Initial add", () -> doAdd(list, finalI));
+        }
+        for (int i = 0; i < 40_000_000; i++)
+        {
+            final int finalI = i;
+            c.timed("Single add", () -> doAdd(list, finalI));
+        }
+
+        System.out.println(Report.prettyPrint(c, OutputConfig.DEFAULT.begin().percentiles(90, 95, 99, 99.9).build(), TableTheme.DEFAULT));
+    }
+
+    private void doAdd(final IndexedCollection<Long> list, final long value)
+    {
+        list.add(value);
+        try
+        {
+            //TimeUnit.MILLISECONDS.sleep(10);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Test
     public void performanceTestMedium()
     {
         Chronograph.configure(TableTheme.RED_HERRING, OutputConfig.EXTENDED);
+
         final int size = 500_000;
 
         final Chronograph c = Chronograph.create();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 16; i++)
         {
             final List<Long> linkedList = c.timedFunction("LinkedList add", this::addLinkedList, size);
             c.timed("Linkedlist sort", () -> linkedList.sort(Comparator.naturalOrder()));
@@ -105,20 +143,18 @@ public class ListPerformanceTest
         }
 
         output(c, TableTheme.DEFAULT);
+        output(c, TableTheme.ROUNDED);
         output(c, TableTheme.DOUBLE);
         output(c, TableTheme.RED_HERRING);
         output(c, TableTheme.MINIMAL);
         output(c, TableTheme.COMPACT);
 
         assertThat(true).isTrue();
-
-        Chronograph.configure(TableTheme.DEFAULT);
     }
 
     private void output(final Chronograph c, TableTheme theme)
     {
-        Chronograph.configure(theme);
-        System.out.println(c.prettyPrint());
+        System.out.println(Report.prettyPrint(c, OutputConfig.DEFAULT, theme));
     }
 
     private LongList addLongList(int count)

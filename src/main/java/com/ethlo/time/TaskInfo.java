@@ -39,7 +39,7 @@ public class TaskInfo
         this.data = new LongList();
     }
 
-    void start()
+    long start()
     {
         if (running)
         {
@@ -49,6 +49,7 @@ public class TaskInfo
 
         // The very last operation
         taskStartTimestamp = System.nanoTime();
+        return taskStartTimestamp;
     }
 
     public String getName()
@@ -56,7 +57,12 @@ public class TaskInfo
         return name;
     }
 
-    public long getInvocations()
+    public long getTotalInvocations()
+    {
+        return data.size();
+    }
+
+    public long getSampleSize()
     {
         return data.size();
     }
@@ -66,7 +72,7 @@ public class TaskInfo
         return running;
     }
 
-    void stopped(final long ts, boolean ignoreState)
+    boolean stopped(final long ts, boolean ignoreState)
     {
         if (!running && !ignoreState)
         {
@@ -76,18 +82,35 @@ public class TaskInfo
         if (running)
         {
             running = false;
-            final long duration = ts - taskStartTimestamp;
-            data.add(duration);
+            return true;
         }
+        return false;
+    }
+
+    void logTiming(final long ts)
+    {
+        final long duration = ts - taskStartTimestamp;
+        data.add(duration);
     }
 
     public DurationStatistics getStatistics()
     {
-        return new DurationStatistics(new IndexedCollectionStatistics(data));
+        final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
+        return new DurationStatistics(stats, data.size(), Duration.ofNanos(stats.sum()));
     }
 
     public Duration getTotal()
     {
         return Duration.ofNanos(data.stream().reduce(0L, Long::sum));
+    }
+
+    protected long getTaskStartTimestamp()
+    {
+        return taskStartTimestamp;
+    }
+
+    protected IndexedCollection<Long> getData()
+    {
+        return data;
     }
 }

@@ -145,7 +145,7 @@ public class ChronographTest
     @Test
     public void noData()
     {
-        assertThat(Chronograph.create().prettyPrint()).isEqualTo("No performance data");
+        assertThat(ChronographImpl.create().prettyPrint()).isEqualTo("No performance data");
     }
 
     @Test(expected = IllegalStateException.class)
@@ -219,7 +219,7 @@ public class ChronographTest
     @Test
     public void getTotalTaskTimeForEmpty()
     {
-        final Chronograph chronograph = Chronograph.create();
+        final Chronograph chronograph = ChronographImpl.create();
         assertThat(chronograph.getTotalTime()).isEqualTo(Duration.ZERO);
         chronograph.start(taskName);
         assertThat(chronograph.getTotalTime()).isEqualTo(Duration.ZERO);
