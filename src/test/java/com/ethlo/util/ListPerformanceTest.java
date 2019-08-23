@@ -22,6 +22,7 @@ package com.ethlo.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -35,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ethlo.ascii.TableTheme;
+import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographImpl;
 import com.ethlo.time.OutputConfig;
@@ -117,20 +119,34 @@ public class ListPerformanceTest
     @Test
     public void rateLimitingTest()
     {
-        final Chronograph c = Chronograph.create();
+        final Chronograph c = Chronograph.create(CaptureConfig.builder().minInterval(Duration.ofMillis(1)).build());
 
-        for (int i = 0; i < 100_000_000; i++)
+        final IndexedCollection<Long> list = new LongList(100_000);
+        for (int i = 0; i < 10_000_000; i++)
         {
             final int finalI = i;
-            boolean b = c.timedSupplier("QuickTask", () -> finalI % 2131231 == 0);
-            foobar(b);
+            c.timed("Initial add", () -> doAdd(list, finalI));
+        }
+        for (int i = 0; i < 40_000_000; i++)
+        {
+            final int finalI = i;
+            c.timed("Single add", () -> doAdd(list, finalI));
         }
 
-        System.out.println(Report.prettyPrint(c, OutputConfig.DEFAULT.begin().percentiles(90, 95, 99, 99.9).build(), TableTheme.DEFAULT));
+        System.out.println(Report.prettyPrint(c, OutputConfig.DEFAULT.begin().percentiles(50, 90, 95, 99, 99.9).build(), TableTheme.DEFAULT));
     }
 
-    private void foobar(final boolean b)
+    private void doAdd(final IndexedCollection<Long> list, final long value)
     {
+        list.add(value);
+        try
+        {
+            //TimeUnit.MILLISECONDS.sleep(10);
+        }
+        catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test

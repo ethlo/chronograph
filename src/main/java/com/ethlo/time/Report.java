@@ -78,7 +78,7 @@ public class Report
 
         row.append(new TableCell(task.getName()));
 
-        final long invocations = task.getInvocations();
+        final long invocations = task.getTotalInvocations();
         final boolean multipleInvocations = invocations > 1;
 
         final DurationStatistics durationStatistics = task.getStatistics();
@@ -91,7 +91,17 @@ public class Report
 
         if (outputConfig.invocations())
         {
-            final String invocationsStr = nf.format(invocations);
+            String invocationsStr;
+            if (task.getSampleSize() != invocations)
+            {
+                // Reduced sample rate
+                invocationsStr = "(" + nf.format(task.getSampleSize())+ ") " + nf.format(invocations);
+            }
+            else
+            {
+                // Full sampling
+                invocationsStr = nf.format(invocations);
+            }
             row.append(new TableCell(invocationsStr, false, true));
         }
 

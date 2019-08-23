@@ -31,10 +31,17 @@ import java.util.Optional;
 public class ChronographImpl extends Chronograph
 {
     private final Map<String, TaskInfo> taskInfos;
+    private final CaptureConfig captureConfig;
 
     public ChronographImpl()
     {
-        taskInfos = new LinkedHashMap<>();
+        this(CaptureConfig.DEFAULT);
+    }
+
+    public ChronographImpl(final CaptureConfig captureConfig)
+    {
+        this.taskInfos = new LinkedHashMap<>();
+        this.captureConfig = captureConfig;
     }
 
     @Override
@@ -45,7 +52,7 @@ public class ChronographImpl extends Chronograph
             throw new IllegalArgumentException("task cannot be null");
         }
 
-        final TaskInfo taskInfo = taskInfos.computeIfAbsent(task, t -> new RateLimitedTaskInfo(task, Duration.ofMillis(2)));
+        final TaskInfo taskInfo = taskInfos.computeIfAbsent(task, t -> captureConfig.getMinInterval().equals(Duration.ZERO) ? new TaskInfo(task) : new RateLimitedTaskInfo(task, captureConfig.getMinInterval()));
         taskInfo.start();
     }
 

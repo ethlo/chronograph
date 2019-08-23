@@ -29,26 +29,29 @@ import com.ethlo.util.IndexedCollectionStatistics;
 public class DurationStatistics
 {
     private final IndexedCollectionStatistics collectionStatistics;
+    private final long totalInvocations;
+    private final Duration elapsedTotal;
 
-    public DurationStatistics(final IndexedCollectionStatistics collectionStatistics)
+    public DurationStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, Duration elapsedTotal)
     {
         this.collectionStatistics = collectionStatistics;
+        this.totalInvocations = totalInvocations;
+        this.elapsedTotal = elapsedTotal;
     }
 
     public Duration getTotal()
     {
-        return Duration.ofNanos(collectionStatistics.sum());
+        return elapsedTotal;
     }
 
     public Duration getAverage()
     {
-        final long invocations = collectionStatistics.size();
-        if (invocations == 0)
+        if (totalInvocations == 0)
         {
             return Duration.ZERO;
         }
 
-        return Duration.ofNanos(BigDecimal.valueOf(getTotal().toNanos()).divide(BigDecimal.valueOf(collectionStatistics.size()), RoundingMode.HALF_UP).longValue());
+        return Duration.ofNanos(BigDecimal.valueOf(elapsedTotal.toNanos()).divide(BigDecimal.valueOf(totalInvocations), RoundingMode.HALF_UP).longValue());
     }
 
     public Duration getMedian()

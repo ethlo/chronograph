@@ -57,7 +57,12 @@ public class TaskInfo
         return name;
     }
 
-    public long getInvocations()
+    public long getTotalInvocations()
+    {
+        return data.size();
+    }
+
+    public long getSampleSize()
     {
         return data.size();
     }
@@ -90,11 +95,22 @@ public class TaskInfo
 
     public DurationStatistics getStatistics()
     {
-        return new DurationStatistics(new IndexedCollectionStatistics(data));
+        final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
+        return new DurationStatistics(stats, data.size(), Duration.ofNanos(stats.sum()));
     }
 
     public Duration getTotal()
     {
         return Duration.ofNanos(data.stream().reduce(0L, Long::sum));
+    }
+
+    protected long getTaskStartTimestamp()
+    {
+        return taskStartTimestamp;
+    }
+
+    protected IndexedCollection<Long> getData()
+    {
+        return data;
     }
 }
