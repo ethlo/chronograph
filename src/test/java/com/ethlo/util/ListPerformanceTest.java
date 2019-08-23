@@ -27,9 +27,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -92,31 +89,6 @@ public class ListPerformanceTest
     }
 
     @Test
-    public void performanceTestMultiThreaded() throws InterruptedException
-    {
-        final Chronograph c = Chronograph.create();
-        final ExecutorService service = Executors.newFixedThreadPool(50);
-        for (int i = 0; i < 1000; i++)
-        {
-            service.submit(() -> c.timed("parallell", () -> {
-                try
-                {
-                    Thread.sleep(10);
-                }
-                catch (InterruptedException e)
-                {
-                    throw new RuntimeException(e);
-                }
-            }));
-        }
-        service.awaitTermination(10, TimeUnit.SECONDS);
-        service.shutdown();
-
-        logger.info(c.prettyPrint());
-        assertThat(true).isTrue();
-    }
-
-    @Test
     public void rateLimitingTest()
     {
         final Chronograph c = Chronograph.create(CaptureConfig.builder().minInterval(Duration.ofMillis(1)).build());
@@ -133,7 +105,7 @@ public class ListPerformanceTest
             c.timed("Single add", () -> doAdd(list, finalI));
         }
 
-        System.out.println(Report.prettyPrint(c, OutputConfig.DEFAULT.begin().percentiles(50, 90, 95, 99, 99.9).build(), TableTheme.DEFAULT));
+        System.out.println(Report.prettyPrint(c, OutputConfig.DEFAULT.begin().percentiles(90, 95, 99, 99.9).build(), TableTheme.DEFAULT));
     }
 
     private void doAdd(final IndexedCollection<Long> list, final long value)

@@ -55,7 +55,7 @@ public class LongListTest
         final LongList l = new LongList();
         for (int i = 1; i <= 2_600_000; i++)
         {
-            l.add((long) Integer.MAX_VALUE);
+            l.add(Integer.MAX_VALUE);
         }
         assertThat(new IndexedCollectionStatistics(l).getAverage()).isEqualTo(Integer.MAX_VALUE);
     }

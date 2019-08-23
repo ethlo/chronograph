@@ -23,6 +23,7 @@ package com.ethlo.util;
 import static java.math.BigDecimal.ROUND_HALF_UP;
 
 import java.math.BigDecimal;
+import java.math.BigInteger;
 
 public class IndexedCollectionStatistics
 {
@@ -87,17 +88,13 @@ public class IndexedCollectionStatistics
 
     public double getAverage()
     {
-        if (list.size() == 0)
-        {
-            return Double.NaN;
-        }
-
-        long sum = 0;
+        BigInteger sum = BigInteger.ZERO;
         for (final Long l : list)
         {
-            sum += l;
+            final BigInteger bi = BigInteger.valueOf(l);
+            sum = sum.add(bi);
         }
-        return sum / (double) list.size();
+        return sum.divide(BigInteger.valueOf(list.size())).doubleValue();
     }
 
     public double getPercentile(double percentile)

@@ -60,7 +60,14 @@ public class ChronographImpl extends Chronograph
     public void stop()
     {
         final long ts = System.nanoTime();
-        //taskInfos.values().stream().map(task -> task.stopped(ts, true)).filter(b->b).forEach(super);
+        for (TaskInfo taskInfo : taskInfos.values())
+        {
+            final boolean shouldLog = taskInfo.stopped(ts, true);
+            if(shouldLog)
+            {
+                taskInfo.logTiming(ts);
+            }
+        }
     }
 
     @Override
