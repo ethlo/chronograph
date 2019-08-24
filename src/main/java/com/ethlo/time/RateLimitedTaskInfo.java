@@ -9,9 +9,9 @@ package com.ethlo.time;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,6 +22,8 @@ package com.ethlo.time;
 
 import java.time.Duration;
 
+import com.ethlo.time.statistics.DurationPerformanceStatistics;
+import com.ethlo.time.statistics.PerformanceStatistics;
 import com.ethlo.util.IndexedCollectionStatistics;
 
 public class RateLimitedTaskInfo extends TaskInfo
@@ -67,9 +69,9 @@ public class RateLimitedTaskInfo extends TaskInfo
     }
 
     @Override
-    public DurationStatistics getStatistics()
+    public PerformanceStatistics<Duration> getDurationStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(getData());
-        return new DurationStatistics(stats, totalInvocations, Duration.ofNanos(totalElapsed));
+        return new DurationPerformanceStatistics(stats, totalInvocations, Duration.ofNanos(totalElapsed));
     }
 }

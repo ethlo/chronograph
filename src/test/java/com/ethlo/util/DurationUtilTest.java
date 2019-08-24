@@ -26,55 +26,55 @@ import java.time.Duration;
 
 import org.junit.Test;
 
-import com.ethlo.time.DurationUtil;
+import com.ethlo.time.ReportUtil;
 
 public class DurationUtilTest
 {
     @Test
     public void humanReadableFormatMoreThanHour()
     {
-        assertThat(DurationUtil.humanReadable(Duration.ofSeconds(4712).withNanos(123456789))).isEqualTo("01:18:32.123");
+        assertThat(ReportUtil.humanReadable(Duration.ofSeconds(4712).withNanos(123456789))).isEqualTo("01:18:32.123");
     }
 
     @Test
     public void humanReadableFormatLessThanHour()
     {
-        assertThat(DurationUtil.humanReadable(Duration.ofSeconds(2000).withNanos(123456789))).isEqualTo("33:20.123");
+        assertThat(ReportUtil.humanReadable(Duration.ofSeconds(2000).withNanos(123456789))).isEqualTo("33:20.123");
     }
 
     @Test
     public void humanReadableFormatLessThanMinute()
     {
-        assertThat(DurationUtil.humanReadable(Duration.ofSeconds(8).withNanos(125_956_789))).isEqualTo("8.126 s");
+        assertThat(ReportUtil.humanReadable(Duration.ofSeconds(8).withNanos(125_956_789))).isEqualTo("8.126 s");
     }
 
     @Test
     public void humanReadableFormatLessThanMinute2()
     {
-        assertThat(DurationUtil.humanReadable(Duration.ofSeconds(8).withNanos(1_000_000))).isEqualTo("8.001 s");
+        assertThat(ReportUtil.humanReadable(Duration.ofSeconds(8).withNanos(1_000_000))).isEqualTo("8.001 s");
     }
 
     @Test
     public void humanReadableFormatLessThanMinute3()
     {
-        assertThat(DurationUtil.humanReadable(Duration.ofSeconds(8))).isEqualTo("8.000 s");
+        assertThat(ReportUtil.humanReadable(Duration.ofSeconds(8))).isEqualTo("8.000 s");
     }
 
     @Test
     public void humanReadableFormatLessThanSecond()
     {
-        assertThat(DurationUtil.humanReadable(Duration.ofNanos(123_456_789))).isEqualTo("123.46 ms");
+        assertThat(ReportUtil.humanReadable(Duration.ofNanos(123_456_789))).isEqualTo("123.46 ms");
     }
 
     @Test
     public void humanReadableFormatLessThanMillisecond()
     {
-        assertThat(DurationUtil.humanReadable(Duration.ofNanos(456_789))).isEqualTo("456.79 μs");
+        assertThat(ReportUtil.humanReadable(Duration.ofNanos(456_789))).isEqualTo("456.79 μs");
     }
 
     @Test
     public void humanReadableFormatLessThanMicrosecond()
     {
-        assertThat(DurationUtil.humanReadable(Duration.ofNanos(489))).isEqualTo("489 ns");
+        assertThat(ReportUtil.humanReadable(Duration.ofNanos(489))).isEqualTo("489 ns");
     }
 }

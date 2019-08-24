@@ -35,9 +35,10 @@ import org.slf4j.LoggerFactory;
 import com.ethlo.ascii.TableTheme;
 import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
-import com.ethlo.time.ChronographImpl;
+import com.ethlo.time.ChronographData;
 import com.ethlo.time.OutputConfig;
 import com.ethlo.time.Report;
+import com.ethlo.time.TaskPerformanceStatistics;
 
 public class ListPerformanceTest
 {
@@ -49,7 +50,7 @@ public class ListPerformanceTest
     @Test
     public void performanceTestLargeLinkedList()
     {
-        final Chronograph c = ChronographImpl.create();
+        final Chronograph c = Chronograph.create();
         for (int i = 0; i < count; i++)
         {
             final List<Long> list = c.timedSupplier("add", () -> addLinkedList(size));
@@ -105,7 +106,7 @@ public class ListPerformanceTest
             c.timed("Single add", () -> doAdd(list, finalI));
         }
 
-        System.out.println(Report.prettyPrint(c, OutputConfig.DEFAULT.begin().percentiles(90, 95, 99, 99.9).build(), TableTheme.DEFAULT));
+        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.begin().percentiles(90, 95, 99, 99.9).build(), TableTheme.DEFAULT));
     }
 
     private void doAdd(final IndexedCollection<Long> list, final long value)
@@ -122,39 +123,68 @@ public class ListPerformanceTest
     }
 
     @Test
-    public void performanceTestMedium()
+    public void performanceTestMediumAdd()
     {
-        Chronograph.configure(TableTheme.RED_HERRING, OutputConfig.EXTENDED);
-
-        final int size = 500_000;
-
-        final Chronograph c = Chronograph.create();
-
-        for (int i = 0; i < 16; i++)
-        {
-            final List<Long> linkedList = c.timedFunction("LinkedList add", this::addLinkedList, size);
-            c.timed("Linkedlist sort", () -> linkedList.sort(Comparator.naturalOrder()));
-
-            final List<Long> arrayList = c.timedFunction("ArrayList add", this::addArrayList, size);
-            c.timed("Arraylist sort", () -> arrayList.sort(Comparator.naturalOrder()));
-
-            final LongList longList = c.timedFunction("LongList add", this::addLongList, size);
-            c.timed("LongList sort", longList::sort);
-        }
-
-        output(c, TableTheme.DEFAULT);
-        output(c, TableTheme.ROUNDED);
-        output(c, TableTheme.DOUBLE);
+        final int size = 50_000;
+        final Chronograph c = performAddBenchmark(size);
         output(c, TableTheme.RED_HERRING);
-        output(c, TableTheme.MINIMAL);
-        output(c, TableTheme.COMPACT);
-
         assertThat(true).isTrue();
     }
 
+    private Chronograph performAddBenchmark(final int size)
+    {
+        final Chronograph c = Chronograph.create("Add");
+
+        for (int i = 0; i < 100; i++)
+        {
+            c.timedFunction("LinkedList", this::addLinkedList, size);
+            c.timedFunction("ArrayList", this::addArrayList, size);
+            c.timedFunction("IndexedCollection", this::addLongList, size);
+        }
+        return c;
+    }
+
+    @Test
+    public void performanceTestMediumSort()
+    {
+        final int size = 500_000;
+        final Chronograph c = performSortBenchmark(size);
+        output(c, TableTheme.RED_HERRING);
+        assertThat(true).isTrue();
+    }
+
+    private Chronograph performSortBenchmark(final int size)
+    {
+        final Chronograph c = Chronograph.create("Sort");
+
+        for (int i = 0; i < 100; i++)
+        {
+            final IndexedCollection<Long> longList = addLongList(size);
+            final List<Long> linkedList = addLinkedList(size);
+            final List<Long> arrayList = addArrayList(size);
+
+            c.timed("Linkedlist", () -> linkedList.sort(Comparator.naturalOrder()));
+            c.timed("Arraylist", () -> arrayList.sort(Comparator.naturalOrder()));
+            c.timed("IndexedCollection", longList::sort);
+        }
+        return c;
+    }
+
+    @Test
+    public void testCombinedPerformanceTable()
+    {
+        final Chronograph a = performAddBenchmark(10_000);
+        final Chronograph b = performSortBenchmark(10_000);
+        final List<TaskPerformanceStatistics> aa = a.getTaskData().getTaskStatistics();
+        final List<TaskPerformanceStatistics> bb = b.getTaskData().getTaskStatistics();
+        aa.addAll(bb);
+        System.out.println(Report.prettyPrint(new ChronographData("Combined", aa, a.getTotalTime().plus(b.getTotalTime())), OutputConfig.EXTENDED, TableTheme.RED_HERRING));
+    }
+
+
     private void output(final Chronograph c, TableTheme theme)
     {
-        System.out.println(Report.prettyPrint(c, OutputConfig.DEFAULT, theme));
+        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.EXTENDED.begin().benchmarkMode(true).build(), theme));
     }
 
     private LongList addLongList(int count)

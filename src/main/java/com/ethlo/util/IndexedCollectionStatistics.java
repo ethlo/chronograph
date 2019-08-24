@@ -47,35 +47,6 @@ public class IndexedCollectionStatistics
         return sum;
     }
 
-    public double getStandardDeviation()
-    {
-        final int count = list.size();
-        final double average = getAverage();
-        BigDecimal sd = BigDecimal.valueOf(0);
-        for (long l : list)
-        {
-            final double val = Math.pow((l - average) / (double) count, 2);
-            sd = sd.add(BigDecimal.valueOf(val));
-        }
-        return sqrt(sd, 10).doubleValue();
-    }
-
-    private BigDecimal sqrt(BigDecimal value, final int SCALE)
-    {
-        BigDecimal TWO = BigDecimal.valueOf(2);
-        BigDecimal x0 = BigDecimal.ZERO;
-        BigDecimal x1 = new BigDecimal(Math.sqrt(value.doubleValue()));
-        while (!x0.equals(x1))
-        {
-            x0 = x1;
-            x1 = value.divide(x0, SCALE, ROUND_HALF_UP);
-            x1 = x1.add(x0);
-            x1 = x1.divide(TWO, SCALE, ROUND_HALF_UP);
-
-        }
-        return x1;
-    }
-
     public long getMin()
     {
         return list.get(0);
@@ -122,5 +93,10 @@ public class IndexedCollectionStatistics
     public long size()
     {
         return list.size();
+    }
+
+    public IndexedCollection<Long> getList()
+    {
+        return list;
     }
 }

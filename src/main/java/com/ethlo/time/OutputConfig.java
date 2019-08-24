@@ -63,6 +63,8 @@ public class OutputConfig
     private final boolean standardDeviation;
     private final boolean total;
     private final boolean percentage;
+    private final Mode mode;
+    private boolean benchmarkMode;
 
     private OutputConfig(Builder builder)
     {
@@ -76,6 +78,8 @@ public class OutputConfig
         this.standardDeviation = builder.standardDeviation;
         this.total = builder.total;
         this.percentage = builder.percentage;
+        this.mode = builder.mode;
+        this.benchmarkMode = builder.benchmarkMode;
 
     }
 
@@ -134,6 +138,16 @@ public class OutputConfig
         return percentage;
     }
 
+    public Mode getMode()
+    {
+        return mode;
+    }
+
+    public boolean benchmarkMode()
+    {
+        return benchmarkMode;
+    }
+
     public Builder begin()
     {
         final Builder b = new Builder();
@@ -147,11 +161,14 @@ public class OutputConfig
         b.invocations = invocations;
         b.average = average;
         b.title = title;
+        b.mode = mode;
+        b.benchmarkMode = benchmarkMode;
         return b;
     }
 
     public static class Builder
     {
+        private Mode mode = Mode.THROUGHPUT;
         private String title;
         private double[] percentiles;
         private boolean median;
@@ -162,6 +179,7 @@ public class OutputConfig
         private boolean standardDeviation;
         private boolean total;
         private boolean percentage;
+        private boolean benchmarkMode;
 
         public Builder title(final String title)
         {
@@ -223,9 +241,21 @@ public class OutputConfig
             return this;
         }
 
+        public Builder mode(final Mode mode)
+        {
+            this.mode = mode;
+            return this;
+        }
+
         public OutputConfig build()
         {
             return new OutputConfig(this);
+        }
+
+        public Builder benchmarkMode(final boolean b)
+        {
+            this.benchmarkMode = b;
+            return this;
         }
     }
 }

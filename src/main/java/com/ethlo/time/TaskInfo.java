@@ -22,6 +22,9 @@ package com.ethlo.time;
 
 import java.time.Duration;
 
+import com.ethlo.time.statistics.DurationPerformanceStatistics;
+import com.ethlo.time.statistics.PerformanceStatistics;
+import com.ethlo.time.statistics.ThroughputPerformanceStatistics;
 import com.ethlo.util.IndexedCollection;
 import com.ethlo.util.IndexedCollectionStatistics;
 import com.ethlo.util.LongList;
@@ -93,10 +96,16 @@ public class TaskInfo
         data.add(duration);
     }
 
-    public DurationStatistics getStatistics()
+    public PerformanceStatistics<Duration> getDurationStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
-        return new DurationStatistics(stats, data.size(), Duration.ofNanos(stats.sum()));
+        return new DurationPerformanceStatistics(stats, data.size(), Duration.ofNanos(stats.sum()));
+    }
+
+    public PerformanceStatistics<Double> getThroughputStatistics()
+    {
+        final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
+        return new ThroughputPerformanceStatistics(stats, data.size(), Duration.ofNanos(stats.sum()));
     }
 
     public Duration getTotal()
