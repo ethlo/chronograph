@@ -73,7 +73,7 @@ public class Report
         rows.add(totals(chronographData));
         rows.add(SeparatorRow.getInstance());
 
-        return new Table(theme, rows).render(outputConfig.title());
+        return new Table(theme, rows).render(outputConfig.title() != null ? outputConfig.title() : chronographData.getName());
     }
 
     private static Comparator<? super TaskPerformanceStatistics> comparator(final OutputConfig outputConfig)
@@ -181,7 +181,10 @@ public class Report
             final String str = outputConfig.getMode() == Mode.DURATION ? ReportUtil.humanReadable(duration) : ReportUtil.humanReadable(throughput);
             row.append(new TableCell(str, false, true));
         }
-        row.append(new TableCell(""));
+        else
+        {
+            row.append(new TableCell(""));
+        }
     }
 
     private static TableRow getHeaderRow(final OutputConfig outputConfig)

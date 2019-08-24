@@ -168,7 +168,7 @@ public class OutputConfig
 
     public static class Builder
     {
-        private Mode mode = Mode.THROUGHPUT;
+        private Mode mode = Mode.DURATION;
         private String title;
         private double[] percentiles;
         private boolean median;

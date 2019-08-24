@@ -99,13 +99,13 @@ public class TaskInfo
     public PerformanceStatistics<Duration> getDurationStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
-        return new DurationPerformanceStatistics(stats, data.size(), Duration.ofNanos(stats.sum()));
+        return new DurationPerformanceStatistics(stats, getTotalInvocations(), Duration.ofNanos(stats.sum()));
     }
 
     public PerformanceStatistics<Double> getThroughputStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
-        return new ThroughputPerformanceStatistics(stats, data.size(), Duration.ofNanos(stats.sum()));
+        return new ThroughputPerformanceStatistics(stats, getTotalInvocations(), Duration.ofNanos(stats.sum()));
     }
 
     public Duration getTotal()

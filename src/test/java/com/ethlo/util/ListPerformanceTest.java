@@ -36,6 +36,7 @@ import com.ethlo.ascii.TableTheme;
 import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographData;
+import com.ethlo.time.Mode;
 import com.ethlo.time.OutputConfig;
 import com.ethlo.time.Report;
 import com.ethlo.time.TaskPerformanceStatistics;
@@ -45,7 +46,7 @@ public class ListPerformanceTest
     private static final Logger logger = LoggerFactory.getLogger(ListPerformanceTest.class);
 
     private final int size = 5_000_000;
-    private final int count = 10;
+    private final int count = 4;
 
     @Test
     public void performanceTestLargeLinkedList()
@@ -92,21 +93,21 @@ public class ListPerformanceTest
     @Test
     public void rateLimitingTest()
     {
-        final Chronograph c = Chronograph.create(CaptureConfig.builder().minInterval(Duration.ofMillis(1)).build());
+        final Chronograph c = Chronograph.create(CaptureConfig.builder().minInterval(Duration.ofNanos(10_000)).build());
 
         final IndexedCollection<Long> list = new LongList(100_000);
-        for (int i = 0; i < 10_000_000; i++)
+        for (int i = 0; i < 2_000_000; i++)
         {
             final int finalI = i;
             c.timed("Initial add", () -> doAdd(list, finalI));
         }
-        for (int i = 0; i < 40_000_000; i++)
+        for (int i = 0; i < 10_000_000; i++)
         {
             final int finalI = i;
             c.timed("Single add", () -> doAdd(list, finalI));
         }
 
-        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.begin().percentiles(90, 95, 99, 99.9).build(), TableTheme.DEFAULT));
+        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.begin().mode(Mode.THROUGHPUT).percentiles(90, 95, 99, 99.9).build(), TableTheme.DOUBLE));
     }
 
     private void doAdd(final IndexedCollection<Long> list, final long value)
@@ -117,17 +118,16 @@ public class ListPerformanceTest
     @Test
     public void performanceTestMediumAdd()
     {
-        final int size = 50_000;
-        final Chronograph c = performAddBenchmark(size);
+        final Chronograph c = performAddBenchmark(10, 500_000);
         output(c, TableTheme.RED_HERRING);
         assertThat(true).isTrue();
     }
 
-    private Chronograph performAddBenchmark(final int size)
+    private Chronograph performAddBenchmark(final int runs, final int size)
     {
         final Chronograph c = Chronograph.create("Add");
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < runs; i++)
         {
             c.timedFunction("LinkedList", this::addLinkedList, size);
             c.timedFunction("ArrayList", this::addArrayList, size);
@@ -139,17 +139,16 @@ public class ListPerformanceTest
     @Test
     public void performanceTestMediumSort()
     {
-        final int size = 500_000;
-        final Chronograph c = performSortBenchmark(size);
+        final Chronograph c = performSortBenchmark(10, 500_000);
         output(c, TableTheme.RED_HERRING);
         assertThat(true).isTrue();
     }
 
-    private Chronograph performSortBenchmark(final int size)
+    private Chronograph performSortBenchmark(final int runs, final int size)
     {
         final Chronograph c = Chronograph.create("Sort");
 
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < runs; i++)
         {
             final IndexedCollection<Long> longList = addLongList(size);
             final List<Long> linkedList = addLinkedList(size);
@@ -165,12 +164,19 @@ public class ListPerformanceTest
     @Test
     public void testCombinedPerformanceTable()
     {
-        final Chronograph a = performAddBenchmark(10_000);
-        final Chronograph b = performSortBenchmark(10_000);
+        final Chronograph a = performAddBenchmark(10, 10_000);
+        final Chronograph b = performSortBenchmark(10, 10_000);
+
         final List<TaskPerformanceStatistics> aa = a.getTaskData().getTaskStatistics();
         final List<TaskPerformanceStatistics> bb = b.getTaskData().getTaskStatistics();
         aa.addAll(bb);
-        System.out.println(Report.prettyPrint(new ChronographData("Combined", aa, a.getTotalTime().plus(b.getTotalTime())), OutputConfig.EXTENDED, TableTheme.RED_HERRING));
+
+        final ChronographData combined = new ChronographData("Combined", aa, a.getTotalTime().plus(b.getTotalTime()));
+
+        System.out.println(Report.prettyPrint(combined,
+                OutputConfig.EXTENDED.begin().mode(Mode.THROUGHPUT).benchmarkMode(true).build(),
+                TableTheme.RED_HERRING));
+
         assertThat(true).isTrue();
     }
 

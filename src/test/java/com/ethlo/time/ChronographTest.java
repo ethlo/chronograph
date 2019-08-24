@@ -42,7 +42,7 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
 
-        for (int i = 1; i <= 1_000; i++)
+        for (int i = 1; i <= 10; i++)
         {
             chronograph.start(taskName);
             millisecondTask();

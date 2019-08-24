@@ -110,7 +110,7 @@ public class ReportUtil
         nf.setMaximumFractionDigits(2);
         nf.setMinimumFractionDigits(2);
 
-        final String designation = "/s";
+        final String designation = " /s";
 
         return nf.format(throughput) + designation;
     }
