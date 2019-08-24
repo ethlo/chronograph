@@ -112,14 +112,6 @@ public class ListPerformanceTest
     private void doAdd(final IndexedCollection<Long> list, final long value)
     {
         list.add(value);
-        try
-        {
-            //TimeUnit.MILLISECONDS.sleep(10);
-        }
-        catch (Exception e)
-        {
-            throw new RuntimeException(e);
-        }
     }
 
     @Test

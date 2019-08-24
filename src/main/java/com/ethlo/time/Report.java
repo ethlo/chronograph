@@ -127,93 +127,48 @@ public class Report
 
         if (outputConfig.median())
         {
-            final String medianStr;
-            if (outputConfig.getMode() == Mode.DURATION)
-            {
-                medianStr = multipleInvocations ? ReportUtil.humanReadable(durationStatistics.getMedian()) : "";
-            }
-            else
-            {
-                medianStr = multipleInvocations ? ReportUtil.humanReadable(throughputStatistics.getMedian()) : "";
-            }
-            row.append(new TableCell(medianStr, false, true));
+            outputCell(outputConfig, row, multipleInvocations, durationStatistics.getMedian(), throughputStatistics.getMedian());
         }
 
         if (outputConfig.standardDeviation())
         {
-            final String deviationStr;
-            if (outputConfig.getMode() == Mode.DURATION)
-            {
-                deviationStr = multipleInvocations ? ReportUtil.humanReadable(durationStatistics.getStandardDeviation()) : "";
-            }
-            else
-            {
-                deviationStr = multipleInvocations ? ReportUtil.humanReadable(throughputStatistics.getStandardDeviation()) : "";
-            }
-
-            row.append(new TableCell(deviationStr, false, true));
+            outputCell(outputConfig, row, multipleInvocations, durationStatistics.getStandardDeviation(), throughputStatistics.getStandardDeviation());
         }
 
         if (outputConfig.mean())
         {
-            final String str;
-            if (outputConfig.getMode() == Mode.DURATION)
-            {
-                str = multipleInvocations ? ReportUtil.humanReadable(durationStatistics.getAverage()) : "";
-            }
-            else
-            {
-                str = multipleInvocations ? ReportUtil.humanReadable(throughputStatistics.getAverage()) : "";
-            }
-            row.append(new TableCell(str, false, true));
+            outputCell(outputConfig, row, multipleInvocations, durationStatistics.getAverage(), throughputStatistics.getAverage());
         }
 
         if (outputConfig.min())
         {
-            final String str;
-            if (outputConfig.getMode() == Mode.DURATION)
-            {
-                str = multipleInvocations ? ReportUtil.humanReadable(durationStatistics.getMin()) : "";
-            }
-            else
-            {
-                str = multipleInvocations ? ReportUtil.humanReadable(throughputStatistics.getMin()) : "";
-            }
-            row.append(new TableCell(str, false, true));
+            outputCell(outputConfig, row, multipleInvocations, durationStatistics.getMin(), throughputStatistics.getMin());
         }
 
         if (outputConfig.max())
         {
-            final String str;
-            if (outputConfig.getMode() == Mode.DURATION)
-            {
-                str = multipleInvocations ? ReportUtil.humanReadable(durationStatistics.getMax()) : "";
-            }
-            else
-            {
-                str = multipleInvocations ? ReportUtil.humanReadable(throughputStatistics.getMax()) : "";
-            }
-            row.append(new TableCell(str, false, true));
+            outputCell(outputConfig, row, multipleInvocations, durationStatistics.getMax(), throughputStatistics.getMax());
         }
 
         if (outputConfig.percentiles() != null)
         {
             for (double percentile : outputConfig.percentiles())
             {
-                final String str;
-                if (outputConfig.getMode() == Mode.DURATION)
-                {
-                    str = multipleInvocations ? ReportUtil.humanReadable(durationStatistics.getPercentile(percentile)) : "";
-                }
-                else
-                {
-                    str = multipleInvocations ? ReportUtil.humanReadable(throughputStatistics.getPercentile(percentile)) : "";
-                }
-                row.append(new TableCell(str, false, true));
+                outputCell(outputConfig, row, multipleInvocations, durationStatistics.getPercentile(percentile), throughputStatistics.getPercentile(percentile));
             }
         }
 
         return row;
+    }
+
+    private static void outputCell(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final Duration duration, final Double throughput)
+    {
+        if (multipleInvocations)
+        {
+            final String str = outputConfig.getMode() == Mode.DURATION ? ReportUtil.humanReadable(duration) : ReportUtil.humanReadable(throughput);
+            row.append(new TableCell(str, false, true));
+        }
+        row.append(new TableCell(""));
     }
 
     private static TableRow getHeaderRow(final OutputConfig outputConfig)
