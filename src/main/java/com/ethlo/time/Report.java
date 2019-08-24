@@ -23,6 +23,8 @@ package com.ethlo.time;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -31,12 +33,13 @@ import com.ethlo.ascii.Table;
 import com.ethlo.ascii.TableCell;
 import com.ethlo.ascii.TableRow;
 import com.ethlo.ascii.TableTheme;
+import com.ethlo.time.statistics.PerformanceStatistics;
 
 public class Report
 {
-    public static String prettyPrint(Chronograph chronograph, OutputConfig outputConfig, TableTheme theme)
+    public static String prettyPrint(ChronographData chronographData, OutputConfig outputConfig, TableTheme theme)
     {
-        if (chronograph.getTasks().isEmpty())
+        if (chronographData.isEmpty())
         {
             return "No performance data";
         }
@@ -58,44 +61,101 @@ public class Report
         rows.add(SeparatorRow.getInstance());
 
         // Task data
-        for (TaskInfo task : chronograph.getTasks())
+        final List<TaskPerformanceStatistics> taskPerformanceStats = new ArrayList<>(chronographData.getTaskStatistics());
+        taskPerformanceStats.sort(comparator(outputConfig));
+        for (TaskPerformanceStatistics taskStats : taskPerformanceStats)
         {
-            rows.add(getTableRow(chronograph, outputConfig, pf, nf, task));
+            rows.add(getTableRow(outputConfig, chronographData.getTotalTime(), taskStats, pf, nf));
         }
 
         // Summary row
-        final int colCount = rows.get(0).getCells().size();
         rows.add(SeparatorRow.getInstance());
-        rows.add(totals(chronograph, colCount));
+        rows.add(totals(chronographData));
         rows.add(SeparatorRow.getInstance());
 
-        return new Table(theme, rows).render(outputConfig.title());
+        return new Table(theme, rows).render(outputConfig.title() != null ? outputConfig.title() : chronographData.getName());
     }
 
-    private static TableRow getTableRow(final Chronograph chronograph, final OutputConfig outputConfig, final NumberFormat pf, final NumberFormat nf, final TaskInfo task)
+    private static Comparator<? super TaskPerformanceStatistics> comparator(final OutputConfig outputConfig)
+    {
+        if (outputConfig.benchmarkMode())
+        {
+            return Comparator.comparing(a -> a.getThroughputStatistics().getElapsedTotal());
+        }
+        return (a, b) -> 0;
+    }
+
+    private static TableRow getTableRow(final OutputConfig outputConfig, Duration totalTime, TaskPerformanceStatistics taskStats, final NumberFormat pf, final NumberFormat nf)
     {
         final TableRow row = new TableRow();
 
-        row.append(new TableCell(task.getName()));
+        row.append(new TableCell(taskStats.getName()));
 
-        final long invocations = task.getTotalInvocations();
+        final long invocations = taskStats.getThroughputStatistics().getTotalInvocations();
         final boolean multipleInvocations = invocations > 1;
 
-        final DurationStatistics durationStatistics = task.getStatistics();
+        final PerformanceStatistics<Duration> durationStatistics = taskStats.getDurationStatistics();
+        final PerformanceStatistics<Double> throughputStatistics = taskStats.getThroughputStatistics();
 
+        outputTotal(outputConfig, row, durationStatistics);
+
+        addInvocations(outputConfig, taskStats, nf, row, invocations);
+
+        outputPercentage(outputConfig, totalTime, pf, row, durationStatistics);
+
+        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.median(), durationStatistics.getMedian(), throughputStatistics.getMedian());
+
+        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.standardDeviation(), durationStatistics.getStandardDeviation(), throughputStatistics.getStandardDeviation());
+
+        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.mean(), durationStatistics.getAverage(), throughputStatistics.getAverage());
+
+        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.min(), durationStatistics.getMin(), throughputStatistics.getMin());
+
+        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.max(), durationStatistics.getMax(), throughputStatistics.getMax());
+
+        outputPercentiles(outputConfig, row, multipleInvocations, durationStatistics, throughputStatistics);
+
+        return row;
+    }
+
+    private static void outputPercentiles(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final PerformanceStatistics<Duration> durationStatistics, final PerformanceStatistics<Double> throughputStatistics)
+    {
+        if (outputConfig.percentiles() != null)
+        {
+            for (double percentile : outputConfig.percentiles())
+            {
+                outputCell(outputConfig, row, multipleInvocations, durationStatistics.getPercentile(percentile), throughputStatistics.getPercentile(percentile));
+            }
+        }
+    }
+
+    private static void outputTotal(final OutputConfig outputConfig, final TableRow row, final PerformanceStatistics<Duration> durationStatistics)
+    {
         if (outputConfig.total())
         {
-            final String totalTaskTimeStr = DurationUtil.humanReadable(durationStatistics.getTotal());
+            final String totalTaskTimeStr = ReportUtil.humanReadable(durationStatistics.getElapsedTotal());
             row.append(new TableCell(totalTaskTimeStr, false, true));
         }
+    }
 
+    private static void outputPercentage(final OutputConfig outputConfig, final Duration totalTime, final NumberFormat pf, final TableRow row, final PerformanceStatistics<Duration> durationStatistics)
+    {
+        if (outputConfig.percentage())
+        {
+            final double pct = totalTime.isZero() ? 0D : durationStatistics.getElapsedTotal().toNanos() / (double) totalTime.toNanos();
+            row.append(new TableCell(pf.format(pct), false, true));
+        }
+    }
+
+    private static void addInvocations(final OutputConfig outputConfig, final TaskPerformanceStatistics taskStats, final NumberFormat nf, final TableRow row, final long invocations)
+    {
         if (outputConfig.invocations())
         {
             String invocationsStr;
-            if (task.getSampleSize() != invocations)
+            if (taskStats.getSampleSize() != invocations)
             {
                 // Reduced sample rate
-                invocationsStr = "(" + nf.format(task.getSampleSize())+ ") " + nf.format(invocations);
+                invocationsStr = "(" + nf.format(taskStats.getSampleSize()) + ") " + nf.format(invocations);
             }
             else
             {
@@ -104,54 +164,27 @@ public class Report
             }
             row.append(new TableCell(invocationsStr, false, true));
         }
+    }
 
-        if (outputConfig.percentage())
+    private static void conditionalOutput(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final boolean shouldShow, final Duration duration, final Double throughput)
+    {
+        if (shouldShow)
         {
-            final Duration totalTime = chronograph.getTotalTime();
-            final double pct = totalTime.isZero() ? 0D : durationStatistics.getTotal().toNanos() / (double) totalTime.toNanos();
-            row.append(new TableCell(pf.format(pct), false, true));
+            outputCell(outputConfig, row, multipleInvocations, duration, throughput);
         }
+    }
 
-        if (outputConfig.median())
+    private static void outputCell(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final Duration duration, final Double throughput)
+    {
+        if (multipleInvocations)
         {
-            final String medianStr = multipleInvocations ? DurationUtil.humanReadable(durationStatistics.getMedian()) : "";
-            row.append(new TableCell(medianStr, false, true));
+            final String str = outputConfig.getMode() == Mode.DURATION ? ReportUtil.humanReadable(duration) : ReportUtil.humanReadable(throughput);
+            row.append(new TableCell(str, false, true));
         }
-
-        if (outputConfig.standardDeviation())
+        else
         {
-            final String deviationStr = multipleInvocations ? DurationUtil.humanReadable(durationStatistics.getStandardDeviation()) : "";
-            row.append(new TableCell(deviationStr, false, true));
+            row.append(new TableCell(""));
         }
-
-        if (outputConfig.mean())
-        {
-            final String avgTaskTimeStr = multipleInvocations ? DurationUtil.humanReadable(durationStatistics.getAverage()) : "";
-            row.append(new TableCell(avgTaskTimeStr, false, true));
-        }
-
-        if (outputConfig.min())
-        {
-            final String minStr = multipleInvocations ? DurationUtil.humanReadable(durationStatistics.getMin()) : "";
-            row.append(new TableCell(minStr, false, true));
-        }
-
-        if (outputConfig.max())
-        {
-            final String maxStr = multipleInvocations ? DurationUtil.humanReadable(durationStatistics.getMax()) : "";
-            row.append(new TableCell(maxStr, false, true));
-        }
-
-        if (outputConfig.percentiles() != null)
-        {
-            for (double percentile : outputConfig.percentiles())
-            {
-                final String percentileStr = multipleInvocations ? DurationUtil.humanReadable(durationStatistics.getPercentile(percentile)) : "";
-                row.append(new TableCell(percentileStr, false, true));
-            }
-        }
-
-        return row;
     }
 
     private static TableRow getHeaderRow(final OutputConfig outputConfig)
@@ -214,10 +247,12 @@ public class Report
         return headerRow;
     }
 
-    private static TableRow totals(final Chronograph chronograph, final int colCount)
+    private static TableRow totals(final ChronographData chronographData)
     {
         return new TableRow()
                 .append(new TableCell("Sum", false, false))
-                .append(new TableCell(DurationUtil.humanReadable(chronograph.getTotalTime()), false, true));
+                .append(new TableCell(ReportUtil.humanReadable(chronographData.getTotalTime()), false, true))
+                .append(new TableCell(ReportUtil.formatInteger(chronographData.getTaskStatistics().stream().map(t -> t.getDurationStatistics().getTotalInvocations()).reduce(0L, Long::sum)), false, true))
+                .append(new TableCell("100.0%", false, true));
     }
 }

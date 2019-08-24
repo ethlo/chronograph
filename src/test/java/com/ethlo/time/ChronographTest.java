@@ -42,7 +42,7 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
 
-        for (int i = 1; i <= 1_000; i++)
+        for (int i = 1; i <= 10; i++)
         {
             chronograph.start(taskName);
             millisecondTask();
@@ -145,7 +145,7 @@ public class ChronographTest
     @Test
     public void noData()
     {
-        assertThat(ChronographImpl.create().prettyPrint()).isEqualTo("No performance data");
+        assertThat(Chronograph.create().prettyPrint()).isEqualTo("No performance data");
     }
 
     @Test(expected = IllegalStateException.class)
@@ -178,8 +178,8 @@ public class ChronographTest
             chronograph.start(taskName);
             chronograph.stop(taskName);
         }
-        final Duration median = chronograph.getTasks(taskName).getStatistics().getMedian();
-        logger.info("Granularity: {}", DurationUtil.humanReadable(median));
+        final Duration median = chronograph.getTasks(taskName).getDurationStatistics().getMedian();
+        logger.info("Granularity: {}", ReportUtil.humanReadable(median));
         assertThat(median.toNanos()).isGreaterThan(0);
     }
 
@@ -219,7 +219,7 @@ public class ChronographTest
     @Test
     public void getTotalTaskTimeForEmpty()
     {
-        final Chronograph chronograph = ChronographImpl.create();
+        final Chronograph chronograph = Chronograph.create();
         assertThat(chronograph.getTotalTime()).isEqualTo(Duration.ZERO);
         chronograph.start(taskName);
         assertThat(chronograph.getTotalTime()).isEqualTo(Duration.ZERO);
@@ -242,6 +242,6 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        assertThat(chronograph.getTasks(taskName).getStatistics().getAverage()).isEqualTo(Duration.ZERO);
+        assertThat(chronograph.getTasks(taskName).getDurationStatistics().getAverage()).isEqualTo(Duration.ZERO);
     }
 }

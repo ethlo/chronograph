@@ -24,7 +24,7 @@ import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.time.Duration;
 
-public class DurationUtil
+public class ReportUtil
 {
     public static final int SECONDS_PER_HOUR = 3_600;
     public static final int SECONDS_PER_MINUTE = 60;
@@ -100,5 +100,25 @@ public class DurationUtil
         }
 
         return sb.toString().trim();
+    }
+
+    public static String humanReadable(final double throughput)
+    {
+        final NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setRoundingMode(RoundingMode.HALF_UP);
+        nf.setGroupingUsed(true);
+        nf.setMaximumFractionDigits(2);
+        nf.setMinimumFractionDigits(2);
+
+        final String designation = " /s";
+
+        return nf.format(throughput) + designation;
+    }
+
+    public static String formatInteger(final long value)
+    {
+        final NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setGroupingUsed(true);
+        return nf.format(value);
     }
 }
