@@ -21,7 +21,6 @@ package com.ethlo.time.statistics;
  */
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.Duration;
 
 import com.ethlo.util.IndexedCollection;

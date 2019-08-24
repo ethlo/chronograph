@@ -39,6 +39,27 @@ public class Chronograph
     private static TableTheme theme = TableTheme.DEFAULT;
     private static OutputConfig outputConfig = OutputConfig.DEFAULT;
 
+    private final Map<String, TaskInfo> taskInfos;
+    private final CaptureConfig captureConfig;
+    private final String name;
+
+    public Chronograph(final String name)
+    {
+        this(name, CaptureConfig.DEFAULT);
+    }
+
+    public Chronograph(final CaptureConfig captureConfig)
+    {
+        this("", captureConfig);
+    }
+
+    public Chronograph(final String name, final CaptureConfig captureConfig)
+    {
+        this.taskInfos = new LinkedHashMap<>();
+        this.name = name;
+        this.captureConfig = captureConfig;
+    }
+
     public static void configure(TableTheme theme, OutputConfig outputConfig)
     {
         configure(theme);
@@ -74,7 +95,6 @@ public class Chronograph
     {
         return new Chronograph(name, captureConfig);
     }
-
 
     public void timed(final String taskName, final Runnable task)
     {
@@ -120,27 +140,6 @@ public class Chronograph
     public String prettyPrint()
     {
         return Report.prettyPrint(this.getTaskData(), outputConfig, theme);
-    }
-
-    private final Map<String, TaskInfo> taskInfos;
-    private final CaptureConfig captureConfig;
-    private final String name;
-
-    public Chronograph(final String name)
-    {
-        this(CaptureConfig.DEFAULT);
-    }
-
-    public Chronograph(final CaptureConfig captureConfig)
-    {
-        this("", captureConfig);
-    }
-
-    public Chronograph(final String name, final CaptureConfig captureConfig)
-    {
-        this.taskInfos = new LinkedHashMap<>();
-        this.name = name;
-        this.captureConfig = captureConfig;
     }
 
     public void start(String task)

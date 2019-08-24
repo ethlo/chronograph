@@ -179,6 +179,7 @@ public class ListPerformanceTest
         final List<TaskPerformanceStatistics> bb = b.getTaskData().getTaskStatistics();
         aa.addAll(bb);
         System.out.println(Report.prettyPrint(new ChronographData("Combined", aa, a.getTotalTime().plus(b.getTotalTime())), OutputConfig.EXTENDED, TableTheme.RED_HERRING));
+        assertThat(true).isTrue();
     }
 
 

@@ -281,7 +281,7 @@ public class Report
         return new TableRow()
                 .append(new TableCell("Sum", false, false))
                 .append(new TableCell(ReportUtil.humanReadable(chronographData.getTotalTime()), false, true))
-                .append(new TableCell(ReportUtil.formatInteger(chronographData.getTaskStatistics().stream().map(t->t.getDurationStatistics().getTotalInvocations()).reduce(0L, Long::sum)), false, true))
+                .append(new TableCell(ReportUtil.formatInteger(chronographData.getTaskStatistics().stream().map(t -> t.getDurationStatistics().getTotalInvocations()).reduce(0L, Long::sum)), false, true))
                 .append(new TableCell("100%", false, true));
     }
 }

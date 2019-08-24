@@ -20,9 +20,6 @@ package com.ethlo.util;
  * #L%
  */
 
-import static java.math.BigDecimal.ROUND_HALF_UP;
-
-import java.math.BigDecimal;
 import java.math.BigInteger;
 
 public class IndexedCollectionStatistics
