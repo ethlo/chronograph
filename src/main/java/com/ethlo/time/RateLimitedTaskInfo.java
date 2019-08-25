@@ -57,13 +57,13 @@ public class RateLimitedTaskInfo extends TaskInfo
     }
 
     @Override
-    public long getTotalInvocations()
+    public long getTotalTaskInvocations()
     {
         return totalInvocations;
     }
 
     @Override
-    public Duration getTotal()
+    public Duration getTotalTaskTime()
     {
         return Duration.ofNanos(totalElapsed);
     }

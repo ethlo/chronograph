@@ -24,6 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
@@ -93,18 +94,17 @@ public class ListPerformanceTest
     @Test
     public void rateLimitingTest()
     {
-        final Chronograph c = Chronograph.create(CaptureConfig.builder().minInterval(Duration.ofNanos(10_000)).build());
+        final Chronograph c = Chronograph.create(CaptureConfig.builder().minInterval(Duration.ofNanos(10_00)).build());
 
         final IndexedCollection<Long> list = new LongList(100_000);
         for (int i = 0; i < 2_000_000; i++)
         {
-            final int finalI = i;
-            c.timed("Initial add", () -> doAdd(list, finalI));
+            c.timed("Warmup", () -> list.add(randomNano()));
         }
         for (int i = 0; i < 10_000_000; i++)
         {
             final int finalI = i;
-            c.timed("Single add", () -> doAdd(list, finalI));
+            c.timed("Adding", () -> list.add(randomNano()));
         }
 
         System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.begin().mode(Mode.THROUGHPUT).percentiles(90, 95, 99, 99.9).build(), TableTheme.DOUBLE));
@@ -164,14 +164,9 @@ public class ListPerformanceTest
     @Test
     public void testCombinedPerformanceTable()
     {
-        final Chronograph a = performAddBenchmark(10, 10_000);
+        final Chronograph a = performAddBenchmark(20, 10_000);
         final Chronograph b = performSortBenchmark(10, 10_000);
-
-        final List<TaskPerformanceStatistics> aa = a.getTaskData().getTaskStatistics();
-        final List<TaskPerformanceStatistics> bb = b.getTaskData().getTaskStatistics();
-        aa.addAll(bb);
-
-        final ChronographData combined = new ChronographData("Combined", aa, a.getTotalTime().plus(b.getTotalTime()));
+        final ChronographData combined = ChronographData.combine("Combined", Arrays.asList(a, b));
 
         System.out.println(Report.prettyPrint(combined,
                 OutputConfig.EXTENDED.begin().mode(Mode.THROUGHPUT).benchmarkMode(true).build(),

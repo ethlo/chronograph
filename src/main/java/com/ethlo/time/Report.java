@@ -69,8 +69,13 @@ public class Report
         }
 
         // Summary row
-        rows.add(SeparatorRow.getInstance());
-        rows.add(totals(chronographData));
+        if (taskPerformanceStats.size() > 1)
+        {
+            rows.add(SeparatorRow.getInstance());
+            rows.add(totals(chronographData));
+        }
+
+        // Bottom
         rows.add(SeparatorRow.getInstance());
 
         return new Table(theme, rows).render(outputConfig.title() != null ? outputConfig.title() : chronographData.getName());
@@ -80,7 +85,7 @@ public class Report
     {
         if (outputConfig.benchmarkMode())
         {
-            return Comparator.comparing(a -> a.getThroughputStatistics().getElapsedTotal());
+            return Comparator.comparing(a -> a.getThroughputStatistics().getAverage());
         }
         return (a, b) -> 0;
     }

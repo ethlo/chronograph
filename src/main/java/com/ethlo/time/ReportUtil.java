@@ -30,6 +30,8 @@ public class ReportUtil
     public static final int SECONDS_PER_MINUTE = 60;
     public static final int NANOS_PER_MILLI = 1_000_000;
     private static final int NANOS_PER_MICRO = 1_000;
+    private static final long MICRO = 1_000_000;
+    private static final long MILLI = 1_000;
 
     public static String humanReadable(Duration duration)
     {
@@ -107,12 +109,21 @@ public class ReportUtil
         final NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setRoundingMode(RoundingMode.HALF_UP);
         nf.setGroupingUsed(true);
-        nf.setMaximumFractionDigits(2);
-        nf.setMinimumFractionDigits(2);
 
-        final String designation = " /s";
+        if (throughput > MICRO)
+        {
+            nf.setMaximumFractionDigits(0);
+        }
+        else if (throughput > MILLI)
+        {
+            nf.setMaximumFractionDigits(1);
+        }
+        else
+        {
+            nf.setMaximumFractionDigits(2);
+        }
 
-        return nf.format(throughput) + designation;
+        return nf.format(throughput);
     }
 
     public static String formatInteger(final long value)

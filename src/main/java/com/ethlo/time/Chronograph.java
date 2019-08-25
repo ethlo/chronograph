@@ -209,7 +209,7 @@ public class Chronograph
 
     public Duration getTotalTime()
     {
-        return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotal).map(Duration::toNanos).reduce(0L, Long::sum));
+        return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotalTaskTime).map(Duration::toNanos).reduce(0L, Long::sum));
     }
 
     public ChronographData getTaskData()

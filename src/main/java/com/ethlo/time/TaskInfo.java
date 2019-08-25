@@ -60,7 +60,7 @@ public class TaskInfo
         return name;
     }
 
-    public long getTotalInvocations()
+    public long getTotalTaskInvocations()
     {
         return data.size();
     }
@@ -99,16 +99,16 @@ public class TaskInfo
     public PerformanceStatistics<Duration> getDurationStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
-        return new DurationPerformanceStatistics(stats, getTotalInvocations(), Duration.ofNanos(stats.sum()));
+        return new DurationPerformanceStatistics(stats, getTotalTaskInvocations(), Duration.ofNanos(stats.sum()));
     }
 
     public PerformanceStatistics<Double> getThroughputStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
-        return new ThroughputPerformanceStatistics(stats, getTotalInvocations(), Duration.ofNanos(stats.sum()));
+        return new ThroughputPerformanceStatistics(stats, getTotalTaskInvocations(), getTotalTaskTime());
     }
 
-    public Duration getTotal()
+    public Duration getTotalTaskTime()
     {
         return Duration.ofNanos(data.stream().reduce(0L, Long::sum));
     }

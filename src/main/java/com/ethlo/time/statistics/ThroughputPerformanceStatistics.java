@@ -21,6 +21,8 @@ package com.ethlo.time.statistics;
  */
 
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.time.Duration;
 
 import com.ethlo.util.IndexedCollection;
@@ -43,12 +45,13 @@ public class ThroughputPerformanceStatistics extends PerformanceStatistics<Doubl
         {
             return Double.NaN;
         }
-        return divide(getTotalInvocations(), elapsedTotal.toNanos());
+        return divide(totalInvocations, elapsedTotal.toNanos());
     }
 
     private Double divide(final long events, final long nanos)
     {
-        return (double) events * 1_000_000_000 / nanos;
+        final BigDecimal second = BigDecimal.valueOf(nanos).divide(BigDecimal.valueOf(D_NANOS), MathContext.DECIMAL128);
+        return BigDecimal.valueOf(events).divide(second, RoundingMode.HALF_UP).doubleValue();
     }
 
     @Override
