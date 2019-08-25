@@ -26,6 +26,17 @@ public class TableTheme
 
     public static final TableTheme DEFAULT = TableTheme.builder().build();
 
+    public static final TableTheme TSV = TableTheme.builder()
+            .leftTop("")
+            .rightTop("")
+            .bottomCross("")
+            .topCross("")
+            .rightBottom("")
+            .leftBottom("")
+            .verticalSeparator("")
+            .horizontalSeparator("\t")
+            .build();
+
     public static final TableTheme DOUBLE = TableTheme.builder()
             .cross("╬")
             .rightCross("╣")

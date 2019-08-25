@@ -107,7 +107,7 @@ public class ListPerformanceTest
             c.timed("Adding", () -> list.add(randomNano()));
         }
 
-        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.begin().mode(Mode.THROUGHPUT).percentiles(90, 95, 99, 99.9).build(), TableTheme.DOUBLE));
+        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.begin().mode(Mode.THROUGHPUT).formatting(false).percentiles(90, 95, 99, 99.9).build(), TableTheme.TSV));
     }
 
     private void doAdd(final IndexedCollection<Long> list, final long value)
