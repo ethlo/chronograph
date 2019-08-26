@@ -107,7 +107,7 @@ public class ListPerformanceTest
             c.timed("Adding", () -> list.add(randomNano()));
         }
 
-        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.begin().mode(Mode.THROUGHPUT).formatting(false).percentiles(90, 95, 99, 99.9).build(), TableTheme.TSV));
+        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.mode(Mode.THROUGHPUT).formatting(false).percentiles(90, 95, 99, 99.9), TableTheme.TSV));
     }
 
     private void doAdd(final IndexedCollection<Long> list, final long value)
@@ -169,7 +169,7 @@ public class ListPerformanceTest
         final ChronographData combined = ChronographData.combine("Combined", Arrays.asList(a, b));
 
         System.out.println(Report.prettyPrint(combined,
-                OutputConfig.EXTENDED.begin().mode(Mode.THROUGHPUT).benchmarkMode(true).build(),
+                OutputConfig.EXTENDED.mode(Mode.THROUGHPUT).benchmarkMode(true),
                 TableTheme.RED_HERRING));
 
         assertThat(true).isTrue();
@@ -178,7 +178,7 @@ public class ListPerformanceTest
 
     private void output(final Chronograph c, TableTheme theme)
     {
-        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.EXTENDED.begin().benchmarkMode(true).build(), theme));
+        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.EXTENDED.benchmarkMode(true), theme));
     }
 
     private LongList addLongList(int count)

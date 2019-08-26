@@ -22,15 +22,14 @@ package com.ethlo.time;
 
 public class OutputConfig
 {
-    public static final OutputConfig COMPACT = OutputConfig.builder()
+    public static final OutputConfig COMPACT = new OutputConfig()
             .median(true)
             .invocations(true)
             .standardDeviation(true)
             .total(true)
-            .percentage(true)
-            .build();
+            .percentage(true);
 
-    public static final OutputConfig DEFAULT = OutputConfig.builder()
+    public static final OutputConfig DEFAULT = new OutputConfig()
             .average(true)
             .median(true)
             .min(true)
@@ -38,10 +37,9 @@ public class OutputConfig
             .invocations(true)
             .standardDeviation(true)
             .total(true)
-            .percentage(true)
-            .build();
+            .percentage(true);
 
-    public static final OutputConfig EXTENDED = OutputConfig.builder()
+    public static final OutputConfig EXTENDED = new OutputConfig()
             .average(true)
             .percentiles(95D, 99, 99.9D)
             .median(true)
@@ -50,22 +48,26 @@ public class OutputConfig
             .invocations(true)
             .standardDeviation(true)
             .total(true)
-            .percentage(true)
-            .build();
+            .percentage(true);
 
-    private final String title;
-    private final double[] percentiles;
-    private final boolean median;
-    private final boolean average;
-    private final boolean min;
-    private final boolean max;
-    private final boolean invocations;
-    private final boolean standardDeviation;
-    private final boolean total;
-    private final boolean percentage;
-    private final Mode mode;
+    private String title;
+    private double[] percentiles;
+    private boolean median;
+    private boolean average;
+    private boolean min;
+    private boolean max;
+    private boolean invocations;
+    private boolean standardDeviation;
+    private boolean total;
+    private boolean percentage;
+    private Mode mode;
     private boolean benchmarkMode;
     private boolean formatting;
+
+    public OutputConfig()
+    {
+
+    }
 
     private OutputConfig(Builder builder)
     {
@@ -83,11 +85,6 @@ public class OutputConfig
         this.benchmarkMode = builder.benchmarkMode;
         this.formatting = builder.formatting;
 
-    }
-
-    public static Builder builder()
-    {
-        return new Builder();
     }
 
     public String title()
@@ -155,28 +152,74 @@ public class OutputConfig
         return formatting;
     }
 
-    public Builder begin()
+    public OutputConfig mode(Mode mode)
     {
-        final Builder b = new Builder();
-        b.total = total;
-        b.percentage = percentage;
-        b.standardDeviation = standardDeviation;
-        b.min = min;
-        b.max = max;
-        b.median = median;
-        b.percentiles = percentiles;
-        b.invocations = invocations;
-        b.average = average;
-        b.title = title;
-        b.mode = mode;
-        b.benchmarkMode = benchmarkMode;
-        b.formatting = formatting;
-        return b;
+        return new OutputConfig(new Builder(this).mode(mode));
+    }
+
+    public OutputConfig title(final String title)
+    {
+        return new OutputConfig(new Builder(this).title(title));
+    }
+
+    public OutputConfig percentiles(final double... percentiles)
+    {
+        return new OutputConfig(new Builder(this).percentiles(percentiles));
+    }
+
+    public OutputConfig median(final boolean median)
+    {
+        return new OutputConfig(new Builder(this).median(median));
+    }
+
+    public OutputConfig average(final boolean average)
+    {
+        return new OutputConfig(new Builder(this).average(average));
+    }
+
+    public OutputConfig min(final boolean min)
+    {
+        return new OutputConfig(new Builder(this).min(min));
+    }
+
+    public OutputConfig max(final boolean max)
+    {
+        return new OutputConfig(new Builder(this).max(max));
+    }
+
+    public OutputConfig invocations(final boolean invocations)
+    {
+        return new OutputConfig(new Builder(this).invocations(invocations));
+    }
+
+    public OutputConfig standardDeviation(final boolean standardDeviation)
+    {
+        return new OutputConfig(new Builder(this).standardDeviation(standardDeviation));
+    }
+
+    public OutputConfig total(final boolean total)
+    {
+        return new OutputConfig(new Builder(this).total(total));
+    }
+
+    public OutputConfig percentage(final boolean percentage)
+    {
+        return new OutputConfig(new Builder(this).percentage(percentage));
+    }
+
+    public OutputConfig benchmarkMode(final boolean b)
+    {
+        return new OutputConfig(new Builder(this).benchmarkMode(b));
+    }
+
+    public OutputConfig formatting(final boolean b)
+    {
+        return new OutputConfig(new Builder(this).formatting(b));
     }
 
     public static class Builder
     {
-        private Mode mode = Mode.DURATION;
+        private Mode mode;
         private String title;
         private double[] percentiles;
         private boolean median;
@@ -189,6 +232,23 @@ public class OutputConfig
         private boolean percentage;
         private boolean benchmarkMode;
         private boolean formatting;
+
+        private Builder(OutputConfig config)
+        {
+            this.total = config.total;
+            this.percentage = config.percentage;
+            this.standardDeviation = config.standardDeviation;
+            this.min = config.min;
+            this.max = config.max;
+            this.median = config.median;
+            this.percentiles = config.percentiles;
+            this.invocations = config.invocations;
+            this.average = config.average;
+            this.title = config.title;
+            this.mode = config.mode;
+            this.benchmarkMode = config.benchmarkMode;
+            this.formatting = config.formatting;
+        }
 
         public Builder title(final String title)
         {

@@ -134,7 +134,7 @@ public class Chronograph
 
     public String prettyPrint(final String title)
     {
-        return Report.prettyPrint(this.getTaskData(), outputConfig.begin().title(title).build(), theme);
+        return Report.prettyPrint(this.getTaskData(), outputConfig.title(title), theme);
     }
 
     public String prettyPrint()
