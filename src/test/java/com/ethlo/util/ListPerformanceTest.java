@@ -37,8 +37,8 @@ import com.ethlo.ascii.TableTheme;
 import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographData;
-import com.ethlo.time.PresentationMode;
 import com.ethlo.time.OutputConfig;
+import com.ethlo.time.PresentationMode;
 import com.ethlo.time.Report;
 
 public class ListPerformanceTest
@@ -169,7 +169,8 @@ public class ListPerformanceTest
 
         System.out.println(Report.prettyPrint(combined,
                 OutputConfig.EXTENDED.mode(PresentationMode.THROUGHPUT).benchmarkMode(true),
-                TableTheme.RED_HERRING));
+                TableTheme.RED_HERRING
+        ));
 
         assertThat(true).isTrue();
     }
