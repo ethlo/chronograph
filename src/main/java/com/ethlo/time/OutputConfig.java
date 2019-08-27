@@ -60,9 +60,9 @@ public class OutputConfig
     private boolean standardDeviation;
     private boolean total;
     private boolean percentage;
-    private Mode mode;
-    private boolean benchmarkMode;
-    private boolean formatting;
+    private PresentationMode mode = PresentationMode.DURATION;
+    private boolean benchmarkMode = false;
+    private boolean formatting = true;
 
     public OutputConfig()
     {
@@ -137,7 +137,7 @@ public class OutputConfig
         return percentage;
     }
 
-    public Mode getMode()
+    public PresentationMode getMode()
     {
         return mode;
     }
@@ -152,7 +152,7 @@ public class OutputConfig
         return formatting;
     }
 
-    public OutputConfig mode(Mode mode)
+    public OutputConfig mode(PresentationMode mode)
     {
         return new OutputConfig(new Builder(this).mode(mode));
     }
@@ -219,7 +219,7 @@ public class OutputConfig
 
     public static class Builder
     {
-        private Mode mode;
+        private PresentationMode mode;
         private String title;
         private double[] percentiles;
         private boolean median;
@@ -310,15 +310,10 @@ public class OutputConfig
             return this;
         }
 
-        public Builder mode(final Mode mode)
+        public Builder mode(final PresentationMode mode)
         {
             this.mode = mode;
             return this;
-        }
-
-        public OutputConfig build()
-        {
-            return new OutputConfig(this);
         }
 
         public Builder benchmarkMode(final boolean b)

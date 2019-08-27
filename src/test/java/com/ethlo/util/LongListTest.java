@@ -156,4 +156,11 @@ public class LongListTest
         }
         assertThat(count).isEqualTo(10);
     }
+
+    @Test
+    public void size()
+    {
+        final LongList l = createList(10, true);
+        assertThat(l.size()).isEqualTo(10);
+    }
 }

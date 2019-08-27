@@ -155,14 +155,6 @@ public class Table
         {
             return theme.getLeftBottom();
         }
-        else if (lastColumn && lastRow)
-        {
-            return theme.getRightBottom();
-        }
-        else if (lastColumn && firstRow)
-        {
-            return theme.getRightTop();
-        }
         else if (firstColumn)
         {
             return theme.getLeftCross();

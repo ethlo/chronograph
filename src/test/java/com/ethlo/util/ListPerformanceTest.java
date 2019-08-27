@@ -37,10 +37,9 @@ import com.ethlo.ascii.TableTheme;
 import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographData;
-import com.ethlo.time.Mode;
+import com.ethlo.time.PresentationMode;
 import com.ethlo.time.OutputConfig;
 import com.ethlo.time.Report;
-import com.ethlo.time.TaskPerformanceStatistics;
 
 public class ListPerformanceTest
 {
@@ -73,7 +72,7 @@ public class ListPerformanceTest
             c.timed("sort", () -> list.sort(Comparator.naturalOrder()));
         }
 
-        logger.info(c.prettyPrint("ArrayList"));
+        logger.info(c.prettyPrint("ArrayList"), new OutputConfig().mode(PresentationMode.THROUGHPUT));
         assertThat(true).isTrue();
     }
 
@@ -107,7 +106,7 @@ public class ListPerformanceTest
             c.timed("Adding", () -> list.add(randomNano()));
         }
 
-        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.mode(Mode.THROUGHPUT).formatting(false).percentiles(90, 95, 99, 99.9), TableTheme.TSV));
+        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.mode(PresentationMode.THROUGHPUT).formatting(false).percentiles(90, 95, 99, 99.9), TableTheme.TSV));
     }
 
     private void doAdd(final IndexedCollection<Long> list, final long value)
@@ -169,7 +168,7 @@ public class ListPerformanceTest
         final ChronographData combined = ChronographData.combine("Combined", Arrays.asList(a, b));
 
         System.out.println(Report.prettyPrint(combined,
-                OutputConfig.EXTENDED.mode(Mode.THROUGHPUT).benchmarkMode(true),
+                OutputConfig.EXTENDED.mode(PresentationMode.THROUGHPUT).benchmarkMode(true),
                 TableTheme.RED_HERRING));
 
         assertThat(true).isTrue();

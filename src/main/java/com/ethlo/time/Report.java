@@ -197,12 +197,12 @@ public class Report
             final String str;
             if (outputConfig.formatting())
             {
-                str = outputConfig.getMode() == Mode.DURATION ? ReportUtil.humanReadable(duration) : ReportUtil.humanReadable(throughput);
+                str = outputConfig.getMode() == PresentationMode.DURATION ? ReportUtil.humanReadable(duration) : ReportUtil.humanReadable(throughput);
             }
             else
             {
                 final NumberFormat nf = getRawNumberFormat();
-                str = outputConfig.getMode() == Mode.DURATION ? Long.toString(duration.toNanos()) : nf.format(throughput);
+                str = outputConfig.getMode() == PresentationMode.DURATION ? Long.toString(duration.toNanos()) : nf.format(throughput);
             }
             row.append(new TableCell(str, false, true));
         }

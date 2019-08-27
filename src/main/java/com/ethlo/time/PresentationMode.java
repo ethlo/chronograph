@@ -20,7 +20,7 @@ package com.ethlo.time;
  * #L%
  */
 
-public enum Mode
+public enum PresentationMode
 {
     THROUGHPUT, DURATION;
 }
