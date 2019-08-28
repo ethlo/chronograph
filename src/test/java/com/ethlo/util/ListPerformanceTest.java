@@ -93,7 +93,7 @@ public class ListPerformanceTest
     @Test
     public void rateLimitingTest()
     {
-        final Chronograph c = Chronograph.create(CaptureConfig.builder().minInterval(Duration.ofNanos(10_00)).build());
+        final Chronograph c = Chronograph.create(CaptureConfig.minInterval(Duration.ofNanos(1000)));
 
         final IndexedCollection<Long> list = new LongList(100_000);
         for (int i = 0; i < 2_000_000; i++)
