@@ -142,7 +142,6 @@ public class Table
 
     private String getCellStart(final Integer columnIndex, final int rowIndex)
     {
-        final boolean lastColumn = columnIndex == minColumnWidths.size();
         final boolean firstColumn = columnIndex == 0;
         final boolean firstRow = rowIndex == 0;
         final boolean lastRow = rowIndex == rows.size() - 1;
@@ -174,7 +173,6 @@ public class Table
 
     private String toString(final TableRow row)
     {
-        final int totalColumns = minColumnWidths.size();
         final StringBuilder sb = new StringBuilder();
 
         for (Map.Entry<Integer, Integer> entry : minColumnWidths.entrySet())

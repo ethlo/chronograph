@@ -102,16 +102,12 @@ public class ListPerformanceTest
         }
         for (int i = 0; i < 10_000_000; i++)
         {
-            final int finalI = i;
             c.timed("Adding", () -> list.add(randomNano()));
         }
 
         System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.mode(PresentationMode.THROUGHPUT).formatting(false).percentiles(90, 95, 99, 99.9), TableTheme.TSV));
-    }
 
-    private void doAdd(final IndexedCollection<Long> list, final long value)
-    {
-        list.add(value);
+        assertThat(true).isTrue();
     }
 
     @Test

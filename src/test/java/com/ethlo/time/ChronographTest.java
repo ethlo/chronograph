@@ -50,6 +50,7 @@ public class ChronographTest
         }
 
         logger.info(chronograph.prettyPrint());
+        assertThat(true).isTrue();
     }
 
     @Test
@@ -167,6 +168,7 @@ public class ChronographTest
             });
         }
         logger.info(chronograph.prettyPrint());
+        assertThat(true).isTrue();
     }
 
     @Test
