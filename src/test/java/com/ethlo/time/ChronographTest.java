@@ -21,11 +21,11 @@ package com.ethlo.time;
  */
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
 import java.time.Duration;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,30 +117,27 @@ public class ChronographTest
         }
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void stopBeforeStart()
     {
         final Chronograph chronograph = Chronograph.create();
-        chronograph.stop(taskName);
-        fail("Should throw");
+        Assertions.assertThrows(IllegalStateException.class, () -> chronograph.stop(taskName));
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void stopAfterStopped()
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
         chronograph.stop(taskName);
-        chronograph.stop(taskName);
-        fail("Should throw");
+        Assertions.assertThrows(IllegalStateException.class, () -> chronograph.stop(taskName));
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void nullTask()
     {
         final Chronograph chronograph = Chronograph.create();
-        chronograph.start(null);
-        fail("Should throw");
+        Assertions.assertThrows(IllegalArgumentException.class, () -> chronograph.start(null));
     }
 
     @Test
@@ -149,13 +146,12 @@ public class ChronographTest
         assertThat(Chronograph.create().prettyPrint()).isEqualTo("No performance data");
     }
 
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void sequentialStart()
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        chronograph.start(taskName);
-        fail("Should throw");
+        Assertions.assertThrows(IllegalStateException.class, () -> chronograph.start(taskName));
     }
 
     @Test

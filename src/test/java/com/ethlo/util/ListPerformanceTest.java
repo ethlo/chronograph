@@ -29,7 +29,7 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -154,7 +154,7 @@ public class ListPerformanceTest
             final List<Long> linkedList = addLinkedList(size);
             final List<Long> arrayList = addArrayList(size);
 
-            c.timed("Linkedlist", () -> linkedList.sort(Comparator.naturalOrder()));
+            c.timed("LinkedList", () -> linkedList.sort(Comparator.naturalOrder()));
             c.timed("Arraylist", () -> arrayList.sort(Comparator.naturalOrder()));
             c.timed("IndexedCollection", longList::sort);
         }

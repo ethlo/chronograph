@@ -21,9 +21,9 @@ package com.ethlo.util;
  */
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.fail;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class LongListTest
 {
@@ -115,20 +115,18 @@ public class LongListTest
         assertThat(new IndexedCollectionStatistics(l).getPercentile(90D)).isEqualTo(90_000);
     }
 
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test
     public void getOutOfBounds()
     {
         final LongList l = createList(10, false);
-        l.get(10);
-        fail("Should throw");
+        Assertions.assertThrows(ArrayIndexOutOfBoundsException.class, () -> l.get(10));
     }
 
-    @Test(expected = ArrayIndexOutOfBoundsException.class)
+    @Test
     public void getOutOfBoundsNegative()
     {
         final LongList l = createList(10, false);
-        l.get(-1);
-        fail("Should throw");
+        Assertions.assertThrows(ArrayIndexOutOfBoundsException.class, () -> l.get(-1));
     }
 
     @Test
