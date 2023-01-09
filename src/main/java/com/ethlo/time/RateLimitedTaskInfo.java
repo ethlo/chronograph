@@ -21,38 +21,43 @@ package com.ethlo.time;
  */
 
 import java.time.Duration;
+import java.util.concurrent.ScheduledExecutorService;
 
+import com.ethlo.sampler.SampleRater;
+import com.ethlo.sampler.ScheduledSampleRater;
 import com.ethlo.time.statistics.DurationPerformanceStatistics;
 import com.ethlo.time.statistics.PerformanceStatistics;
 import com.ethlo.util.IndexedCollectionStatistics;
 
 public class RateLimitedTaskInfo extends TaskInfo
 {
-    private final long nanosInterval;
-    private long lastStopped;
+    private final SampleRater<Long> sampleRater;
     private int totalInvocations;
     private long totalElapsed;
 
-    RateLimitedTaskInfo(final String name, Duration minInterval)
+    RateLimitedTaskInfo(final String name, Duration minInterval, final ScheduledExecutorService scheduledExecutorService)
     {
         super(name);
-        this.nanosInterval = minInterval.toNanos();
+        this.sampleRater = new ScheduledSampleRater<>(scheduledExecutorService, minInterval, prg -> logElapsedDuration(prg.progress()));
     }
 
     @Override
     boolean stopped(final long ts, final boolean ignoreState)
     {
-        super.stopped(ts, ignoreState);
-        final long elapsed = ts - lastStopped;
-        if (lastStopped == 0 || elapsed > nanosInterval)
+        if (!isRunning() && !ignoreState)
         {
-            lastStopped = ts;
+            throw new IllegalStateException("Task " + getName() + " is not started");
+        }
+
+        if (isRunning())
+        {
+            final long elapsed = ts - super.getTaskStartTimestamp();
             totalInvocations++;
-            totalElapsed += ts - super.getTaskStartTimestamp();
+            totalElapsed += elapsed;
+            sampleRater.update(elapsed);
+            running = false;
             return true;
         }
-        totalInvocations++;
-        totalElapsed += ts - super.getTaskStartTimestamp();
         return false;
     }
 

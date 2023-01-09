@@ -34,7 +34,7 @@ public class TaskInfo
     private final String name;
     private final IndexedCollection<Long> data;
     private long taskStartTimestamp;
-    private boolean running = false;
+    protected boolean running = false;
 
     TaskInfo(final String name)
     {
@@ -84,15 +84,15 @@ public class TaskInfo
 
         if (running)
         {
+            logElapsedDuration(ts - getTaskStartTimestamp());
             running = false;
             return true;
         }
         return false;
     }
 
-    void logTiming(final long ts)
+    void logElapsedDuration(final long duration)
     {
-        final long duration = ts - taskStartTimestamp;
         data.add(duration);
     }
 

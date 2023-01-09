@@ -21,15 +21,14 @@ package com.ethlo.time;
  */
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.function.Function;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 import com.ethlo.ascii.TableTheme;
 
@@ -37,6 +36,8 @@ public class Chronograph
 {
     private static TableTheme theme = TableTheme.DEFAULT;
     private static OutputConfig outputConfig = OutputConfig.DEFAULT;
+
+    private final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
 
     private final Map<String, TaskInfo> taskInfos;
     private final CaptureConfig captureConfig;
@@ -103,7 +104,7 @@ public class Chronograph
         }
     }
 
-    public <R, T> R timedSupplier(final String taskName, final Supplier<R> task)
+    public <R> R timedSupplier(final String taskName, final Supplier<R> task)
     {
         try
         {
@@ -132,7 +133,13 @@ public class Chronograph
             throw new IllegalArgumentException("task cannot be null");
         }
 
-        final TaskInfo taskInfo = taskInfos.computeIfAbsent(task, t -> captureConfig.getMinInterval().equals(Duration.ZERO) ? new TaskInfo(task) : new RateLimitedTaskInfo(task, captureConfig.getMinInterval()));
+        final TaskInfo taskInfo = taskInfos.computeIfAbsent(task, t -> {
+            if (captureConfig.getMinInterval().equals(Duration.ZERO))
+            {
+                return new TaskInfo(task);
+            }
+            return new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService);
+        });
         taskInfo.start();
     }
 
@@ -141,11 +148,7 @@ public class Chronograph
         final long ts = System.nanoTime();
         for (TaskInfo taskInfo : taskInfos.values())
         {
-            final boolean shouldLog = taskInfo.stopped(ts, true);
-            if (shouldLog)
-            {
-                taskInfo.logTiming(ts);
-            }
+            taskInfo.stopped(ts, true);
         }
     }
 
@@ -163,10 +166,7 @@ public class Chronograph
             throw new IllegalStateException("No started task with name " + task);
         }
 
-        if (taskInfo.stopped(ts, false))
-        {
-            taskInfo.logTiming(ts);
-        }
+        taskInfo.stopped(ts, false);
     }
 
     public void resetAll()
@@ -181,7 +181,7 @@ public class Chronograph
 
     public List<TaskInfo> getTasks()
     {
-        return Collections.unmodifiableList(new ArrayList<>(taskInfos.values()));
+        return List.copyOf(taskInfos.values());
     }
 
     public boolean isRunning(String task)
@@ -200,7 +200,7 @@ public class Chronograph
         final List<TaskPerformanceStatistics> stats = getTasks()
                 .stream()
                 .map(task -> new TaskPerformanceStatistics(task.getName(), task.getSampleSize(), task.getDurationStatistics(), task.getThroughputStatistics()))
-                .collect(Collectors.toList());
+                .toList();
         return new ChronographData(name, stats, getTotalTime());
     }
 }

@@ -41,7 +41,7 @@ import com.ethlo.time.OutputConfig;
 import com.ethlo.time.PresentationMode;
 import com.ethlo.time.Report;
 
-public class ListPerformanceTest
+class ListPerformanceTest
 {
     private static final Logger logger = LoggerFactory.getLogger(ListPerformanceTest.class);
 
@@ -49,7 +49,7 @@ public class ListPerformanceTest
     private final int count = 4;
 
     @Test
-    public void performanceTestLargeLinkedList()
+    void performanceTestLargeLinkedList()
     {
         final Chronograph c = Chronograph.create();
         for (int i = 0; i < count; i++)
@@ -63,7 +63,7 @@ public class ListPerformanceTest
     }
 
     @Test
-    public void performanceTestLargeArrayList()
+    void performanceTestLargeArrayList()
     {
         final Chronograph c = Chronograph.create();
         for (int i = 0; i < count; i++)
@@ -77,7 +77,7 @@ public class ListPerformanceTest
     }
 
     @Test
-    public void performanceTestLargeLongList()
+    void performanceTestLargeLongList()
     {
         final Chronograph c = Chronograph.create();
         for (int i = 0; i < count; i++)
@@ -91,9 +91,9 @@ public class ListPerformanceTest
     }
 
     @Test
-    public void rateLimitingTest()
+    void rateLimitingTest()
     {
-        final Chronograph c = Chronograph.create(CaptureConfig.minInterval(Duration.ofNanos(1000)));
+        final Chronograph c = Chronograph.create(CaptureConfig.minInterval(Duration.ofNanos(10_000)));
 
         final IndexedCollection<Long> list = new LongList(100_000);
         for (int i = 0; i < 2_000_000; i++)
@@ -105,13 +105,13 @@ public class ListPerformanceTest
             c.timed("Adding", () -> list.add(randomNano()));
         }
 
-        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.DEFAULT.mode(PresentationMode.THROUGHPUT).formatting(false).percentiles(90, 95, 99, 99.9), TableTheme.TSV));
+        System.out.println(c.prettyPrint());
 
         assertThat(true).isTrue();
     }
 
     @Test
-    public void performanceTestMediumAdd()
+    void performanceTestMediumAdd()
     {
         final Chronograph c = performAddBenchmark(10, 500_000);
         output(c, TableTheme.RED_HERRING);
@@ -132,7 +132,7 @@ public class ListPerformanceTest
     }
 
     @Test
-    public void performanceTestMediumSort()
+    void performanceTestMediumSort()
     {
         final Chronograph c = performSortBenchmark(10, 500_000);
         output(c, TableTheme.RED_HERRING);
@@ -162,7 +162,7 @@ public class ListPerformanceTest
     }
 
     @Test
-    public void testCombinedPerformanceTable()
+    void testCombinedPerformanceTable()
     {
         final Chronograph a = performAddBenchmark(20, 10_000);
         final Chronograph b = performSortBenchmark(10, 10_000);
