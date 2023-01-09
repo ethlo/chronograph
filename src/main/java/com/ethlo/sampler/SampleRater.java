@@ -1,4 +1,4 @@
-package com.ethlo.time.statistics;
+package com.ethlo.sampler;
 
 /*-
  * #%L
@@ -19,6 +19,8 @@ package com.ethlo.time.statistics;
  * limitations under the License.
  * #L%
  */
+
+import com.ethlo.sampler.TaskProgress;
 
 import java.time.Duration;
 import java.util.Objects;

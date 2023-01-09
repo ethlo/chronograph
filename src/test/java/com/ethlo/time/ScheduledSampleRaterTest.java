@@ -23,24 +23,21 @@ import java.math.BigInteger;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.ethlo.time.statistics.SampleRater;
+import com.ethlo.sampler.SampleRater;
+import com.ethlo.sampler.ScheduledSampleRater;
 
 class SampleRaterTest
 {
-    private static final Logger logger = LoggerFactory.getLogger(SampleRaterTest.class);
-
     @Test
     void test()
     {
-        final SampleRater<BigInteger> taskPerformance = new SampleRater<>(Duration.ofMillis(500));
+        final SampleRater<BigInteger> taskPerformance = new ScheduledSampleRater<>(Duration.ofMillis(500), System.err::println);
         BigInteger sum = BigInteger.valueOf(0);
         for (long i = 0; i < 200_000_000L; i++)
         {
             sum = sum.add(BigInteger.valueOf(i));
-            taskPerformance.progress(sum, System.err::println);
+            taskPerformance.update(sum);
         }
         System.out.println(sum);
     }

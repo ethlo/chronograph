@@ -1,5 +1,7 @@
 package com.ethlo.sampler;
 
+import java.time.Duration;
+
 /*-
  * #%L
  * Chronograph
@@ -19,19 +21,7 @@ package com.ethlo.sampler;
  * limitations under the License.
  * #L%
  */
-
-import java.util.function.Consumer;
-
-public class PassThroughSampleRater<T> extends SampleRater<T>
+public record TaskProgress<T>(T lastProgress, T progress, Duration duration)
 {
-    protected PassThroughSampleRater(final Consumer<TaskProgress<T>> sampledProgressListener)
-    {
-        super(sampledProgressListener);
-    }
 
-    @Override
-    protected boolean shouldEmit(final T progress)
-    {
-        return true;
-    }
 }
