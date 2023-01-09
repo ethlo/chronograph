@@ -1,17 +1,17 @@
-package com.ethlo.ascii;
+package com.ethlo.sampler;
 
 /*-
  * #%L
  * Chronograph
  * %%
- * Copyright (C) 2019 Morten Haraldsen (ethlo)
+ * Copyright (C) 2019 - 2023 Morten Haraldsen (ethlo)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -20,19 +20,21 @@ package com.ethlo.ascii;
  * #L%
  */
 
-public enum AnsiStyle
+import java.util.function.Consumer;
+
+import com.ethlo.sampler.SampleRater;
+import com.ethlo.time.statistics.TaskProgress;
+
+public class PassThroughSampleRater<T> extends SampleRater<T>
 {
-    BOLD("\u001B[1m");
-
-    private String s;
-
-    AnsiStyle(String s)
+    protected PassThroughSampleRater(final Consumer<TaskProgress<T>> sampledProgressListener)
     {
-        this.s = s;
+        super(sampledProgressListener);
     }
 
-    public String value()
+    @Override
+    protected boolean shouldEmit(final T progress)
     {
-        return s;
+        return true;
     }
 }
