@@ -21,8 +21,13 @@ package com.ethlo.time;
  */
 
 import java.time.Duration;
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+
+import com.ethlo.time.statistics.DurationPerformanceStatistics;
+import com.ethlo.time.statistics.ThroughputPerformanceStatistics;
 
 public class ChronographData
 {
@@ -39,20 +44,23 @@ public class ChronographData
 
     public static ChronographData combine(final String name, final List<Chronograph> toCombine)
     {
-        final List<TaskPerformanceStatistics> all = new LinkedList<>();
-        for (Chronograph c : toCombine)
+        if (toCombine.isEmpty())
         {
-            final ChronographData taskData = c.getTaskData();
-            final String runName = taskData.name;
-
-            for (TaskPerformanceStatistics taskStats : taskData.taskStatistics)
-            {
-                final String fullName = runName != null && runName.length() > 0 ? (runName + " - " + taskStats.getName()) : taskStats.getName();
-                all.add(new TaskPerformanceStatistics(fullName, taskStats.getSampleSize(), taskStats.getDurationStatistics(), taskStats.getThroughputStatistics()));
-            }
+            throw new IllegalArgumentException("No results to combine");
         }
-        final Duration total = toCombine.stream().map(Chronograph::getTaskData).map(ChronographData::getTotalTime).reduce(Duration.ZERO, Duration::plus);
-        return new ChronographData(name, all, total);
+        if (toCombine.size() == 1)
+        {
+            return toCombine.get(0).getTaskData();
+        }
+        else
+        {
+            ChronographData last = toCombine.get(0).getTaskData();
+            for (int i = 1; i < toCombine.size(); i++)
+            {
+                last = last.merge(name, toCombine.get(i).getTaskData());
+            }
+            return last;
+        }
     }
 
     public String getName()
@@ -73,5 +81,23 @@ public class ChronographData
     public boolean isEmpty()
     {
         return this.taskStatistics.isEmpty();
+    }
+
+    public ChronographData merge(String chronographName, ChronographData chronographData)
+    {
+        final Map<String, TaskPerformanceStatistics> joined = new LinkedHashMap<>(Math.max(this.taskStatistics.size(), chronographData.taskStatistics.size()));
+        this.taskStatistics.forEach(t -> joined.put(t.getName(), t));
+        chronographData.taskStatistics.forEach(t -> joined.compute(t.getName(), (k, v) ->
+        {
+            if (v != null)
+            {
+                final long sampleSize = v.getSampleSize() + t.getSampleSize();
+                final DurationPerformanceStatistics durationStatistics = ((DurationPerformanceStatistics) t.getDurationStatistics()).merge((DurationPerformanceStatistics) v.getDurationStatistics());
+                final ThroughputPerformanceStatistics throughputStatistics = ((ThroughputPerformanceStatistics) t.getThroughputStatistics()).merge((ThroughputPerformanceStatistics) v.getThroughputStatistics());
+                return new TaskPerformanceStatistics(k, sampleSize, durationStatistics, throughputStatistics);
+            }
+            return t;
+        }));
+        return new ChronographData(chronographName, new ArrayList<>(joined.values()), Duration.ofNanos(joined.values().stream().mapToLong(t -> t.getDurationStatistics().getElapsedTotal().toNanos()).sum()));
     }
 }

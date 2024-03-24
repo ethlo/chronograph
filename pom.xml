@@ -6,8 +6,8 @@
     <groupId>com.ethlo.time</groupId>
     <artifactId>chronograph</artifactId>
     <name>Chronograph</name>
-    <description>Easy to use timer allowing accurate measurement of elapsed time</description>
-    <version>1.3.0-SNAPSHOT</version>
+    <description>Easy-to-use stopwatch for task performance statistics</description>
+    <version>1.4.0</version>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -36,7 +36,7 @@
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.7</version>
+                <version>0.8.11</version>
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -98,7 +98,7 @@
             <plugin>
                 <groupId>org.sonatype.plugins</groupId>
                 <artifactId>nexus-staging-maven-plugin</artifactId>
-                <version>1.6.8</version>
+                <version>1.6.13</version>
                 <extensions>true</extensions>
                 <configuration>
                     <serverId>sonatype-nexus-staging</serverId>
@@ -109,7 +109,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-gpg-plugin</artifactId>
-                <version>3.0.1</version>
+                <version>1.6</version>
                 <executions>
                     <execution>
                         <id>sign-artifacts</id>
@@ -117,11 +117,11 @@
                         <goals>
                             <goal>sign</goal>
                         </goals>
+                        <configuration>
+                            <executable>gpg</executable>
+                        </configuration>
                     </execution>
                 </executions>
-                <configuration>
-                    <useAgent>false</useAgent>
-                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

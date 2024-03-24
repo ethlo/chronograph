@@ -96,4 +96,9 @@ public class ThroughputPerformanceStatistics extends PerformanceStatistics<Doubl
         }
         return MathUtil.sqrt(sd).doubleValue();
     }
+
+    public ThroughputPerformanceStatistics merge(final ThroughputPerformanceStatistics other)
+    {
+        return new ThroughputPerformanceStatistics(this.collectionStatistics.merge(other.collectionStatistics), totalInvocations + other.totalInvocations, elapsedTotal.plus(other.elapsedTotal));
+    }
 }

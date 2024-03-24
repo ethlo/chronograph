@@ -84,4 +84,9 @@ public class DurationPerformanceStatistics extends PerformanceStatistics<Duratio
         }
         return Duration.ofNanos(MathUtil.sqrt(sd).longValue());
     }
+
+    public DurationPerformanceStatistics merge(final DurationPerformanceStatistics other)
+    {
+        return new DurationPerformanceStatistics(this.collectionStatistics.merge(other.collectionStatistics), totalInvocations + other.totalInvocations, elapsedTotal.plus(other.elapsedTotal));
+    }
 }

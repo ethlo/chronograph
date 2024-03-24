@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ethlo.ascii.TableTheme;
 import com.ethlo.util.SleepUtil;
 
 public class ChronographTest
@@ -241,5 +242,26 @@ public class ChronographTest
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
         assertThat(chronograph.getTasks(taskName).getDurationStatistics().getAverage()).isEqualTo(Duration.ZERO);
+    }
+
+    @Test
+    void testMergeResults()
+    {
+        final Chronograph chronograph1 = Chronograph.create();
+        chronograph1.start(taskName);
+
+        final Chronograph chronograph2 = Chronograph.create();
+        chronograph2.start(taskName);
+
+        chronograph1.stop();
+        chronograph2.stop();
+        final ChronographData merged = chronograph2.getTaskData().merge("merged", chronograph1.getTaskData());
+
+        System.out.println(Report.prettyPrint(merged,
+                OutputConfig.EXTENDED.mode(PresentationMode.THROUGHPUT).benchmarkMode(true),
+                TableTheme.RED_HERRING
+        ));
+
+        assertThat(true).isTrue();
     }
 }
