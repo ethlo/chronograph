@@ -96,4 +96,12 @@ public class IndexedCollectionStatistics
     {
         return list;
     }
+
+    public IndexedCollectionStatistics merge(IndexedCollectionStatistics other)
+    {
+        final LongList list = new LongList((Math.max(10, this.list.size() + other.list.size()) / 10));
+        this.list.forEach(list::add);
+        other.list.forEach(list::add);
+        return new IndexedCollectionStatistics(list);
+    }
 }

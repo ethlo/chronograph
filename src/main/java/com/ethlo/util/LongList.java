@@ -44,6 +44,10 @@ public class LongList implements IndexedCollection<Long>
 
     public LongList(int blockSize)
     {
+        if (blockSize < 1)
+        {
+            throw new IllegalArgumentException("blockSize cannot be less than 1");
+        }
         this.blockSize = blockSize;
     }
 

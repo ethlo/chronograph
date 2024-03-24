@@ -20,12 +20,13 @@ package com.ethlo.util;
  * #L%
  */
 
-import static java.math.BigDecimal.ROUND_HALF_UP;
-
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 public class MathUtil
 {
+    private static final BigDecimal TWO = BigDecimal.valueOf(2);
+
     public static BigDecimal sqrt(BigDecimal value)
     {
         return sqrt(value, 10);
@@ -33,16 +34,19 @@ public class MathUtil
 
     public static BigDecimal sqrt(BigDecimal value, final int SCALE)
     {
-        BigDecimal TWO = BigDecimal.valueOf(2);
+        if (value.compareTo(BigDecimal.ZERO) == 0)
+        {
+            return value;
+        }
+        
         BigDecimal x0 = BigDecimal.ZERO;
-        BigDecimal x1 = new BigDecimal(Math.sqrt(value.doubleValue()));
+        BigDecimal x1 = BigDecimal.valueOf(Math.sqrt(value.doubleValue()));
         while (!x0.equals(x1))
         {
             x0 = x1;
-            x1 = value.divide(x0, SCALE, ROUND_HALF_UP);
+            x1 = value.divide(x0, SCALE, RoundingMode.HALF_UP);
             x1 = x1.add(x0);
-            x1 = x1.divide(TWO, SCALE, ROUND_HALF_UP);
-
+            x1 = x1.divide(TWO, SCALE, RoundingMode.HALF_UP);
         }
         return x1;
     }

@@ -124,9 +124,9 @@ class ListPerformanceTest
 
         for (int i = 0; i < runs; i++)
         {
-            c.timedFunction("LinkedList", this::addLinkedList, size);
-            c.timedFunction("ArrayList", this::addArrayList, size);
-            c.timedFunction("IndexedCollection", this::addLongList, size);
+            c.timedFunction("LinkedList - Add", this::addLinkedList, size);
+            c.timedFunction("ArrayList - Add", this::addArrayList, size);
+            c.timedFunction("IndexedCollection - Add", this::addLongList, size);
         }
         return c;
     }
@@ -154,9 +154,9 @@ class ListPerformanceTest
             final List<Long> linkedList = addLinkedList(size);
             final List<Long> arrayList = addArrayList(size);
 
-            c.timed("LinkedList", () -> linkedList.sort(Comparator.naturalOrder()));
-            c.timed("Arraylist", () -> arrayList.sort(Comparator.naturalOrder()));
-            c.timed("IndexedCollection", longList::sort);
+            c.timed("LinkedList - Sort", () -> linkedList.sort(Comparator.naturalOrder()));
+            c.timed("ArrayList - Sort", () -> arrayList.sort(Comparator.naturalOrder()));
+            c.timed("IndexedCollection - Sort", longList::sort);
         }
         return c;
     }
@@ -165,8 +165,10 @@ class ListPerformanceTest
     void testCombinedPerformanceTable()
     {
         final Chronograph a = performAddBenchmark(20, 10_000);
-        final Chronograph b = performSortBenchmark(10, 10_000);
-        final ChronographData combined = ChronographData.combine("Combined", Arrays.asList(a, b));
+        final Chronograph b = performAddBenchmark(10, 10_000);
+        final Chronograph c = performAddBenchmark(5, 10_000);
+        final Chronograph d = performSortBenchmark(8, 10_000);
+        final ChronographData combined = ChronographData.combine("Combined", Arrays.asList(a, b, c, d));
 
         System.out.println(Report.prettyPrint(combined,
                 OutputConfig.EXTENDED.mode(PresentationMode.THROUGHPUT).benchmarkMode(true),
