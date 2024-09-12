@@ -93,7 +93,7 @@ public class LongList implements IndexedCollection<Long>
     @Override
     public Iterator<Long> iterator()
     {
-        return new Iterator<Long>()
+        return new Iterator<>()
         {
             private int idx = 0;
 
@@ -143,7 +143,7 @@ public class LongList implements IndexedCollection<Long>
     @Override
     public Stream<Long> stream()
     {
-        final Iterable<Long> iterable = LongList.this::iterator;
+        final Iterable<Long> iterable = LongList.this;
         return StreamSupport.stream(iterable.spliterator(), false);
     }
 }
