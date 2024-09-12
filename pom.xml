@@ -7,7 +7,7 @@
     <artifactId>chronograph</artifactId>
     <name>Chronograph</name>
     <description>Easy-to-use stopwatch for task performance statistics</description>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
