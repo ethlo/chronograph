@@ -26,13 +26,17 @@ import java.time.Duration;
 
 import com.ethlo.util.IndexedCollection;
 import com.ethlo.util.IndexedCollectionStatistics;
-import com.ethlo.util.MathUtil;
 
 public class DurationPerformanceStatistics extends PerformanceStatistics<Duration>
 {
     public DurationPerformanceStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, Duration elapsedTotal)
     {
-        super(collectionStatistics, totalInvocations, elapsedTotal);
+        super(collectionStatistics, totalInvocations, elapsedTotal.toNanos());
+    }
+
+    public DurationPerformanceStatistics(IndexedCollectionStatistics collectionStatistics)
+    {
+        super(collectionStatistics, collectionStatistics.size(), collectionStatistics.sum());
     }
 
     @Override
@@ -75,22 +79,17 @@ public class DurationPerformanceStatistics extends PerformanceStatistics<Duratio
     {
         final IndexedCollection<Long> list = collectionStatistics.getList();
         final int count = list.size();
-        if (count == 0)
+        final long mean = getAverage().toNanos();
+        double standardDeviation = 0D;
+        for (long num : list)
         {
-            return Duration.ZERO;
+            standardDeviation += Math.pow(num - mean, 2);
         }
-        final double average = getAverage().toNanos();
-        BigDecimal sd = BigDecimal.valueOf(0);
-        for (long l : list)
-        {
-            final double val = Math.pow((l - average) / (double) count, 2);
-            sd = sd.add(BigDecimal.valueOf(val));
-        }
-        return Duration.ofNanos(MathUtil.sqrt(sd).longValue());
+        return Duration.ofNanos((long) Math.sqrt(standardDeviation / (double) count));
     }
 
     public DurationPerformanceStatistics merge(final DurationPerformanceStatistics other)
     {
-        return new DurationPerformanceStatistics(this.collectionStatistics.merge(other.collectionStatistics), totalInvocations + other.totalInvocations, elapsedTotal.plus(other.elapsedTotal));
+        return new DurationPerformanceStatistics(this.collectionStatistics.merge(other.collectionStatistics), totalInvocations + other.totalInvocations, Duration.ofNanos(elapsedTotal + other.elapsedTotal));
     }
 }

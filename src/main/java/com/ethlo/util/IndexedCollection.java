@@ -35,4 +35,6 @@ public interface IndexedCollection<T> extends Iterable<T>
     void sort();
 
     Stream<T> stream();
+
+    IndexedCollection<Long> addAll(Iterable<T> values);
 }

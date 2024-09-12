@@ -20,14 +20,10 @@ package com.ethlo.time.statistics;
  * #L%
  */
 
-import java.math.BigDecimal;
-import java.math.MathContext;
-import java.math.RoundingMode;
 import java.time.Duration;
 
 import com.ethlo.util.IndexedCollection;
 import com.ethlo.util.IndexedCollectionStatistics;
-import com.ethlo.util.MathUtil;
 
 public class ThroughputPerformanceStatistics extends PerformanceStatistics<Double>
 {
@@ -35,7 +31,12 @@ public class ThroughputPerformanceStatistics extends PerformanceStatistics<Doubl
 
     public ThroughputPerformanceStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, Duration elapsedTotal)
     {
-        super(collectionStatistics, totalInvocations, elapsedTotal);
+        super(collectionStatistics, totalInvocations, elapsedTotal.toNanos());
+    }
+
+    public ThroughputPerformanceStatistics(IndexedCollectionStatistics collectionStatistics)
+    {
+        super(collectionStatistics, collectionStatistics.size(), collectionStatistics.sum());
     }
 
     @Override
@@ -45,13 +46,7 @@ public class ThroughputPerformanceStatistics extends PerformanceStatistics<Doubl
         {
             return Double.NaN;
         }
-        return divide(totalInvocations, elapsedTotal.toNanos());
-    }
-
-    private Double divide(final long events, final long nanos)
-    {
-        final BigDecimal second = BigDecimal.valueOf(nanos).divide(BigDecimal.valueOf(D_NANOS), MathContext.DECIMAL128);
-        return BigDecimal.valueOf(events).divide(second, RoundingMode.HALF_UP).doubleValue();
+        return (double) elapsedTotal / (double) totalInvocations;
     }
 
     @Override
@@ -87,22 +82,17 @@ public class ThroughputPerformanceStatistics extends PerformanceStatistics<Doubl
     {
         final IndexedCollection<Long> list = collectionStatistics.getList();
         final int count = list.size();
-        if (count == 0)
+        final Double mean = getAverage();
+        double standardDeviation = 0D;
+        for (long num : list)
         {
-            return 0D;
+            standardDeviation += Math.pow(num - mean, 2);
         }
-        final double average = getAverage();
-        BigDecimal sd = BigDecimal.valueOf(0);
-        for (long l : list)
-        {
-            final double val = Math.pow(((D_NANOS / l) - average) / (double) count, 2);
-            sd = sd.add(BigDecimal.valueOf(val));
-        }
-        return MathUtil.sqrt(sd).doubleValue();
+        return Math.sqrt(standardDeviation / (double) count);
     }
 
     public ThroughputPerformanceStatistics merge(final ThroughputPerformanceStatistics other)
     {
-        return new ThroughputPerformanceStatistics(this.collectionStatistics.merge(other.collectionStatistics), totalInvocations + other.totalInvocations, elapsedTotal.plus(other.elapsedTotal));
+        return new ThroughputPerformanceStatistics(this.collectionStatistics.merge(other.collectionStatistics), totalInvocations + other.totalInvocations, Duration.ofNanos(elapsedTotal + other.elapsedTotal));
     }
 }

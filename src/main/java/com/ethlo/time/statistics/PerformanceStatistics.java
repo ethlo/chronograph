@@ -28,9 +28,9 @@ public abstract class PerformanceStatistics<T>
 {
     protected final IndexedCollectionStatistics collectionStatistics;
     protected final long totalInvocations;
-    protected final Duration elapsedTotal;
+    protected final long elapsedTotal;
 
-    public PerformanceStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, Duration elapsedTotal)
+    public PerformanceStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, long elapsedTotal)
     {
         this.collectionStatistics = collectionStatistics;
         this.totalInvocations = totalInvocations;
@@ -44,7 +44,7 @@ public abstract class PerformanceStatistics<T>
 
     public Duration getElapsedTotal()
     {
-        return elapsedTotal;
+        return Duration.ofNanos(elapsedTotal);
     }
 
     public abstract T getAverage();

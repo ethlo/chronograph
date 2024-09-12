@@ -54,6 +54,10 @@ public class LongList implements IndexedCollection<Long>
     @Override
     public void add(long l)
     {
+        if (index == Integer.MAX_VALUE)
+        {
+            throw new IndexOutOfBoundsException("Cannot add more than " + Integer.MAX_VALUE + " entries");
+        }
         if (index % blockSize == 0)
         {
             blocks.add(new long[blockSize]);
@@ -145,5 +149,12 @@ public class LongList implements IndexedCollection<Long>
     {
         final Iterable<Long> iterable = LongList.this;
         return StreamSupport.stream(iterable.spliterator(), false);
+    }
+
+    @Override
+    public IndexedCollection<Long> addAll(final Iterable<Long> values)
+    {
+        values.forEach(this::add);
+        return this;
     }
 }
