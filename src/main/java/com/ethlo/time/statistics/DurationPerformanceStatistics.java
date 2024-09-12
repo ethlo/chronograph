@@ -75,6 +75,10 @@ public class DurationPerformanceStatistics extends PerformanceStatistics<Duratio
     {
         final IndexedCollection<Long> list = collectionStatistics.getList();
         final int count = list.size();
+        if (count == 0)
+        {
+            return Duration.ZERO;
+        }
         final double average = getAverage().toNanos();
         BigDecimal sd = BigDecimal.valueOf(0);
         for (long l : list)

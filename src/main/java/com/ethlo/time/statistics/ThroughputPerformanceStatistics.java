@@ -89,7 +89,7 @@ public class ThroughputPerformanceStatistics extends PerformanceStatistics<Doubl
         final int count = list.size();
         if (count == 0)
         {
-            return null;
+            return 0D;
         }
         final double average = getAverage();
         BigDecimal sd = BigDecimal.valueOf(0);
