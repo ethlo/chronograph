@@ -2,9 +2,8 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.ethlo.time/chronograph)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.ethlo.time%22%20a%3A%22chronograph%22)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](LICENSE)
-utm_source=github.com&amp;utm_medium=referral&amp;utm_content=ethlo/chronograph&amp;utm_campaign=Badge_Grade)
 
-Easy to use Java Chronograph (stopwatch) allowing measurement of elapsed time.
+Easy to use Java stopwatch allowing measurement of elapsed time.
 
 ## Features
   * The same task can be timed multiple times for aggregated/cumulative data.
