@@ -258,7 +258,7 @@ public class ChronographTest
         final ChronographData merged = chronograph2.getTaskData().merge("merged", chronograph1.getTaskData());
 
         System.out.println(Report.prettyPrint(merged,
-                OutputConfig.EXTENDED.mode(PresentationMode.THROUGHPUT).benchmarkMode(true),
+                OutputConfig.EXTENDED.benchmarkMode(true),
                 TableTheme.RED_HERRING
         ));
 

@@ -157,4 +157,10 @@ public class LongList implements IndexedCollection<Long>
         values.forEach(this::add);
         return this;
     }
+
+    @Override
+    public boolean isEmpty()
+    {
+        return size() == 0;
+    }
 }

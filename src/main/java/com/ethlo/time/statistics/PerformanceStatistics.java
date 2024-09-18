@@ -20,11 +20,14 @@ package com.ethlo.time.statistics;
  * #L%
  */
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.Duration;
+import java.util.Optional;
 
 import com.ethlo.util.IndexedCollectionStatistics;
 
-public abstract class PerformanceStatistics<T>
+public class PerformanceStatistics
 {
     protected final IndexedCollectionStatistics collectionStatistics;
     protected final long totalInvocations;
@@ -37,9 +40,19 @@ public abstract class PerformanceStatistics<T>
         this.elapsedTotal = elapsedTotal;
     }
 
+    public PerformanceStatistics(IndexedCollectionStatistics collectionStatistics)
+    {
+        this(collectionStatistics, collectionStatistics.size(), collectionStatistics.sum());
+    }
+
     public long getTotalInvocations()
     {
         return totalInvocations;
+    }
+
+    public boolean isEmpty()
+    {
+        return collectionStatistics.getList().isEmpty();
     }
 
     public Duration getElapsedTotal()
@@ -47,15 +60,48 @@ public abstract class PerformanceStatistics<T>
         return Duration.ofNanos(elapsedTotal);
     }
 
-    public abstract T getAverage();
+    public Duration getAverage()
+    {
+        if (getTotalInvocations() == 0)
+        {
+            return Duration.ZERO;
+        }
 
-    public abstract T getMedian();
+        return Duration.ofNanos(BigDecimal.valueOf(getElapsedTotal().toNanos()).divide(BigDecimal.valueOf(getTotalInvocations()), RoundingMode.HALF_UP).longValue());
+    }
 
-    public abstract T getPercentile(double limit);
+    public Duration getMedian()
+    {
+        return getDuration(collectionStatistics.getMedian());
+    }
 
-    public abstract T getMin();
+    public Duration getPercentile(double limit)
+    {
+        return getDuration(collectionStatistics.getPercentile(limit));
+    }
 
-    public abstract T getMax();
+    public Duration getMin()
+    {
+        return getDuration(collectionStatistics.getMin());
+    }
 
-    public abstract T getStandardDeviation();
+    public Duration getMax()
+    {
+        return getDuration(collectionStatistics.getMax());
+    }
+
+    public Duration getStandardDeviation()
+    {
+        return getDuration(collectionStatistics.getStandardDeviation());
+    }
+
+    public PerformanceStatistics merge(final PerformanceStatistics other)
+    {
+        return new PerformanceStatistics(this.collectionStatistics.merge(other.collectionStatistics), totalInvocations + other.totalInvocations, elapsedTotal + other.elapsedTotal);
+    }
+
+    private Duration getDuration(Number d)
+    {
+        return Optional.ofNullable(d).map(dur -> Duration.ofNanos(dur.longValue())).orElse(null);
+    }
 }

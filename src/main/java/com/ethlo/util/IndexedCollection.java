@@ -37,4 +37,6 @@ public interface IndexedCollection<T> extends Iterable<T>
     Stream<T> stream();
 
     IndexedCollection<Long> addAll(Iterable<T> values);
+
+    boolean isEmpty();
 }

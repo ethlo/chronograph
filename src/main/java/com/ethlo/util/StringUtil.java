@@ -26,12 +26,7 @@ public class StringUtil
 {
     public static String repeat(final String s, final int count)
     {
-        final StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < count; i++)
-        {
-            sb.append(s);
-        }
-        return sb.toString();
+        return s.repeat(Math.max(0, count));
     }
 
     public static String adjustPadRight(final String s, final int width)

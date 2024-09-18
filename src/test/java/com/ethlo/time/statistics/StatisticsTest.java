@@ -34,20 +34,25 @@ import com.ethlo.util.LongList;
 class StatisticsTest
 {
     private final IndexedCollection<Long> list = new LongList().addAll(List.of(200L, 400L, 400L, 400L, 500L, 500L, 700L, 900L));
-    private final ThroughputPerformanceStatistics throughputStats = new ThroughputPerformanceStatistics(new IndexedCollectionStatistics(list));
-    private final DurationPerformanceStatistics durationStats = new DurationPerformanceStatistics(new IndexedCollectionStatistics(list));
+    private final PerformanceStatistics durationStats = new PerformanceStatistics(new IndexedCollectionStatistics(list));
 
     @Test
     void getAverage()
     {
-        assertThat(throughputStats.getAverage()).isEqualTo(500D);
         assertThat(durationStats.getAverage()).isEqualTo(Duration.ofNanos(500));
     }
 
     @Test
     void getStandardDeviation()
     {
-        assertThat(throughputStats.getStandardDeviation()).isEqualTo(200D);
         assertThat(durationStats.getStandardDeviation()).isEqualTo(Duration.ofNanos(200));
+    }
+
+    @Test
+    void getMedianNoValuesValue()
+    {
+        final IndexedCollection<Long> list = new LongList().addAll(List.of());
+        final PerformanceStatistics durationStats = new PerformanceStatistics(new IndexedCollectionStatistics(list));
+        assertThat(durationStats.getMedian()).isEqualTo(null);
     }
 }

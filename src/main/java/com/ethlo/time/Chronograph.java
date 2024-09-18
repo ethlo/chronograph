@@ -199,7 +199,7 @@ public class Chronograph
     {
         final List<TaskPerformanceStatistics> stats = getTasks()
                 .stream()
-                .map(task -> new TaskPerformanceStatistics(task.getName(), task.getSampleSize(), task.getDurationStatistics(), task.getThroughputStatistics()))
+                .map(task -> new TaskPerformanceStatistics(task.getName(), task.getSampleSize(), task.getDurationStatistics()))
                 .toList();
         return new ChronographData(name, stats, getTotalTime());
     }

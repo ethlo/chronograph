@@ -25,7 +25,6 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.ethlo.sampler.SampleRater;
 import com.ethlo.sampler.ScheduledSampleRater;
-import com.ethlo.time.statistics.DurationPerformanceStatistics;
 import com.ethlo.time.statistics.PerformanceStatistics;
 import com.ethlo.util.IndexedCollectionStatistics;
 
@@ -74,9 +73,9 @@ public class RateLimitedTaskInfo extends TaskInfo
     }
 
     @Override
-    public PerformanceStatistics<Duration> getDurationStatistics()
+    public PerformanceStatistics getDurationStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(getData());
-        return new DurationPerformanceStatistics(stats, totalInvocations, Duration.ofNanos(totalElapsed));
+        return new PerformanceStatistics(stats, totalInvocations, totalElapsed);
     }
 }

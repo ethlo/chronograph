@@ -26,8 +26,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ethlo.time.statistics.DurationPerformanceStatistics;
-import com.ethlo.time.statistics.ThroughputPerformanceStatistics;
+import com.ethlo.time.statistics.PerformanceStatistics;
 
 public class ChronographData
 {
@@ -86,18 +85,17 @@ public class ChronographData
     public ChronographData merge(String chronographName, ChronographData chronographData)
     {
         final Map<String, TaskPerformanceStatistics> joined = new LinkedHashMap<>(Math.max(this.taskStatistics.size(), chronographData.taskStatistics.size()));
-        this.taskStatistics.forEach(t -> joined.put(t.getName(), t));
-        chronographData.taskStatistics.forEach(t -> joined.compute(t.getName(), (k, v) ->
+        this.taskStatistics.forEach(t -> joined.put(t.name(), t));
+        chronographData.taskStatistics.forEach(t -> joined.compute(t.name(), (k, v) ->
         {
             if (v != null)
             {
-                final long sampleSize = v.getSampleSize() + t.getSampleSize();
-                final DurationPerformanceStatistics durationStatistics = ((DurationPerformanceStatistics) t.getDurationStatistics()).merge((DurationPerformanceStatistics) v.getDurationStatistics());
-                final ThroughputPerformanceStatistics throughputStatistics = ((ThroughputPerformanceStatistics) t.getThroughputStatistics()).merge((ThroughputPerformanceStatistics) v.getThroughputStatistics());
-                return new TaskPerformanceStatistics(k, sampleSize, durationStatistics, throughputStatistics);
+                final long sampleSize = v.sampleSize() + t.sampleSize();
+                final PerformanceStatistics durationStatistics = t.performanceStatistics().merge(v.performanceStatistics());
+                return new TaskPerformanceStatistics(k, sampleSize, durationStatistics);
             }
             return t;
         }));
-        return new ChronographData(chronographName, new ArrayList<>(joined.values()), Duration.ofNanos(joined.values().stream().mapToLong(t -> t.getDurationStatistics().getElapsedTotal().toNanos()).sum()));
+        return new ChronographData(chronographName, new ArrayList<>(joined.values()), Duration.ofNanos(joined.values().stream().mapToLong(t -> t.performanceStatistics().getElapsedTotal().toNanos()).sum()));
     }
 }

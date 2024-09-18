@@ -47,7 +47,7 @@ public class LongListTest
         {
             l.add(i);
         }
-        assertThat(new IndexedCollectionStatistics(l).getAverage()).isEqualTo(500.0D);
+        assertThat(new IndexedCollectionStatistics(l).getAverage()).isEqualTo(500);
     }
 
     @Test
@@ -89,7 +89,7 @@ public class LongListTest
     public void medianEven()
     {
         final LongList l = createList(100_000, true);
-        assertThat(new IndexedCollectionStatistics(l).getMedian()).isEqualTo(49_999.5);
+        assertThat(new IndexedCollectionStatistics(l).getMedian()).isEqualTo(49_999L);
     }
 
     @Test

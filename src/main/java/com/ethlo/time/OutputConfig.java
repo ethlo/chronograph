@@ -60,7 +60,6 @@ public class OutputConfig
     private boolean standardDeviation;
     private boolean total;
     private boolean percentage;
-    private PresentationMode mode = PresentationMode.DURATION;
     private boolean benchmarkMode = false;
     private boolean formatting = true;
 
@@ -81,7 +80,6 @@ public class OutputConfig
         this.standardDeviation = builder.standardDeviation;
         this.total = builder.total;
         this.percentage = builder.percentage;
-        this.mode = builder.mode;
         this.benchmarkMode = builder.benchmarkMode;
         this.formatting = builder.formatting;
 
@@ -137,11 +135,6 @@ public class OutputConfig
         return percentage;
     }
 
-    public PresentationMode getMode()
-    {
-        return mode;
-    }
-
     public boolean benchmarkMode()
     {
         return benchmarkMode;
@@ -150,11 +143,6 @@ public class OutputConfig
     public boolean formatting()
     {
         return formatting;
-    }
-
-    public OutputConfig mode(PresentationMode mode)
-    {
-        return new OutputConfig(new Builder(this).mode(mode));
     }
 
     public OutputConfig title(final String title)
@@ -219,7 +207,6 @@ public class OutputConfig
 
     public static class Builder
     {
-        private PresentationMode mode;
         private String title;
         private double[] percentiles;
         private boolean median;
@@ -245,7 +232,6 @@ public class OutputConfig
             this.invocations = config.invocations;
             this.average = config.average;
             this.title = config.title;
-            this.mode = config.mode;
             this.benchmarkMode = config.benchmarkMode;
             this.formatting = config.formatting;
         }
@@ -307,12 +293,6 @@ public class OutputConfig
         public Builder percentage(final boolean percentage)
         {
             this.percentage = percentage;
-            return this;
-        }
-
-        public Builder mode(final PresentationMode mode)
-        {
-            this.mode = mode;
             return this;
         }
 

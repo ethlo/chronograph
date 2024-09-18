@@ -88,7 +88,7 @@ public class Report
     {
         if (outputConfig.benchmarkMode())
         {
-            return Comparator.comparingDouble((TaskPerformanceStatistics a) -> a.getThroughputStatistics().getAverage()).reversed();
+            return Comparator.comparingLong((TaskPerformanceStatistics a) -> a.performanceStatistics().getElapsedTotal().toNanos());
         }
         return (a, b) -> 0;
     }
@@ -97,68 +97,68 @@ public class Report
     {
         final TableRow row = new TableRow();
 
-        row.append(new TableCell(taskStats.getName()));
+        row.append(new TableCell(taskStats.name()));
 
-        final long invocations = taskStats.getThroughputStatistics().getTotalInvocations();
+        final long invocations = taskStats.performanceStatistics().getTotalInvocations();
+        ;
         final boolean multipleInvocations = invocations > 1;
 
-        final PerformanceStatistics<Duration> durationStatistics = taskStats.getDurationStatistics();
-        final PerformanceStatistics<Double> throughputStatistics = taskStats.getThroughputStatistics();
+        final PerformanceStatistics performanceStatistics = taskStats.performanceStatistics();
 
-        outputTotal(outputConfig, row, durationStatistics);
+        outputTotal(outputConfig, row, performanceStatistics);
 
         addInvocations(outputConfig, taskStats, nf, row, invocations);
 
-        outputPercentage(outputConfig, totalTime, pf, row, durationStatistics);
+        outputPercentage(outputConfig, totalTime, pf, row, performanceStatistics);
 
-        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.median(), durationStatistics.getMedian(), throughputStatistics.getMedian());
+        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.median(), performanceStatistics.getMedian());
 
-        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.standardDeviation(), durationStatistics.getStandardDeviation(), throughputStatistics.getStandardDeviation());
+        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.standardDeviation(), performanceStatistics.getStandardDeviation());
 
-        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.mean(), durationStatistics.getAverage(), throughputStatistics.getAverage());
+        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.mean(), performanceStatistics.getAverage());
 
-        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.min(), durationStatistics.getMin(), throughputStatistics.getMin());
+        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.min(), performanceStatistics.getMin());
 
-        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.max(), durationStatistics.getMax(), throughputStatistics.getMax());
+        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.max(), performanceStatistics.getMax());
 
-        outputPercentiles(outputConfig, row, multipleInvocations, durationStatistics, throughputStatistics);
+        outputPercentiles(outputConfig, row, multipleInvocations, performanceStatistics);
 
         return row;
     }
 
-    private static void outputPercentiles(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final PerformanceStatistics<Duration> durationStatistics, final PerformanceStatistics<Double> throughputStatistics)
+    private static void outputPercentiles(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final PerformanceStatistics performanceStatistics)
     {
         if (outputConfig.percentiles() != null)
         {
             for (double percentile : outputConfig.percentiles())
             {
-                outputCell(outputConfig, row, multipleInvocations, durationStatistics.getPercentile(percentile), throughputStatistics.getPercentile(percentile));
+                outputCell(outputConfig, row, multipleInvocations, performanceStatistics.getPercentile(percentile));
             }
         }
     }
 
-    private static void outputTotal(final OutputConfig outputConfig, final TableRow row, final PerformanceStatistics<Duration> durationStatistics)
+    private static void outputTotal(final OutputConfig outputConfig, final TableRow row, final PerformanceStatistics performanceStatistics)
     {
         if (outputConfig.total())
         {
             final String str;
             if (outputConfig.formatting())
             {
-                str = ReportUtil.humanReadable(durationStatistics.getElapsedTotal());
+                str = ReportUtil.humanReadable(performanceStatistics.getElapsedTotal());
             }
             else
             {
-                str = getRawNumberFormat().format(durationStatistics.getElapsedTotal().toNanos() / NANOS_PER_SECOND);
+                str = getRawNumberFormat().format(performanceStatistics.getElapsedTotal().toNanos() / NANOS_PER_SECOND);
             }
             row.append(new TableCell(str, false, true));
         }
     }
 
-    private static void outputPercentage(final OutputConfig outputConfig, final Duration totalTime, final NumberFormat pf, final TableRow row, final PerformanceStatistics<Duration> durationStatistics)
+    private static void outputPercentage(final OutputConfig outputConfig, final Duration totalTime, final NumberFormat pf, final TableRow row, final PerformanceStatistics performanceStatistics)
     {
         if (outputConfig.percentage())
         {
-            final double pct = totalTime.isZero() ? 0D : durationStatistics.getElapsedTotal().toNanos() / (double) totalTime.toNanos();
+            final double pct = totalTime.isZero() ? 0D : performanceStatistics.getElapsedTotal().toNanos() / (double) totalTime.toNanos();
             row.append(new TableCell(outputConfig.formatting() ? pf.format(pct) : getRawNumberFormat().format(pct), false, true));
         }
     }
@@ -168,10 +168,10 @@ public class Report
         if (outputConfig.invocations())
         {
             String invocationsStr;
-            if (taskStats.getSampleSize() != invocations && outputConfig.formatting())
+            if (taskStats.sampleSize() != invocations && outputConfig.formatting())
             {
                 // Reduced sample rate
-                invocationsStr = "(" + nf.format(taskStats.getSampleSize()) + ") " + nf.format(invocations);
+                invocationsStr = "(" + nf.format(taskStats.sampleSize()) + ") " + nf.format(invocations);
             }
             else
             {
@@ -182,27 +182,27 @@ public class Report
         }
     }
 
-    private static void conditionalOutput(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final boolean shouldShow, final Duration duration, final Double throughput)
+    private static void conditionalOutput(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final boolean shouldShow, final Duration duration)
     {
         if (shouldShow)
         {
-            outputCell(outputConfig, row, multipleInvocations, duration, throughput);
+            outputCell(outputConfig, row, multipleInvocations, duration);
         }
     }
 
-    private static void outputCell(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final Duration duration, final Double throughput)
+    private static void outputCell(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final Duration duration)
     {
         if (multipleInvocations)
         {
             final String str;
             if (outputConfig.formatting())
             {
-                str = outputConfig.getMode() == PresentationMode.DURATION ? ReportUtil.humanReadable(duration) : ReportUtil.humanReadable(throughput);
+                str = ReportUtil.humanReadable(duration);
             }
             else
             {
                 final NumberFormat nf = getRawNumberFormat();
-                str = outputConfig.getMode() == PresentationMode.DURATION ? Long.toString(duration.toNanos()) : nf.format(throughput);
+                str = nf.format(duration.toNanos());
             }
             row.append(new TableCell(str, false, true));
         }
@@ -284,7 +284,7 @@ public class Report
 
     private static TableRow totals(final OutputConfig outputConfig, final ChronographData chronographData)
     {
-        final long totalInvocations = chronographData.getTaskStatistics().stream().map(t -> t.getDurationStatistics().getTotalInvocations()).reduce(0L, Long::sum);
+        final long totalInvocations = chronographData.getTaskStatistics().stream().map(t -> t.performanceStatistics().getTotalInvocations()).reduce(0L, Long::sum);
         return new TableRow()
                 .append(new TableCell("Sum", false, false))
                 .append(new TableCell(

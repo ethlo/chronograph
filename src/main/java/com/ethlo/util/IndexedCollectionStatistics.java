@@ -44,40 +44,55 @@ public class IndexedCollectionStatistics
         return sum;
     }
 
-    public long getMin()
+    public Long getMin()
     {
-        return list.get(0);
+        return isEmpty() ? null : list.get(0);
     }
 
-    public long getMax()
+    public Long getMax()
     {
-        return list.get(list.size() - 1);
+        return isEmpty() ? null : list.get(list.size() - 1);
     }
 
-    public double getAverage()
+    public Long getAverage()
     {
+        if (isEmpty())
+        {
+            return null;
+        }
+
         BigInteger sum = BigInteger.ZERO;
         for (final Long l : list)
         {
             final BigInteger bi = BigInteger.valueOf(l);
             sum = sum.add(bi);
         }
-        return sum.divide(BigInteger.valueOf(list.size())).doubleValue();
+        return sum.divide(BigInteger.valueOf(list.size())).longValue();
     }
 
-    public double getPercentile(double percentile)
+    public Long getPercentile(double percentile)
     {
+        if (isEmpty())
+        {
+            return null;
+        }
+
         final int index = (int) Math.ceil((percentile / 100) * list.size());
         return list.get(index - 1);
     }
 
-    public double getMedian()
+    public Long getMedian()
     {
+        if (list.isEmpty())
+        {
+            return null;
+        }
+
         final int pivot = list.size() / 2;
         if (pivot * 2 == list.size())
         {
             // Average of two middle elements
-            return (list.get(pivot - 1) + list.get(pivot)) / 2D;
+            return (list.get(pivot - 1) + list.get(pivot)) / 2;
         }
         return list.get(pivot);
     }
@@ -103,5 +118,27 @@ public class IndexedCollectionStatistics
         this.list.forEach(list::add);
         other.list.forEach(list::add);
         return new IndexedCollectionStatistics(list);
+    }
+
+    public boolean isEmpty()
+    {
+        return list.isEmpty();
+    }
+
+    public Long getStandardDeviation()
+    {
+        if (isEmpty())
+        {
+            return null;
+        }
+
+        final int count = list.size();
+        final Long mean = getAverage();
+        double standardDeviation = 0D;
+        for (long num : list)
+        {
+            standardDeviation += Math.pow(num - mean, 2);
+        }
+        return (long) Math.sqrt(standardDeviation / count);
     }
 }

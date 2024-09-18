@@ -33,8 +33,8 @@ import java.util.function.Consumer;
  */
 public class ScheduledSampleRater<T> extends SampleRater<T>
 {
-    private volatile boolean ready = true;
     private final ScheduledExecutorService executor;
+    private volatile boolean ready = true;
 
     public ScheduledSampleRater(final Consumer<TaskProgress<T>> sampledProgressListener)
     {

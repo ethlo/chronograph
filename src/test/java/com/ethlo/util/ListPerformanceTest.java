@@ -38,14 +38,13 @@ import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographData;
 import com.ethlo.time.OutputConfig;
-import com.ethlo.time.PresentationMode;
 import com.ethlo.time.Report;
 
 class ListPerformanceTest
 {
     private static final Logger logger = LoggerFactory.getLogger(ListPerformanceTest.class);
 
-    private final int size = 5_000_000;
+    private final int size = 2_000_000;
     private final int count = 4;
 
     @Test
@@ -72,7 +71,7 @@ class ListPerformanceTest
             c.timed("sort", () -> list.sort(Comparator.naturalOrder()));
         }
 
-        logger.info(c.prettyPrint("ArrayList"), new OutputConfig().mode(PresentationMode.THROUGHPUT));
+        logger.info(c.prettyPrint("ArrayList"));
         assertThat(true).isTrue();
     }
 
@@ -171,7 +170,7 @@ class ListPerformanceTest
         final ChronographData combined = ChronographData.combine("Combined", Arrays.asList(a, b, c, d));
 
         System.out.println(Report.prettyPrint(combined,
-                OutputConfig.EXTENDED.mode(PresentationMode.THROUGHPUT).benchmarkMode(true),
+                OutputConfig.EXTENDED.benchmarkMode(true),
                 TableTheme.RED_HERRING
         ));
 
