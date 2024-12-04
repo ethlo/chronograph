@@ -37,6 +37,20 @@ public class TableTheme
             .horizontalSeparator("\t")
             .build();
 
+    public static final TableTheme SINGLE = TableTheme.builder()
+            .cross("┼")
+            .rightCross("┤")
+            .leftCross("├")
+            .topCross("┬")
+            .bottomCross("┴")
+            .leftTop("┌")
+            .rightTop("┐")
+            .leftBottom("└")
+            .rightBottom("┘")
+            .verticalSeparator("─")
+            .horizontalSeparator("│")
+            .build();
+
     public static final TableTheme DOUBLE = TableTheme.builder()
             .cross("╬")
             .rightCross("╣")
@@ -236,23 +250,23 @@ public class TableTheme
 
     public static final class Builder
     {
-        public String topCross = "┬";
-        public String bottomCross = "┴";
+        public String topCross = "+";
+        public String bottomCross = "+";
         private AnsiColor stringColor = AnsiColor.NONE;
         private AnsiColor numericColor = AnsiColor.NONE;
         private AnsiColor horizontalSpacerColor = AnsiColor.NONE;
         private AnsiColor verticalSpacerColor = AnsiColor.NONE;
         private AnsiBackgroundColor cellBackground = AnsiBackgroundColor.NONE;
-        private String horizontalSeparator = "│";
-        private String verticalSeparator = "─";
+        private String horizontalSeparator = "|";
+        private String verticalSeparator = "-";
         private String padding = " ";
-        private String cross = "┼";
-        private String leftCross = "├";
-        private String rightCross = "┤";
-        private String leftTop = "┌";
-        private String rightTop = "┐";
-        private String leftBottom = "└";
-        private String rightBottom = "┘";
+        private String cross = "+";
+        private String leftCross = "+";
+        private String rightCross = "+";
+        private String leftTop = "+";
+        private String rightTop = "+";
+        private String leftBottom = "+";
+        private String rightBottom = "+";
 
         private Builder()
         {

@@ -135,11 +135,13 @@ class ListPerformanceTest
     {
         final Chronograph c = performSortBenchmark(10, 500_000);
         output(c, TableTheme.RED_HERRING);
+        output(c, TableTheme.SINGLE);
         output(c, TableTheme.DOUBLE);
         output(c, TableTheme.DEFAULT);
         output(c, TableTheme.ROUNDED);
         output(c, TableTheme.MINIMAL);
         output(c, TableTheme.COMPACT);
+        output(c, TableTheme.TSV);
         assertThat(true).isTrue();
     }
 

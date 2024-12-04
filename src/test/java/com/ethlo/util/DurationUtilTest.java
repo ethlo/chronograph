@@ -69,7 +69,7 @@ public class DurationUtilTest
     @Test
     public void humanReadableFormatLessThanMillisecond()
     {
-        assertThat(ReportUtil.humanReadable(Duration.ofNanos(456_789))).isEqualTo("456.79 μs");
+        assertThat(ReportUtil.humanReadable(Duration.ofNanos(456_789))).isEqualTo("456.79 us");
     }
 
     @Test
