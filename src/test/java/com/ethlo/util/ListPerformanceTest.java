@@ -29,6 +29,8 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ethlo.ascii.AnsiBackgroundColor;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +40,7 @@ import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographData;
 import com.ethlo.time.OutputConfig;
-import com.ethlo.time.Report;
+import com.ethlo.time.TableOutputformatter;
 
 class ListPerformanceTest
 {
@@ -53,8 +55,8 @@ class ListPerformanceTest
         final Chronograph c = Chronograph.create();
         for (int i = 0; i < count; i++)
         {
-            final List<Long> list = c.timedSupplier("add", () -> addLinkedList(size));
-            c.timed("sort", () -> list.sort(Comparator.naturalOrder()));
+            final List<Long> list = c.time("add", () -> addLinkedList(size));
+            c.time("sort", () -> list.sort(Comparator.naturalOrder()));
         }
 
         logger.info(c.prettyPrint("LinkedList"));
@@ -67,8 +69,8 @@ class ListPerformanceTest
         final Chronograph c = Chronograph.create();
         for (int i = 0; i < count; i++)
         {
-            final List<Long> list = c.timedSupplier("add", () -> addArrayList(size));
-            c.timed("sort", () -> list.sort(Comparator.naturalOrder()));
+            final List<Long> list = c.time("add", () -> addArrayList(size));
+            c.time("sort", () -> list.sort(Comparator.naturalOrder()));
         }
 
         logger.info(c.prettyPrint("ArrayList"));
@@ -81,8 +83,8 @@ class ListPerformanceTest
         final Chronograph c = Chronograph.create();
         for (int i = 0; i < count; i++)
         {
-            final LongList list = c.timedSupplier("add", () -> addLongList(size));
-            c.timed("sort", list::sort);
+            final LongList list = c.time("add", () -> addLongList(size));
+            c.time("sort", list::sort);
         }
 
         logger.info(c.prettyPrint("LongList"));
@@ -97,11 +99,11 @@ class ListPerformanceTest
         final IndexedCollection<Long> list = new LongList(100_000);
         for (int i = 0; i < 2_000_000; i++)
         {
-            c.timed("Warmup", () -> list.add(randomNano()));
+            c.time("Warmup", () -> list.add(randomNano()));
         }
         for (int i = 0; i < 10_000_000; i++)
         {
-            c.timed("Adding", () -> list.add(randomNano()));
+            c.time("Adding", () -> list.add(randomNano()));
         }
 
         System.out.println(c.prettyPrint());
@@ -123,9 +125,9 @@ class ListPerformanceTest
 
         for (int i = 0; i < runs; i++)
         {
-            c.timedFunction("LinkedList - Add", this::addLinkedList, size);
-            c.timedFunction("ArrayList - Add", this::addArrayList, size);
-            c.timedFunction("IndexedCollection - Add", this::addLongList, size);
+            c.time("LinkedList - Add", this::addLinkedList, size);
+            c.time("ArrayList - Add", this::addArrayList, size);
+            c.time("IndexedCollection - Add", this::addLongList, size);
         }
         return c;
     }
@@ -135,8 +137,9 @@ class ListPerformanceTest
     {
         final Chronograph c = performSortBenchmark(10, 500_000);
         output(c, TableTheme.RED_HERRING);
+        output(c, TableTheme.SINGLE);
         output(c, TableTheme.DOUBLE);
-        output(c, TableTheme.DEFAULT);
+        output(c, TableTheme.DEFAULT.begin().cellBackground(AnsiBackgroundColor.BRIGHT_CYAN).build());
         output(c, TableTheme.ROUNDED);
         output(c, TableTheme.MINIMAL);
         output(c, TableTheme.COMPACT);
@@ -153,9 +156,9 @@ class ListPerformanceTest
             final List<Long> linkedList = addLinkedList(size);
             final List<Long> arrayList = addArrayList(size);
 
-            c.timed("LinkedList - Sort", () -> linkedList.sort(Comparator.naturalOrder()));
-            c.timed("ArrayList - Sort", () -> arrayList.sort(Comparator.naturalOrder()));
-            c.timed("IndexedCollection - Sort", longList::sort);
+            c.time("LinkedList - Sort", () -> linkedList.sort(Comparator.naturalOrder()));
+            c.time("ArrayList - Sort", () -> arrayList.sort(Comparator.naturalOrder()));
+            c.time("IndexedCollection - Sort", longList::sort);
         }
         return c;
     }
@@ -169,10 +172,7 @@ class ListPerformanceTest
         final Chronograph d = performSortBenchmark(8, 10_000);
         final ChronographData combined = ChronographData.combine("Combined", Arrays.asList(a, b, c, d));
 
-        System.out.println(Report.prettyPrint(combined,
-                OutputConfig.EXTENDED.benchmarkMode(true),
-                TableTheme.RED_HERRING
-        ));
+        System.out.println(new TableOutputformatter().format(combined));
 
         assertThat(true).isTrue();
     }
@@ -180,7 +180,8 @@ class ListPerformanceTest
 
     private void output(final Chronograph c, TableTheme theme)
     {
-        System.out.println(Report.prettyPrint(c.getTaskData(), OutputConfig.EXTENDED.benchmarkMode(true), theme));
+        System.out.println(theme.getName());
+        System.out.println(c.prettyPrint(OutputConfig.EXTENDED.benchmarkMode(true), theme));
     }
 
     private LongList addLongList(int count)

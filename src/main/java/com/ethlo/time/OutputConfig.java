@@ -61,7 +61,6 @@ public class OutputConfig
     private boolean total;
     private boolean percentage;
     private boolean benchmarkMode = false;
-    private boolean formatting = true;
 
     public OutputConfig()
     {
@@ -81,7 +80,6 @@ public class OutputConfig
         this.total = builder.total;
         this.percentage = builder.percentage;
         this.benchmarkMode = builder.benchmarkMode;
-        this.formatting = builder.formatting;
 
     }
 
@@ -140,11 +138,6 @@ public class OutputConfig
         return benchmarkMode;
     }
 
-    public boolean formatting()
-    {
-        return formatting;
-    }
-
     public OutputConfig title(final String title)
     {
         return new OutputConfig(new Builder(this).title(title));
@@ -200,11 +193,6 @@ public class OutputConfig
         return new OutputConfig(new Builder(this).benchmarkMode(b));
     }
 
-    public OutputConfig formatting(final boolean b)
-    {
-        return new OutputConfig(new Builder(this).formatting(b));
-    }
-
     public static class Builder
     {
         private String title;
@@ -218,7 +206,6 @@ public class OutputConfig
         private boolean total;
         private boolean percentage;
         private boolean benchmarkMode;
-        private boolean formatting;
 
         private Builder(OutputConfig config)
         {
@@ -233,7 +220,6 @@ public class OutputConfig
             this.average = config.average;
             this.title = config.title;
             this.benchmarkMode = config.benchmarkMode;
-            this.formatting = config.formatting;
         }
 
         public Builder title(final String title)
@@ -299,12 +285,6 @@ public class OutputConfig
         public Builder benchmarkMode(final boolean b)
         {
             this.benchmarkMode = b;
-            return this;
-        }
-
-        public Builder formatting(final boolean b)
-        {
-            this.formatting = b;
             return this;
         }
     }
