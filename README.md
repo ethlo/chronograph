@@ -34,7 +34,7 @@ Easy to use Java stopwatch allowing measurement of elapsed time.
 <dependency>
   <groupId>com.ethlo.time</groupId>
   <artifactId>chronograph</artifactId>
-  <version>1.2.0</version>
+  <version>3.0.0</version>
 </dependency>
 ``` 
 ### Usage 
@@ -53,7 +53,7 @@ System.out.printn(chronograph.prettyPrint());
 ```java
 final List<Long> myList = ...;
 final Chronograph chronograph = Chronograph.create();     
-chronograph.timed("List sort", () -> linkedList.sort(Comparator.naturalOrder()));
+chronograph.time("List sort", () -> linkedList.sort(Comparator.naturalOrder()));
 System.out.printn(chronograph.prettyPrint());
 ```
 
@@ -71,16 +71,6 @@ Begin from DEFAULT configuration:
 ```java
 final OutputConfig cfg = Chronograph.configure(OutputConfig.DEFAULT
   .percentiles(75, 90, 99, 99.9, 99.99));
-```
-
-Output TSV (Tab separated values) with throughput per second values (instead of duration)
- ```java
-System.out.println(Report.prettyPrint(chronograph, 
-    OutputConfig.COMPACT
-        .mode(PresentationMode.THROUGHPUT)
-        .benchmarkMode(true)
-        .formatting(false),
-    TableTheme.TSV
 ```
 
 ```java
