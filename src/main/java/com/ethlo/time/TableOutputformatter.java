@@ -2,16 +2,16 @@ package com.ethlo.time;
 
 /*-
  * #%L
- * chronograph
+ * Chronograph
  * %%
- * Copyright (C) 2019 Morten Haraldsen (ethlo)
+ * Copyright (C) 2019 - 2024 Morten Haraldsen (ethlo)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 import com.ethlo.ascii.SeparatorRow;
 import com.ethlo.ascii.Table;
@@ -35,53 +36,20 @@ import com.ethlo.ascii.TableRow;
 import com.ethlo.ascii.TableTheme;
 import com.ethlo.time.statistics.PerformanceStatistics;
 
-public class Report
+public class TableOutputformatter implements OutputFormatter
 {
+    private final TableTheme tableTheme;
+    private final OutputConfig outputConfig;
 
-    public static final double NANOS_PER_SECOND = 1_000_000_000D;
-
-    public static String prettyPrint(ChronographData chronographData, OutputConfig outputConfig, TableTheme theme)
+    public TableOutputformatter(TableTheme tableTheme, OutputConfig outputConfig)
     {
-        if (chronographData.isEmpty())
-        {
-            return "No performance data";
-        }
+        this.tableTheme = Objects.requireNonNull(tableTheme, "tableTheme cannot be null");
+        this.outputConfig = Objects.requireNonNull(outputConfig, "outputConfig cannot be null");
+    }
 
-        final List<TableRow> rows = new LinkedList<>();
-
-        final NumberFormat pf = NumberFormat.getPercentInstance();
-        pf.setMinimumFractionDigits(1);
-        pf.setMaximumFractionDigits(1);
-        pf.setGroupingUsed(false);
-
-        final NumberFormat nf = NumberFormat.getNumberInstance();
-        nf.setRoundingMode(RoundingMode.HALF_UP);
-        nf.setGroupingUsed(true);
-
-        // Header rows
-        rows.add(SeparatorRow.getInstance());
-        rows.add(getHeaderRow(outputConfig));
-        rows.add(SeparatorRow.getInstance());
-
-        // Task data
-        final List<TaskPerformanceStatistics> taskPerformanceStats = new ArrayList<>(chronographData.getTaskStatistics());
-        taskPerformanceStats.sort(comparator(outputConfig));
-        for (TaskPerformanceStatistics taskStats : taskPerformanceStats)
-        {
-            rows.add(getTableRow(outputConfig, chronographData.getTotalTime(), taskStats, pf, nf));
-        }
-
-        // Summary row
-        if (taskPerformanceStats.size() > 1)
-        {
-            rows.add(SeparatorRow.getInstance());
-            rows.add(totals(outputConfig, chronographData));
-        }
-
-        // Bottom
-        rows.add(SeparatorRow.getInstance());
-
-        return new Table(theme, rows).render(outputConfig.title() != null ? outputConfig.title() : chronographData.getName());
+    public TableOutputformatter()
+    {
+        this(TableTheme.DEFAULT, OutputConfig.DEFAULT);
     }
 
     private static Comparator<? super TaskPerformanceStatistics> comparator(final OutputConfig outputConfig)
@@ -100,7 +68,7 @@ public class Report
         row.append(new TableCell(taskStats.name()));
 
         final long invocations = taskStats.performanceStatistics().getTotalInvocations();
-        ;
+
         final boolean multipleInvocations = invocations > 1;
 
         final PerformanceStatistics performanceStatistics = taskStats.performanceStatistics();
@@ -111,15 +79,15 @@ public class Report
 
         outputPercentage(outputConfig, totalTime, pf, row, performanceStatistics);
 
-        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.median(), performanceStatistics.getMedian());
+        conditionalOutput(row, multipleInvocations, outputConfig.median(), performanceStatistics.getMedian());
 
-        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.standardDeviation(), performanceStatistics.getStandardDeviation());
+        conditionalOutput(row, multipleInvocations, outputConfig.standardDeviation(), performanceStatistics.getStandardDeviation());
 
-        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.mean(), performanceStatistics.getAverage());
+        conditionalOutput(row, multipleInvocations, outputConfig.mean(), performanceStatistics.getAverage());
 
-        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.min(), performanceStatistics.getMin());
+        conditionalOutput(row, multipleInvocations, outputConfig.min(), performanceStatistics.getMin());
 
-        conditionalOutput(outputConfig, row, multipleInvocations, outputConfig.max(), performanceStatistics.getMax());
+        conditionalOutput(row, multipleInvocations, outputConfig.max(), performanceStatistics.getMax());
 
         outputPercentiles(outputConfig, row, multipleInvocations, performanceStatistics);
 
@@ -132,7 +100,7 @@ public class Report
         {
             for (double percentile : outputConfig.percentiles())
             {
-                outputCell(outputConfig, row, multipleInvocations, performanceStatistics.getPercentile(percentile));
+                outputCell(row, multipleInvocations, performanceStatistics.getPercentile(percentile));
             }
         }
     }
@@ -141,15 +109,7 @@ public class Report
     {
         if (outputConfig.total())
         {
-            final String str;
-            if (outputConfig.formatting())
-            {
-                str = ReportUtil.humanReadable(performanceStatistics.getElapsedTotal());
-            }
-            else
-            {
-                str = getRawNumberFormat().format(performanceStatistics.getElapsedTotal().toNanos() / NANOS_PER_SECOND);
-            }
+            final String str = ReportUtil.humanReadable(performanceStatistics.getElapsedTotal());
             row.append(new TableCell(str, false, true));
         }
     }
@@ -159,7 +119,7 @@ public class Report
         if (outputConfig.percentage())
         {
             final double pct = totalTime.isZero() ? 0D : performanceStatistics.getElapsedTotal().toNanos() / (double) totalTime.toNanos();
-            row.append(new TableCell(outputConfig.formatting() ? pf.format(pct) : getRawNumberFormat().format(pct), false, true));
+            row.append(new TableCell(pf.format(pct), false, true));
         }
     }
 
@@ -168,7 +128,7 @@ public class Report
         if (outputConfig.invocations())
         {
             String invocationsStr;
-            if (taskStats.sampleSize() != invocations && outputConfig.formatting())
+            if (taskStats.sampleSize() != invocations)
             {
                 // Reduced sample rate
                 invocationsStr = "(" + nf.format(taskStats.sampleSize()) + ") " + nf.format(invocations);
@@ -176,50 +136,31 @@ public class Report
             else
             {
                 // Full sampling
-                invocationsStr = outputConfig.formatting() ? nf.format(invocations) : getRawNumberFormat().format(invocations);
+                invocationsStr = nf.format(invocations);
             }
             row.append(new TableCell(invocationsStr, false, true));
         }
     }
 
-    private static void conditionalOutput(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final boolean shouldShow, final Duration duration)
+    private static void conditionalOutput(final TableRow row, final boolean multipleInvocations, final boolean shouldShow, final Duration duration)
     {
         if (shouldShow)
         {
-            outputCell(outputConfig, row, multipleInvocations, duration);
+            outputCell(row, multipleInvocations, duration);
         }
     }
 
-    private static void outputCell(final OutputConfig outputConfig, final TableRow row, final boolean multipleInvocations, final Duration duration)
+    private static void outputCell(final TableRow row, final boolean multipleInvocations, final Duration duration)
     {
         if (multipleInvocations)
         {
-            final String str;
-            if (outputConfig.formatting())
-            {
-                str = ReportUtil.humanReadable(duration);
-            }
-            else
-            {
-                final NumberFormat nf = getRawNumberFormat();
-                str = nf.format(duration.toNanos());
-            }
+            final String str = ReportUtil.humanReadable(duration);
             row.append(new TableCell(str, false, true));
         }
         else
         {
             row.append(new TableCell(""));
         }
-    }
-
-    private static NumberFormat getRawNumberFormat()
-    {
-        final NumberFormat nf = NumberFormat.getNumberInstance();
-        nf.setRoundingMode(RoundingMode.HALF_UP);
-        nf.setMinimumFractionDigits(6);
-        nf.setMaximumFractionDigits(6);
-        nf.setGroupingUsed(false);
-        return nf;
     }
 
     private static TableRow getHeaderRow(final OutputConfig outputConfig)
@@ -282,15 +223,58 @@ public class Report
         return headerRow;
     }
 
-    private static TableRow totals(final OutputConfig outputConfig, final ChronographData chronographData)
+    private static TableRow totals(final ChronographData chronographData)
     {
         final long totalInvocations = chronographData.getTaskStatistics().stream().map(t -> t.performanceStatistics().getTotalInvocations()).reduce(0L, Long::sum);
         return new TableRow()
                 .append(new TableCell("Sum", false, false))
-                .append(new TableCell(
-                        outputConfig.formatting() ? ReportUtil.humanReadable(chronographData.getTotalTime()) : getRawNumberFormat().format(chronographData.getTotalTime().toNanos() / NANOS_PER_SECOND), false, true))
-                .append(new TableCell(
-                        outputConfig.formatting() ? ReportUtil.formatInteger(totalInvocations) : getRawNumberFormat().format(totalInvocations), false, true))
-                .append(new TableCell(outputConfig.formatting() ? "100.0%" : "1.000000", false, true));
+                .append(new TableCell(ReportUtil.humanReadable(chronographData.getTotalTime()), false, true))
+                .append(new TableCell(ReportUtil.formatInteger(totalInvocations), false, true))
+                .append(new TableCell("100.0%", false, true));
+    }
+
+    @Override
+    public String format(final ChronographData chronographData)
+    {
+        if (chronographData.isEmpty())
+        {
+            return "No performance data";
+        }
+
+        final List<TableRow> rows = new LinkedList<>();
+
+        final NumberFormat pf = NumberFormat.getPercentInstance();
+        pf.setMinimumFractionDigits(1);
+        pf.setMaximumFractionDigits(1);
+        pf.setGroupingUsed(false);
+
+        final NumberFormat nf = NumberFormat.getNumberInstance();
+        nf.setRoundingMode(RoundingMode.HALF_UP);
+        nf.setGroupingUsed(true);
+
+        // Header rows
+        rows.add(SeparatorRow.getInstance());
+        rows.add(getHeaderRow(outputConfig));
+        rows.add(SeparatorRow.getInstance());
+
+        // Task data
+        final List<TaskPerformanceStatistics> taskPerformanceStats = new ArrayList<>(chronographData.getTaskStatistics());
+        taskPerformanceStats.sort(comparator(outputConfig));
+        for (TaskPerformanceStatistics taskStats : taskPerformanceStats)
+        {
+            rows.add(getTableRow(outputConfig, chronographData.getTotalTime(), taskStats, pf, nf));
+        }
+
+        // Summary row
+        if (taskPerformanceStats.size() > 1)
+        {
+            rows.add(SeparatorRow.getInstance());
+            rows.add(totals(chronographData));
+        }
+
+        // Bottom
+        rows.add(SeparatorRow.getInstance());
+
+        return new Table(tableTheme, rows).render(outputConfig.title() != null ? outputConfig.title() : chronographData.getName());
     }
 }

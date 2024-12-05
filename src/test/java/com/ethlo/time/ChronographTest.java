@@ -61,7 +61,7 @@ public class ChronographTest
 
         for (int i = 1; i <= 100_000; i++)
         {
-            assertThat((int) chronograph.timedFunction("foo", this::microsecondTask, 1)).isEqualTo(2);
+            assertThat((int) chronograph.time("foo", this::microsecondTaskInput, 1)).isEqualTo(2);
         }
     }
 
@@ -72,9 +72,10 @@ public class ChronographTest
 
         for (int i = 1; i <= 100_000; i++)
         {
-            chronograph.timed("foo", this::microsecondTask);
-            chronograph.timed("bar", this::microsecondTask);
-            chronograph.timed("baz baz baz baz baz baz", this::microsecondTask);
+            chronograph.time("foo", this::microsecondTask);
+            final int input = i;
+            chronograph.time("bar", () -> microsecondTaskInput(input));
+            chronograph.time("baz baz baz baz baz baz", this::microsecondTask);
         }
 
         assertThat(chronograph.getTasks()).hasSize(3);
@@ -105,7 +106,7 @@ public class ChronographTest
         }
     }
 
-    private int microsecondTask(int input)
+    private int microsecondTaskInput(int input)
     {
         try
         {
@@ -161,7 +162,7 @@ public class ChronographTest
         final Chronograph chronograph = Chronograph.create();
         for (int i = 0; i < 10; i++)
         {
-            chronograph.timed("Task-" + i, () -> {
+            chronograph.time("Task-" + i, () -> {
             });
         }
         logger.info(chronograph.prettyPrint());
@@ -255,12 +256,12 @@ public class ChronographTest
 
         chronograph1.stop();
         chronograph2.stop();
+
+        System.out.println(chronograph1.prettyPrint(TableTheme.DOUBLE));
+        System.out.println(chronograph2.prettyPrint(OutputConfig.COMPACT));
         final ChronographData merged = chronograph2.getTaskData().merge("merged", chronograph1.getTaskData());
 
-        System.out.println(Report.prettyPrint(merged,
-                OutputConfig.EXTENDED.benchmarkMode(true),
-                TableTheme.RED_HERRING
-        ));
+        System.out.println(new TableOutputformatter().format(merged));
 
         assertThat(true).isTrue();
     }

@@ -23,7 +23,6 @@ package com.ethlo.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class LongListTest
@@ -161,19 +160,5 @@ public class LongListTest
     {
         final LongList l = createList(10, true);
         assertThat(l.size()).isEqualTo(10);
-    }
-
-    @Disabled
-    @Test
-    void overflow()
-    {
-        final LongList l = new LongList(10000);
-        System.out.println(Runtime.getRuntime().maxMemory() / 1024D / 1024D);
-        for (long i = 0; i < (long) Integer.MAX_VALUE; i++)
-        {
-            l.add(1);
-        }
-
-        assertThrows(IndexOutOfBoundsException.class, () -> l.add(1));
     }
 }

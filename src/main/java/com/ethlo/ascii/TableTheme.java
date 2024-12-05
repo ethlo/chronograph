@@ -24,20 +24,10 @@ public class TableTheme
 {
     // Inspiration: https://www.compart.com/en/unicode/search?q=Box+Drawings#characters
 
-    public static final TableTheme DEFAULT = TableTheme.builder().build();
-
-    public static final TableTheme TSV = TableTheme.builder()
-            .leftTop("")
-            .rightTop("")
-            .bottomCross("")
-            .topCross("")
-            .rightBottom("")
-            .leftBottom("")
-            .verticalSeparator("")
-            .horizontalSeparator("\t")
-            .build();
+    public static final TableTheme ASCII = TableTheme.builder().name("ASCII").build();
 
     public static final TableTheme SINGLE = TableTheme.builder()
+            .name("Single")
             .cross("┼")
             .rightCross("┤")
             .leftCross("├")
@@ -52,6 +42,7 @@ public class TableTheme
             .build();
 
     public static final TableTheme DOUBLE = TableTheme.builder()
+            .name("Double")
             .cross("╬")
             .rightCross("╣")
             .leftCross("╠")
@@ -64,37 +55,35 @@ public class TableTheme
             .verticalSeparator("═")
             .horizontalSeparator("║")
             .build();
-
-    public static final TableTheme ROUNDED = DEFAULT.begin()
-            .leftTop("╭")
-            .rightTop("╮")
-            .leftBottom("╰")
-            .rightBottom("╯")
-            .build();
-
     public static final TableTheme RED_HERRING = TableTheme.builder()
+            .name("Red Herring")
             .stringColor(AnsiColor.BRIGHT_WHITE)
             .numericColor(AnsiColor.GREEN)
             .verticalSpacerColor(AnsiColor.RED)
             .horizontalSpacerColor(AnsiColor.RED)
-            .cellBackground(AnsiBackgroundColor.BLACK)
             .build();
-
     public static final TableTheme MINIMAL = TableTheme.builder()
+            .name("Minimal")
             .stringColor(AnsiColor.GRAY)
             .numericColor(AnsiColor.GREEN)
             .horizontalSeparator(" ")
             .verticalSpacerColor(AnsiColor.GRAY)
             .horizontalSpacerColor(AnsiColor.GRAY)
-            .cellBackground(AnsiBackgroundColor.BLACK)
             .build();
-
     public static final TableTheme COMPACT = TableTheme.builder()
+            .name("Compact")
             .verticalSeparator("")
             .horizontalSeparator("")
             .padding(" ")
             .build();
-
+    public static final TableTheme DEFAULT = ASCII;
+    public static final TableTheme ROUNDED = SINGLE.begin()
+            .name("Rounded")
+            .leftTop("╭")
+            .rightTop("╮")
+            .leftBottom("╰")
+            .rightBottom("╯")
+            .build();
     private final AnsiColor stringColor;
     private final AnsiColor numericColor;
     private final AnsiColor horizontalSpacerColor;
@@ -113,9 +102,11 @@ public class TableTheme
     private final String rightBottom;
     private final String topCross;
     private final String bottomCross;
+    private final String name;
 
     private TableTheme(Builder builder)
     {
+        this.name = builder.name;
         this.stringColor = builder.stringColor;
         this.numericColor = builder.numericColor;
         this.horizontalSpacerColor = builder.horizontalSpacerColor;
@@ -143,6 +134,7 @@ public class TableTheme
     public Builder begin()
     {
         final Builder builder = new Builder();
+        builder.name = this.name;
         builder.stringColor = this.stringColor;
         builder.numericColor = this.numericColor;
         builder.horizontalSpacerColor = this.horizontalSpacerColor;
@@ -248,6 +240,11 @@ public class TableTheme
         return rightBottom;
     }
 
+    public String getName()
+    {
+        return name;
+    }
+
     public static final class Builder
     {
         public String topCross = "+";
@@ -267,6 +264,7 @@ public class TableTheme
         private String rightTop = "+";
         private String leftBottom = "+";
         private String rightBottom = "+";
+        private String name;
 
         private Builder()
         {
@@ -377,6 +375,12 @@ public class TableTheme
         public TableTheme build()
         {
             return new TableTheme(this);
+        }
+
+        public Builder name(String name)
+        {
+            this.name = name;
+            return this;
         }
     }
 }
