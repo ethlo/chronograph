@@ -782,6 +782,6 @@ public class Chronograph
                 .stream()
                 .map(task -> new TaskPerformanceStatistics(task.getName(), task.getSampleSize(), task.getDurationStatistics()))
                 .toList();
-        return new ChronographData(name, stats, getTotalTime());
+        return new ChronographData(name, stats);
     }
 }

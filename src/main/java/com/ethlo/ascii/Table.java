@@ -73,7 +73,7 @@ public class Table
         {
             for (int i = 0; i < row.getCells().size(); i++)
             {
-                result.compute(i, (key, value) -> row.getCells().get(key).getValue().length() > 0);
+                result.compute(i, (key, value) -> !row.getCells().get(key).getValue().isEmpty());
             }
         }
         return result;
@@ -89,15 +89,25 @@ public class Table
 
     public String render(String title)
     {
-        final String titleRow = title != null ? (theme.getCellBackground().value() + theme.getStringColor().value() + StringUtil.adjustPadRight(theme.getPadding() + title, tableWidth) + AnsiColor.RESET.value()) : "";
-        return NEWLINE + titleRow + NEWLINE + theme.getCellBackground().value() + toString(rows);
+        final String content = StringUtil.adjustPadRight(theme.getPadding() + title, tableWidth);
+        String colored;
+        if (theme.hasColors())
+        {
+            colored = theme.getCellBackground().value() + theme.getStringColor().value() + content + AnsiColor.RESET.value();
+        }
+        else
+        {
+            colored = content;
+        }
+        final String titleRow = title != null ? colored : "";
+        return titleRow + NEWLINE + theme.getCellBackground().value() + toString(rows);
     }
 
     private String toString(final List<TableRow> rows)
     {
         final StringBuilder sb = new StringBuilder();
 
-        final boolean hasVerticalSeparator = theme.getVerticalSeparator().length() != 0;
+        final boolean hasVerticalSeparator = !theme.getVerticalSeparator().isEmpty();
 
         for (int rowIndex = 0; rowIndex < rows.size(); rowIndex++)
         {
@@ -115,7 +125,12 @@ public class Table
                         sb.append(StringUtil.repeat(verticalSep(), width));
                     }
                     sb.append(theme.getVerticalSpacerColor().value()).append(theme.getCellBackground().value());
-                    sb.append(getCellEnd(rowIndex)).append(AnsiColor.RESET.value()).append(NEWLINE);
+                    sb.append(getCellEnd(rowIndex));
+                    if (theme.hasColors())
+                    {
+                        sb.append(AnsiColor.RESET.value());
+                    }
+                    sb.append(NEWLINE);
                 }
             }
             else

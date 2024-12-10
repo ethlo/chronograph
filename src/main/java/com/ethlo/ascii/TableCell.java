@@ -42,6 +42,10 @@ public class TableCell
 
     public static String color(final String value, AnsiColor color, AnsiBackgroundColor backgroundColor)
     {
+        if (color == AnsiColor.NONE && backgroundColor == AnsiBackgroundColor.NONE)
+        {
+            return value;
+        }
         return color.value() + backgroundColor.value() + value + AnsiColor.RESET.value();
     }
 

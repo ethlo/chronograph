@@ -24,4 +24,8 @@ import com.ethlo.time.statistics.PerformanceStatistics;
 
 public record TaskPerformanceStatistics(String name, long sampleSize, PerformanceStatistics performanceStatistics)
 {
+    public TaskPerformanceStatistics(String name, PerformanceStatistics performanceStatistics)
+    {
+        this(name, performanceStatistics.getTotalInvocations(), performanceStatistics);
+    }
 }

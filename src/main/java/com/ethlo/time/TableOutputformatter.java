@@ -9,9 +9,9 @@ package com.ethlo.time;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,6 +23,7 @@ package com.ethlo.time;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.LinkedList;
@@ -73,7 +74,7 @@ public class TableOutputformatter implements OutputFormatter
 
         final PerformanceStatistics performanceStatistics = taskStats.performanceStatistics();
 
-        outputTotal(outputConfig, row, performanceStatistics);
+        outputTotal(outputConfig, row, performanceStatistics, totalTime);
 
         addInvocations(outputConfig, taskStats, nf, row, invocations);
 
@@ -105,11 +106,12 @@ public class TableOutputformatter implements OutputFormatter
         }
     }
 
-    private static void outputTotal(final OutputConfig outputConfig, final TableRow row, final PerformanceStatistics performanceStatistics)
+    private static void outputTotal(final OutputConfig outputConfig, final TableRow row, final PerformanceStatistics performanceStatistics, final Duration totalTime)
     {
         if (outputConfig.total())
         {
-            final String str = ReportUtil.humanReadable(performanceStatistics.getElapsedTotal());
+            final ChronoUnit summaryResolution = ReportUtil.getSummaryResolution(totalTime);
+            final String str = ReportUtil.humanReadable(performanceStatistics.getElapsedTotal(), summaryResolution);
             row.append(new TableCell(str, false, true));
         }
     }

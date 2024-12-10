@@ -33,13 +33,13 @@ public class DurationUtilTest
     @Test
     public void humanReadableFormatMoreThanHour()
     {
-        assertThat(ReportUtil.humanReadable(Duration.ofSeconds(4712).withNanos(123456789))).isEqualTo("01:18:32.123");
+        assertThat(ReportUtil.humanReadable(Duration.ofSeconds(4712).withNanos(123456789))).isEqualTo("1:18:32");
     }
 
     @Test
     public void humanReadableFormatLessThanHour()
     {
-        assertThat(ReportUtil.humanReadable(Duration.ofSeconds(2000).withNanos(123456789))).isEqualTo("33:20.123");
+        assertThat(ReportUtil.humanReadable(Duration.ofSeconds(2000).withNanos(123456789))).isEqualTo("33:20");
     }
 
     @Test
