@@ -141,4 +141,9 @@ public class IndexedCollectionStatistics
         }
         return (long) Math.sqrt(standardDeviation / count);
     }
+
+    public long getSum()
+    {
+        return sum;
+    }
 }

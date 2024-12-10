@@ -34,11 +34,11 @@ public class ChronographData
     private final List<TaskPerformanceStatistics> taskStatistics;
     private final Duration totalTime;
 
-    public ChronographData(final String name, final List<TaskPerformanceStatistics> taskStatistics, final Duration totalTime)
+    public ChronographData(final String name, final List<TaskPerformanceStatistics> taskStatistics)
     {
         this.name = name;
         this.taskStatistics = taskStatistics;
-        this.totalTime = totalTime;
+        this.totalTime = Duration.ofNanos(taskStatistics.stream().mapToLong(t -> t.performanceStatistics().getElapsedTotal().toNanos()).sum());
     }
 
     public static ChronographData combine(final String name, final List<Chronograph> toCombine)
@@ -96,6 +96,6 @@ public class ChronographData
             }
             return t;
         }));
-        return new ChronographData(chronographName, new ArrayList<>(joined.values()), Duration.ofNanos(joined.values().stream().mapToLong(t -> t.performanceStatistics().getElapsedTotal().toNanos()).sum()));
+        return new ChronographData(chronographName, new ArrayList<>(joined.values()));
     }
 }

@@ -29,8 +29,6 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.ethlo.ascii.AnsiBackgroundColor;
-
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -136,10 +134,10 @@ class ListPerformanceTest
     void performanceTestMediumSort()
     {
         final Chronograph c = performSortBenchmark(10, 500_000);
+        output(c, TableTheme.DEFAULT);
         output(c, TableTheme.RED_HERRING);
         output(c, TableTheme.SINGLE);
         output(c, TableTheme.DOUBLE);
-        output(c, TableTheme.DEFAULT.begin().cellBackground(AnsiBackgroundColor.BRIGHT_CYAN).build());
         output(c, TableTheme.ROUNDED);
         output(c, TableTheme.MINIMAL);
         output(c, TableTheme.COMPACT);

@@ -20,86 +20,54 @@ package com.ethlo.time;
  * #L%
  */
 
+import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 
 public class ReportUtil
 {
-    public static final int SECONDS_PER_HOUR = 3_600;
-    public static final int SECONDS_PER_MINUTE = 60;
-    public static final int NANOS_PER_MILLI = 1_000_000;
     private static final int NANOS_PER_MICRO = 1_000;
+    private static final long NANOS_PER_MILLI = 1_000_000;
+    private static final long NANOS_PER_SECOND = 1_000_000_000;
+
 
     public static String humanReadable(Duration duration)
     {
-        final long seconds = duration.getSeconds();
-        final int hours = (int) seconds / SECONDS_PER_HOUR;
-        int remainder = (int) seconds - hours * SECONDS_PER_HOUR;
-        final int mins = remainder / SECONDS_PER_MINUTE;
-        remainder = remainder - mins * SECONDS_PER_MINUTE;
-        final int secs = remainder;
+        return humanReadable(duration, getSummaryResolution(duration));
+    }
 
-        final long nanos = duration.getNano();
-        final int millis = (int) nanos / NANOS_PER_MILLI;
-        remainder = (int) nanos - millis * NANOS_PER_MILLI;
-        final int micros = remainder / NANOS_PER_MICRO;
-        remainder = remainder - micros * NANOS_PER_MICRO;
-        final int nano = remainder;
-
-        final NumberFormat nf = NumberFormat.getNumberInstance();
-        nf.setMinimumIntegerDigits(2);
-
-        final NumberFormat df = NumberFormat.getNumberInstance();
-        df.setMinimumFractionDigits(2);
-        df.setMaximumFractionDigits(2);
-        df.setRoundingMode(RoundingMode.HALF_UP);
-
-        final StringBuilder sb = new StringBuilder();
-        if (hours > 0)
+    public static String humanReadable(Duration duration, ChronoUnit unit)
+    {
+        switch (unit)
         {
-            sb.append(nf.format(hours)).append(":");
-        }
-        if (hours > 0 || mins > 0)
-        {
-            sb.append(nf.format(mins)).append(":");
-        }
+            case NANOS:
+                return duration.toNanos() + " ns";
+            case MICROS:
+                return BigDecimal.valueOf(duration.toNanos()).divide(BigDecimal.valueOf(NANOS_PER_MICRO), 2, RoundingMode.HALF_UP) + " us";
+            case MILLIS:
+                return BigDecimal.valueOf(duration.toNanos()).divide(BigDecimal.valueOf(NANOS_PER_MILLI), 2, RoundingMode.HALF_UP) + " ms";
+            case SECONDS:
+                return BigDecimal.valueOf(duration.toNanos()).divide(BigDecimal.valueOf(NANOS_PER_SECOND), 3, RoundingMode.HALF_UP) + " s";
+            case MINUTES:
+            case HOURS:
+            default:
+                // Use dynamic HH:mm:ss format
+                long seconds = duration.getSeconds();
+                long hours = seconds / 3600;
+                long minutes = (seconds % 3600) / 60;
+                long remainingSeconds = seconds % 60;
 
-        final boolean hasMinuteOrMore = hours > 0 || mins > 0;
-        final boolean hasSecondOrMore = hasMinuteOrMore || secs > 0;
-        if (hasSecondOrMore && !hasMinuteOrMore)
-        {
-            final NumberFormat dfSec = NumberFormat.getNumberInstance();
-            dfSec.setMinimumFractionDigits(0);
-            dfSec.setMaximumFractionDigits(0);
-            dfSec.setMinimumIntegerDigits(3);
-            dfSec.setMaximumIntegerDigits(3);
-            sb.append(seconds).append('.').append(dfSec.format(nanos / (double) NANOS_PER_MILLI)).append(" s");
+                if (hours > 0)
+                {
+                    return String.format("%d:%02d:%02d", hours, minutes, remainingSeconds);
+                }
+                else
+                {
+                    return String.format("%02d:%02d", minutes, remainingSeconds);
+                }
         }
-        else if (hasSecondOrMore)
-        {
-            sb.append(nf.format(secs)).append(".").append(millis);
-        }
-        else
-        {
-            // Sub-second
-            if (millis > 0)
-            {
-                sb.append(df.format(nanos / (double) NANOS_PER_MILLI)).append(" ms ");
-            }
-
-            if (millis == 0 && micros > 0)
-            {
-                sb.append(df.format(nanos / (double) NANOS_PER_MICRO)).append(" us ");
-            }
-
-            if (millis == 0 && micros == 0 && nano > 0)
-            {
-                sb.append(nano).append(" ns ");
-            }
-        }
-
-        return sb.toString().trim();
     }
 
     public static String formatInteger(final long value)
@@ -107,5 +75,38 @@ public class ReportUtil
         final NumberFormat nf = NumberFormat.getNumberInstance();
         nf.setGroupingUsed(true);
         return nf.format(value);
+    }
+
+    public static ChronoUnit getSummaryResolution(final Duration totalExecutionTime)
+    {
+        if (totalExecutionTime == null || totalExecutionTime.isNegative() || totalExecutionTime.isZero())
+        {
+            return ChronoUnit.NANOS;
+        }
+
+        final long nanos = totalExecutionTime.toNanos();
+
+        // Define thresholds for units
+        if (nanos < 1_000)
+        { // Less than 1 microsecond
+            return ChronoUnit.NANOS;
+        }
+        else if (nanos < 1_000_000)
+        { // Less than 1 millisecond
+            return ChronoUnit.MICROS;
+        }
+        else if (nanos < 1_000_000_000)
+        { // Less than 1 second
+            return ChronoUnit.MILLIS;
+        }
+        else if (nanos < 60L * 1_000_000_000)
+        { // Less than 1 minute
+            return ChronoUnit.SECONDS;
+        }
+        else if (nanos < 3600L * 1_000_000_000)
+        { // Less than 1 hour
+            return ChronoUnit.MINUTES;
+        }
+        return ChronoUnit.HOURS;
     }
 }

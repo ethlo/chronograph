@@ -245,6 +245,11 @@ public class TableTheme
         return name;
     }
 
+    public boolean hasColors()
+    {
+        return cellBackground != AnsiBackgroundColor.NONE || stringColor != AnsiColor.NONE || numericColor != AnsiColor.NONE;
+    }
+
     public static final class Builder
     {
         public String topCross = "+";
