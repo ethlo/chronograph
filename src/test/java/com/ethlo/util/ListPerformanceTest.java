@@ -179,7 +179,7 @@ class ListPerformanceTest
     private void output(final Chronograph c, TableTheme theme)
     {
         System.out.println(theme.getName());
-        System.out.println(c.prettyPrint(OutputConfig.EXTENDED.benchmarkMode(true), theme));
+        System.out.println(c.prettyPrint(OutputConfig.EXTENDED.overheadName("---"), theme));
     }
 
     private LongList addLongList(int count)

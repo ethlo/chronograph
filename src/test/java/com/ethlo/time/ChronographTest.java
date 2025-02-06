@@ -87,7 +87,7 @@ public class ChronographTest
             });
         });
 
-        logger.info(chronograph.prettyPrint(OutputConfig.DEFAULT.percentage(true).median(true).max(true)));
+        logger.info(chronograph.prettyPrint(OutputConfig.DEFAULT.overheadName("<unknown>").percentage(true).median(true).max(true)));
     }
 
     private void busy(long millis)

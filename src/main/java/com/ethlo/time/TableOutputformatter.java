@@ -260,9 +260,9 @@ public class TableOutputformatter implements OutputFormatter
         // Find all at this level
         final long allAtLevel = children.stream().mapToLong(c->c.getTotalTaskTime().toNanos()).sum();
         final long diff = parentDuration.toNanos() - allAtLevel;
-        if (diff / (double)parentDuration.toNanos() > 0.01)
+        if (diff / (double)parentDuration.toNanos() > 0.02)
         {
-            final TaskInfo overheadTask = new TaskInfo("Overhead", children.get(0).getParent());
+            final TaskInfo overheadTask = new TaskInfo(outputConfig.overheadName(), children.get(0).getParent());
             overheadTask.data.add(diff);
             combined.add(overheadTask);
         }

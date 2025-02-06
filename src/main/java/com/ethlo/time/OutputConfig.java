@@ -60,7 +60,7 @@ public class OutputConfig
     private boolean standardDeviation;
     private boolean total;
     private boolean percentage;
-    private boolean benchmarkMode = false;
+    private String overheadName = "<overhead>";
 
     public OutputConfig()
     {
@@ -79,7 +79,8 @@ public class OutputConfig
         this.standardDeviation = builder.standardDeviation;
         this.total = builder.total;
         this.percentage = builder.percentage;
-        this.benchmarkMode = builder.benchmarkMode;
+        this.overheadName = builder.overheadName;
+
 
     }
 
@@ -133,11 +134,6 @@ public class OutputConfig
         return percentage;
     }
 
-    public boolean benchmarkMode()
-    {
-        return benchmarkMode;
-    }
-
     public OutputConfig title(final String title)
     {
         return new OutputConfig(new Builder(this).title(title));
@@ -188,9 +184,14 @@ public class OutputConfig
         return new OutputConfig(new Builder(this).percentage(percentage));
     }
 
-    public OutputConfig benchmarkMode(final boolean b)
+    public String overheadName()
     {
-        return new OutputConfig(new Builder(this).benchmarkMode(b));
+        return overheadName;
+    }
+
+    public OutputConfig overheadName(String overheadName)
+    {
+        return new OutputConfig(new Builder(this).overheadName(overheadName));
     }
 
     public static class Builder
@@ -205,7 +206,7 @@ public class OutputConfig
         private boolean standardDeviation;
         private boolean total;
         private boolean percentage;
-        private boolean benchmarkMode;
+        private String overheadName;
 
         private Builder(OutputConfig config)
         {
@@ -219,7 +220,7 @@ public class OutputConfig
             this.invocations = config.invocations;
             this.average = config.average;
             this.title = config.title;
-            this.benchmarkMode = config.benchmarkMode;
+            this.overheadName = config.overheadName;
         }
 
         public Builder title(final String title)
@@ -282,9 +283,9 @@ public class OutputConfig
             return this;
         }
 
-        public Builder benchmarkMode(final boolean b)
+        public Builder overheadName(final String overheadName)
         {
-            this.benchmarkMode = b;
+            this.overheadName = overheadName;
             return this;
         }
     }
