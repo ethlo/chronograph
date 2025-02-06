@@ -30,6 +30,7 @@ public class Table
 {
     private static final String NEWLINE = System.lineSeparator();
 
+    public static final String EMPTY_CONTENT = "";
     private final List<TableRow> rows;
     private final Map<Integer, Integer> minColumnWidths;
     private final int tableWidth;
@@ -68,7 +69,7 @@ public class Table
     private Map<Integer, Boolean> getHasColumnContent(final List<TableRow> rows)
     {
         final Map<Integer, Boolean> result = new HashMap<>();
-        for (TableRow row : rows)
+        for (TableRow row : rows.subList(2, rows.size()))
         {
             for (int column = 0; column < row.getCells().size(); column++)
             {
@@ -204,7 +205,7 @@ public class Table
             }
             else
             {
-                sb.append(new TableCell(" ").render(theme, minWidth));
+                sb.append(new TableCell(EMPTY_CONTENT).render(theme, minWidth));
             }
         }
 

@@ -61,7 +61,7 @@ public class ChronographTest
 
         chronograph.time("Request", () ->
         {
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 13; i++)
             {
                 chronograph.time("Fetch", () -> busy(12));
             }
@@ -87,7 +87,7 @@ public class ChronographTest
             });
         });
 
-        logger.info(chronograph.prettyPrint(OutputConfig.DEFAULT.overheadName("<unknown>").percentage(true).median(true).max(true)));
+        logger.info(chronograph.prettyPrint(OutputConfig.DEFAULT.overheadName("<overhead>").percentage(true).median(true).max(true)));
     }
 
     private void busy(long millis)

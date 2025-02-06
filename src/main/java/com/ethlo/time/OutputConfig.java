@@ -60,7 +60,7 @@ public class OutputConfig
     private boolean standardDeviation;
     private boolean total;
     private boolean percentage;
-    private String overheadName = "<overhead>";
+    private String overheadName = "<unknown>";
 
     public OutputConfig()
     {
