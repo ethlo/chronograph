@@ -21,6 +21,8 @@ package com.ethlo.time;
  */
 
 import java.time.Duration;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -81,10 +83,11 @@ public class Chronograph
 {
     private final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
 
-    private final Map<String, TaskInfo> taskInfos;
+    private final Deque<TaskInfo> taskStack = new ArrayDeque<>(); // Tracks the active task
+    private final Map<String, TaskInfo> tasksByName = new LinkedHashMap<>();
+
     private final CaptureConfig captureConfig;
     private final String name;
-
 
     private Chronograph(final String name)
     {
@@ -93,7 +96,6 @@ public class Chronograph
 
     private Chronograph(final String name, final CaptureConfig captureConfig)
     {
-        this.taskInfos = new LinkedHashMap<>();
         this.name = name;
         this.captureConfig = captureConfig;
     }
@@ -131,7 +133,7 @@ public class Chronograph
             task.run();
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -143,7 +145,7 @@ public class Chronograph
             return task.apply(input);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -155,7 +157,7 @@ public class Chronograph
             return task.get();
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -167,7 +169,7 @@ public class Chronograph
             task.accept(t, u);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -179,7 +181,7 @@ public class Chronograph
             return task.apply(t, u);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -191,7 +193,7 @@ public class Chronograph
             return task.apply(t1, t2);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -203,7 +205,7 @@ public class Chronograph
             return task.test(t, u);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -215,7 +217,7 @@ public class Chronograph
             return task.getAsBoolean();
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -227,7 +229,7 @@ public class Chronograph
             task.accept(t);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -239,7 +241,7 @@ public class Chronograph
             return task.applyAsDouble(d1, d2);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -251,7 +253,7 @@ public class Chronograph
             task.accept(d);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -263,7 +265,7 @@ public class Chronograph
             return task.apply(d);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -275,7 +277,7 @@ public class Chronograph
             return task.test(d);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -287,7 +289,7 @@ public class Chronograph
             return task.getAsDouble();
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -299,7 +301,7 @@ public class Chronograph
             return task.applyAsInt(d);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -311,7 +313,7 @@ public class Chronograph
             return task.applyAsLong(d);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -323,7 +325,7 @@ public class Chronograph
             return task.applyAsDouble(d);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -335,7 +337,7 @@ public class Chronograph
             return task.applyAsInt(i1, i2);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -347,7 +349,7 @@ public class Chronograph
             task.accept(i);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -359,7 +361,7 @@ public class Chronograph
             return task.apply(i);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -371,7 +373,7 @@ public class Chronograph
             return task.test(i);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -383,7 +385,7 @@ public class Chronograph
             return task.getAsInt();
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -395,7 +397,7 @@ public class Chronograph
             return task.applyAsDouble(i);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -407,7 +409,7 @@ public class Chronograph
             return task.applyAsLong(i);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -419,7 +421,7 @@ public class Chronograph
             return task.applyAsInt(i);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -431,7 +433,7 @@ public class Chronograph
             return task.applyAsLong(l1, l2);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -443,7 +445,7 @@ public class Chronograph
             task.accept(l);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -455,7 +457,7 @@ public class Chronograph
             return task.apply(l);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -467,7 +469,7 @@ public class Chronograph
             return task.test(l);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -479,7 +481,7 @@ public class Chronograph
             return task.getAsLong();
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -491,7 +493,7 @@ public class Chronograph
             return task.applyAsDouble(l);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -503,7 +505,7 @@ public class Chronograph
             return task.applyAsInt(l);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -515,7 +517,7 @@ public class Chronograph
             return task.applyAsLong(l);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -527,7 +529,7 @@ public class Chronograph
             task.accept(t, d);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -539,7 +541,7 @@ public class Chronograph
             task.accept(t, i);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -551,7 +553,7 @@ public class Chronograph
             task.accept(t, l);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -563,7 +565,7 @@ public class Chronograph
             return task.applyAsDouble(t, u);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -575,7 +577,7 @@ public class Chronograph
             return task.applyAsDouble(t);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -587,7 +589,7 @@ public class Chronograph
             return task.applyAsInt(t, u);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -599,7 +601,7 @@ public class Chronograph
             return task.applyAsInt(t);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -611,7 +613,7 @@ public class Chronograph
             return task.applyAsLong(t, u);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -623,7 +625,7 @@ public class Chronograph
             return task.applyAsLong(t);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -635,7 +637,7 @@ public class Chronograph
             return task.apply(t);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -647,7 +649,7 @@ public class Chronograph
             return predicate.test(t);
         } finally
         {
-            stop(taskName);
+            stop();
         }
     }
 
@@ -694,7 +696,7 @@ public class Chronograph
 
     public String prettyPrint(OutputConfig outputConfig, TableTheme tableTheme)
     {
-        return new TableOutputformatter(tableTheme, outputConfig).format(this.getTaskData());
+        return new TableOutputformatter(tableTheme, outputConfig).format(getTaskData());
     }
 
     public String prettyPrint(OutputConfig outputConfig)
@@ -714,74 +716,94 @@ public class Chronograph
             throw new IllegalArgumentException("task cannot be null");
         }
 
-        final TaskInfo taskInfo = taskInfos.computeIfAbsent(task, t -> {
+        final TaskInfo taskInfo = tasksByName.computeIfAbsent(task, t ->
+        {
+            final TaskInfo parent = taskStack.peek();
             if (captureConfig.getMinInterval().equals(Duration.ZERO))
             {
-                return new TaskInfo(task);
+                TaskInfo newTask;
+                if (captureConfig.getMinInterval().equals(Duration.ZERO))
+                {
+                    newTask = new TaskInfo(task, parent);
+                }
+                else
+                {
+                    newTask = new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService, parent);
+                }
+
+                return newTask;
             }
-            return new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService);
+            return new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService, parent);
         });
+        taskStack.push(taskInfo);
         taskInfo.start();
     }
 
     public void stop()
     {
         final long ts = System.nanoTime();
-        for (TaskInfo taskInfo : taskInfos.values())
+        if (!taskStack.isEmpty())
         {
-            taskInfo.stopped(ts, true);
+            final TaskInfo task = taskStack.pop();
+            task.stopped(ts);
         }
     }
 
     public boolean isAnyRunning()
     {
-        return taskInfos.values().stream().anyMatch(TaskInfo::isRunning);
+        return !taskStack.isEmpty();
     }
 
     public void stop(String task)
     {
         final long ts = System.nanoTime();
-        final TaskInfo taskInfo = taskInfos.get(task);
-        if (taskInfo == null)
-        {
-            throw new IllegalStateException("No started task with name " + task);
-        }
-
-        taskInfo.stopped(ts, false);
+        final TaskInfo taskInfo = findByName(task).orElseThrow(() -> new IllegalStateException("No started task with name " + task));
+        taskInfo.stopped(ts);
     }
 
     public void resetAll()
     {
-        taskInfos.clear();
+        taskStack.clear();
+        tasksByName.clear();
     }
 
-    public TaskInfo getTasks(final String task)
+    public TaskInfo getRootTasks(final String task)
     {
-        return Optional.ofNullable(taskInfos.get(task)).orElseThrow(() -> new IllegalStateException("Unknown task " + task));
+        return findByName(task).orElseThrow(() -> new IllegalStateException("Unknown task " + task));
     }
 
-    public List<TaskInfo> getTasks()
+    private Optional<TaskInfo> findByName(String task)
     {
-        return List.copyOf(taskInfos.values());
+        return Optional.ofNullable(tasksByName.get(task));
+    }
+
+    public List<TaskInfo> getRootTasks()
+    {
+        return List.copyOf(tasksByName.values().stream().filter(t -> t.depth() == 0).toList());
     }
 
     public boolean isRunning(String task)
     {
-        final TaskInfo taskInfo = taskInfos.get(task);
-        return taskInfo != null && taskInfo.isRunning();
+        return findByName(task).map(TaskInfo::isRunning).orElse(false);
     }
 
     public Duration getTotalTime()
     {
-        return Duration.ofNanos(taskInfos.values().stream().map(TaskInfo::getTotalTaskTime).map(Duration::toNanos).reduce(0L, Long::sum));
+        return Duration.ofNanos(tasksByName.values().stream().map(TaskInfo::getTotalTaskTime).map(Duration::toNanos).reduce(0L, Long::sum));
     }
 
     public ChronographData getTaskData()
     {
-        final List<TaskPerformanceStatistics> stats = getTasks()
-                .stream()
-                .map(task -> new TaskPerformanceStatistics(task.getName(), task.getSampleSize(), task.getDurationStatistics()))
-                .toList();
-        return new ChronographData(name, stats);
+        return new ChronographData(name, getRootTasks());
+    }
+
+    public void stopAll()
+    {
+        final long ts = System.nanoTime();
+        while (!taskStack.isEmpty())
+        {
+            final TaskInfo task = taskStack.pop();
+            task.stopped(ts);
+        }
     }
 }

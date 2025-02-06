@@ -9,9 +9,9 @@ package com.ethlo.time;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -73,7 +73,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo("Hello, World!");
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -86,7 +86,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo("Result: 42");
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -99,7 +99,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo(15);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -112,7 +112,7 @@ public class ChronographTimedTest
 
         assertThat(result).isTrue();
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -125,7 +125,7 @@ public class ChronographTimedTest
 
         verify(consumer).accept("Hello");
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -138,7 +138,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo(7.0);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -151,7 +151,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo(5);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -164,7 +164,7 @@ public class ChronographTimedTest
 
         verify(biConsumer).accept("Test", 10);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -177,7 +177,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo(10);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -190,7 +190,7 @@ public class ChronographTimedTest
 
         assertThat(result).isTrue();
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -203,7 +203,7 @@ public class ChronographTimedTest
 
         assertThat(result).isTrue();
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -216,7 +216,7 @@ public class ChronographTimedTest
 
         verify(doubleConsumer).accept(5.5);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -229,7 +229,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo("Value: 2.5");
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -242,7 +242,7 @@ public class ChronographTimedTest
 
         assertThat(result).isTrue();
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -255,7 +255,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo(3);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -268,7 +268,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo(8L);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -281,7 +281,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo(25);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -294,7 +294,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo(12L);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -307,7 +307,7 @@ public class ChronographTimedTest
 
         verify(consumer).accept("Value", 3.14);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -320,7 +320,7 @@ public class ChronographTimedTest
 
         verify(consumer).accept("Value", 42);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -333,7 +333,7 @@ public class ChronographTimedTest
 
         verify(consumer).accept("Value", 100L);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -346,7 +346,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo(3.14);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -359,7 +359,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo(12345L);
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
     @Test
@@ -372,7 +372,7 @@ public class ChronographTimedTest
 
         assertThat(result).isEqualTo("TEST");
         verify(chronograph).start(taskName);
-        verify(chronograph).stop(taskName);
+        verify(chronograph).stop();
     }
 
 }

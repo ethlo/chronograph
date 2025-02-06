@@ -29,20 +29,22 @@ import com.ethlo.util.IndexedCollectionStatistics;
 
 public class PerformanceStatistics
 {
-    protected final IndexedCollectionStatistics collectionStatistics;
-    protected final long totalInvocations;
-    protected final long elapsedTotal;
+    private final IndexedCollectionStatistics collectionStatistics;
+    private final long totalInvocations;
+    private final long elapsedTotal;
+    private final long elapsedSelfTime;
 
-    public PerformanceStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, long elapsedTotal)
+    public PerformanceStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, long elapsedTotal, long elapsedSelfTime)
     {
         this.collectionStatistics = collectionStatistics;
         this.totalInvocations = totalInvocations;
         this.elapsedTotal = elapsedTotal;
+        this.elapsedSelfTime = elapsedSelfTime;
     }
 
     public PerformanceStatistics(IndexedCollectionStatistics collectionStatistics)
     {
-        this(collectionStatistics, collectionStatistics.size(), collectionStatistics.sum());
+        this(collectionStatistics, collectionStatistics.size(), collectionStatistics.sum(), collectionStatistics.sum());
     }
 
     public long getTotalInvocations()
@@ -59,6 +61,12 @@ public class PerformanceStatistics
     {
         return Duration.ofNanos(elapsedTotal);
     }
+
+    public Duration getElapsedSelfTime()
+    {
+        return Duration.ofNanos(elapsedSelfTime);
+    }
+
 
     public Duration getAverage()
     {
@@ -97,7 +105,7 @@ public class PerformanceStatistics
 
     public PerformanceStatistics merge(final PerformanceStatistics other)
     {
-        return new PerformanceStatistics(this.collectionStatistics.merge(other.collectionStatistics), totalInvocations + other.totalInvocations, elapsedTotal + other.elapsedTotal);
+        return new PerformanceStatistics(this.collectionStatistics.merge(other.collectionStatistics), totalInvocations + other.totalInvocations, elapsedTotal + other.elapsedTotal, elapsedSelfTime + other.elapsedSelfTime);
     }
 
     private Duration getDuration(Number d)

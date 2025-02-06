@@ -34,30 +34,26 @@ public class RateLimitedTaskInfo extends TaskInfo
     private int totalInvocations;
     private long totalElapsed;
 
-    RateLimitedTaskInfo(final String name, Duration minInterval, final ScheduledExecutorService scheduledExecutorService)
+    RateLimitedTaskInfo(final String name, Duration minInterval, final ScheduledExecutorService scheduledExecutorService, final TaskInfo parent)
     {
-        super(name);
+        super(name, parent);
         this.sampleRater = new ScheduledSampleRater<>(scheduledExecutorService, minInterval, prg -> logElapsedDuration(prg.progress()));
     }
 
     @Override
-    boolean stopped(final long ts, final boolean ignoreState)
+    void stopped(final long ts)
     {
-        if (!isRunning() && !ignoreState)
+        if (!isRunning())
         {
             throw new IllegalStateException("Task " + getName() + " is not started");
         }
 
-        if (isRunning())
-        {
-            final long elapsed = ts - super.getTaskStartTimestamp();
-            totalInvocations++;
-            totalElapsed += elapsed;
-            sampleRater.update(elapsed);
-            running = false;
-            return true;
-        }
-        return false;
+        final long elapsed = ts - super.getTaskStartTimestamp();
+        totalInvocations++;
+        totalElapsed += elapsed;
+        sampleRater.update(elapsed);
+        running = false;
+        
     }
 
     @Override
@@ -73,9 +69,9 @@ public class RateLimitedTaskInfo extends TaskInfo
     }
 
     @Override
-    public PerformanceStatistics getDurationStatistics()
+    public PerformanceStatistics getPerformanceStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(getData());
-        return new PerformanceStatistics(stats, totalInvocations, totalElapsed);
+        return new PerformanceStatistics(stats, totalInvocations, totalElapsed, getSelfTime().toNanos());
     }
 }

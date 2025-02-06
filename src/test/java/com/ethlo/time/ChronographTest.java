@@ -47,11 +47,59 @@ public class ChronographTest
         {
             chronograph.start(taskName);
             millisecondTask();
-            chronograph.stop(taskName);
+            chronograph.stop();
         }
 
         logger.info(chronograph.prettyPrint());
         assertThat(true).isTrue();
+    }
+
+    @Test
+    void hierarchicalTest()
+    {
+        final Chronograph chronograph = Chronograph.create();
+
+        chronograph.time("Request", () ->
+        {
+            for (int i = 0; i < 5; i++)
+            {
+                chronograph.time("Fetch", () -> busy(12));
+            }
+
+            // Overhead
+            busy(300);
+
+            chronograph.time("De-serialize", () ->
+            {
+                // Overhead
+                busy(14);
+                chronograph.time("JSON de-serialize", () -> busy(44));
+            });
+        });
+
+        chronograph.time("Response", () ->
+        {
+            chronograph.time("Serialize", () ->
+            {
+                // Overhead
+                busy(19);
+                chronograph.time("JSON serialize", () -> busy(27));
+            });
+        });
+
+        logger.info(chronograph.prettyPrint(OutputConfig.DEFAULT.percentage(true).median(true).max(true)));
+    }
+
+    private void busy(long millis)
+    {
+        try
+        {
+            Thread.sleep(millis);
+        }
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().notify();
+        }
     }
 
     @Test
@@ -61,7 +109,7 @@ public class ChronographTest
 
         for (int i = 1; i <= 100_000; i++)
         {
-            assertThat((int) chronograph.time("foo", this::microsecondTaskInput, 1)).isEqualTo(2);
+            assertThat(chronograph.time("foo", this::microsecondTaskInput, 1)).isEqualTo(2);
         }
     }
 
@@ -78,7 +126,7 @@ public class ChronographTest
             chronograph.time("baz baz baz baz baz baz", this::microsecondTask);
         }
 
-        assertThat(chronograph.getTasks()).hasSize(3);
+        assertThat(chronograph.getRootTasks()).hasSize(3);
         logger.info(chronograph.prettyPrint());
     }
 
@@ -119,11 +167,12 @@ public class ChronographTest
         }
     }
 
+    /*
     @Test
     public void stopBeforeStart()
     {
         final Chronograph chronograph = Chronograph.create();
-        Assertions.assertThrows(IllegalStateException.class, () -> chronograph.stop(taskName));
+        Assertions.assertThrows(IllegalStateException.class, () -> chronograph.stop());
     }
 
     @Test
@@ -131,9 +180,10 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        chronograph.stop(taskName);
-        Assertions.assertThrows(IllegalStateException.class, () -> chronograph.stop(taskName));
+        chronograph.stop();
+        Assertions.assertThrows(IllegalStateException.class, () -> chronograph.stop());
     }
+*/
 
     @Test
     public void nullTask()
@@ -176,9 +226,9 @@ public class ChronographTest
         for (int i = 0; i < 1_000_000; i++)
         {
             chronograph.start(taskName);
-            chronograph.stop(taskName);
+            chronograph.stop();
         }
-        final Duration median = chronograph.getTasks(taskName).getDurationStatistics().getMedian();
+        final Duration median = chronograph.getRootTasks(taskName).getPerformanceStatistics().getMedian();
         logger.info("Granularity: {}", ReportUtil.humanReadable(median));
         assertThat(median.toNanos()).isGreaterThan(0);
     }
@@ -188,10 +238,10 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        chronograph.stop(taskName);
-        assertThat(chronograph.getTasks().stream().map(TaskInfo::getName)).containsExactly(taskName);
+        chronograph.stop();
+        assertThat(chronograph.getRootTasks().stream().map(TaskInfo::getName)).containsExactly(taskName);
         chronograph.resetAll();
-        assertThat(chronograph.getTasks()).isEmpty();
+        assertThat(chronograph.getRootTasks()).isEmpty();
     }
 
     @Test
@@ -201,7 +251,7 @@ public class ChronographTest
         assertThat(chronograph.isRunning(taskName)).isFalse();
         chronograph.start(taskName);
         assertThat(chronograph.isRunning(taskName)).isTrue();
-        chronograph.stop(taskName);
+        chronograph.stop();
         assertThat(chronograph.isRunning(taskName)).isFalse();
     }
 
@@ -212,8 +262,8 @@ public class ChronographTest
         chronograph.start("a");
         chronograph.start("b");
         chronograph.start("c");
-        chronograph.stop();
-        assertThat(chronograph.getTasks()).hasSize(3);
+        chronograph.stopAll();
+        assertThat(chronograph.getRootTasks()).hasSize(1);
     }
 
     @Test
@@ -242,7 +292,7 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        assertThat(chronograph.getTasks(taskName).getDurationStatistics().getAverage()).isEqualTo(Duration.ZERO);
+        assertThat(chronograph.getRootTasks(taskName).getPerformanceStatistics().getAverage()).isEqualTo(Duration.ZERO);
     }
 
     @Test

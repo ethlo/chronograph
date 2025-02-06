@@ -20,12 +20,20 @@ package com.ethlo.time;
  * #L%
  */
 
+import java.time.Duration;
+
 import com.ethlo.time.statistics.PerformanceStatistics;
 
-public record TaskPerformanceStatistics(String name, long sampleSize, PerformanceStatistics performanceStatistics)
+public record TaskPerformanceStatistics(String name, int depth, long sampleSize,
+                                        PerformanceStatistics performanceStatistics)
 {
+    public TaskPerformanceStatistics(String name, final long sampleSize, PerformanceStatistics performanceStatistics)
+    {
+        this(name, 0, sampleSize, performanceStatistics);
+    }
+
     public TaskPerformanceStatistics(String name, PerformanceStatistics performanceStatistics)
     {
-        this(name, performanceStatistics.getTotalInvocations(), performanceStatistics);
+        this(name, 0, performanceStatistics.getTotalInvocations(), performanceStatistics);
     }
 }
