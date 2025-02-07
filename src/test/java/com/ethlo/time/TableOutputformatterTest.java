@@ -41,9 +41,9 @@ class TableOutputformatterTest
         var stats3 = new LongList().addAll(List.of(1200_100_000L, 1400_100_000L, 1800_100_000L));
         assertThat(stats3.sum()).isEqualTo(4_400_300_000L);
 
-        var task1 = new TaskInfo("Quick", null, stats1);
-        var task2 = new TaskInfo("Moderate", null, stats2);
-        var task3 = new TaskInfo("Slow", null, stats3);
+        var task1 = new MutableTaskInfo("Quick", null, stats1);
+        var task2 = new MutableTaskInfo("Moderate", null, stats2);
+        var task3 = new MutableTaskInfo("Slow", null, stats3);
 
         var chronographData = new ChronographData("My test", List.of(task1, task2, task3));
         assertThat(chronographData.getTotalTime().toNanos()).isEqualTo(4_404_752_627L);

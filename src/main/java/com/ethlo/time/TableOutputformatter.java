@@ -265,7 +265,7 @@ public class TableOutputformatter implements OutputFormatter
         final long diff = parentDuration.toNanos() - allAtLevel;
         if (diff / (double) parentDuration.toNanos() > 0.02)
         {
-            final TaskInfo overheadTask = new TaskInfo(outputConfig.overheadName(), children.get(0).getParent());
+            final MutableTaskInfo overheadTask = new MutableTaskInfo(outputConfig.overheadName(), (MutableTaskInfo) children.get(0).getParent());
             overheadTask.addMeasurement(diff);
             combined.add(overheadTask);
         }

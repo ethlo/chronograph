@@ -83,8 +83,8 @@ public class ChronographData
             if (existingTaskOpt.isPresent())
             {
                 // If the task exists, merge the data
-                TaskInfo existingTask = existingTaskOpt.get();
-                existingTask.merge(task2);  // Merge the data from task2 into the existing task
+                MutableTaskInfo existingTask = (MutableTaskInfo) existingTaskOpt.get();
+                existingTask.merge((MutableTaskInfo) task2);  // Merge the data from task2 into the existing task
             }
             else
             {

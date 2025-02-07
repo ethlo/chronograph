@@ -28,13 +28,13 @@ import com.ethlo.sampler.ScheduledSampleRater;
 import com.ethlo.time.statistics.PerformanceStatistics;
 import com.ethlo.util.IndexedCollectionStatistics;
 
-public class RateLimitedTaskInfo extends TaskInfo
+public class RateLimitedTaskInfo extends MutableTaskInfo
 {
     private final SampleRater<Long> sampleRater;
     private int totalInvocations;
     private long totalElapsed;
 
-    RateLimitedTaskInfo(final String name, Duration minInterval, final ScheduledExecutorService scheduledExecutorService, final TaskInfo parent)
+    RateLimitedTaskInfo(final String name, Duration minInterval, final ScheduledExecutorService scheduledExecutorService, final MutableTaskInfo parent)
     {
         super(name, parent);
         this.sampleRater = new ScheduledSampleRater<>(scheduledExecutorService, minInterval, prg -> logElapsedDuration(prg.progress()));

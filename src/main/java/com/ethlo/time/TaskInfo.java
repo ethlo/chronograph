@@ -21,220 +21,31 @@ package com.ethlo.time;
  */
 
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.StringJoiner;
 
 import com.ethlo.time.statistics.PerformanceStatistics;
-import com.ethlo.util.IndexedCollection;
-import com.ethlo.util.IndexedCollectionStatistics;
-import com.ethlo.util.LongList;
 
-public class TaskInfo
+public interface TaskInfo
 {
-    private final IndexedCollection<Long> data;
-    private final String name;
-    private final TaskInfo parent;
-    private final List<TaskInfo> children = new ArrayList<>(0);
-    protected boolean running = false;
-    private long taskStartTimestamp;
+    String getName();
 
-    TaskInfo(final String name, final TaskInfo parent)
-    {
-        this(name, parent, new LongList());
-    }
+    Duration getTotalTaskTime();
 
-    public TaskInfo(String name, final TaskInfo parent, IndexedCollection<Long> data)
-    {
-        this.name = name;
-        this.parent = parent;
-        this.data = data;
-        if (parent != null)
-        {
-            parent.children.add(this);
-        }
-    }
+    long getTotalTaskInvocations();
 
-    boolean start()
-    {
-        if (!running)
-        {
-            running = true;
-            taskStartTimestamp = System.nanoTime();
-            return true;
-        }
-        return false;
-    }
+    long getSampleSize();
 
-    boolean stopped(final long ts)
-    {
-        if (running)
-        {
-            final long duration = ts - taskStartTimestamp;
-            logElapsedDuration(duration);
-            running = false;
-            return true;
-        }
-        return false;
-    }
+    PerformanceStatistics getPerformanceStatistics();
 
-    public Duration getTotalTaskTime()
-    {
-        return Duration.ofNanos(data.stream().reduce(0L, Long::sum));
-    }
+    long getTaskStartTimestamp();
 
-    public String getName()
-    {
-        return name;
-    }
+    Duration getSelfTime();
 
-    public long getTotalTaskInvocations()
-    {
-        return data.size();
-    }
+    Duration getSubTaskTime();
 
-    public long getSampleSize()
-    {
-        return data.size();
-    }
+    int getDepth();
 
-    public boolean isRunning()
-    {
-        return running;
-    }
+    List<TaskInfo> getChildren();
 
-    void logElapsedDuration(final long duration)
-    {
-        data.add(duration);
-    }
-
-    public PerformanceStatistics getPerformanceStatistics()
-    {
-        final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
-        return new PerformanceStatistics(stats, getTotalTaskInvocations(), getTotalTaskTime().toNanos(), getSelfTime().toNanos());
-    }
-
-    protected long getTaskStartTimestamp()
-    {
-        return taskStartTimestamp;
-    }
-
-    public IndexedCollection<Long> getData()
-    {
-        return data;
-    }
-
-    public void addChild(TaskInfo newTask)
-    {
-        children.add(newTask);
-    }
-
-    public Duration getSelfTime()
-    {
-        final Duration totalTime = getTotalTaskTime();
-        final Duration subTaskTime = getSubTaskTime();
-        return totalTime.minus(subTaskTime);
-    }
-
-    public Duration getSubTaskTime()
-    {
-        return children.stream()
-                .map(TaskInfo::getTotalTaskTime)
-                .reduce(Duration.ZERO, Duration::plus);
-    }
-
-    public int getDepth()
-    {
-        int depth = 0;
-        TaskInfo current = this;
-        while (current.parent != null)
-        {
-            depth++;
-            current = current.parent;
-        }
-        return depth;
-    }
-
-    @Override
-    public boolean equals(final Object object)
-    {
-        if (this == object) return true;
-        if (object == null || getClass() != object.getClass()) return false;
-        TaskInfo taskInfo = (TaskInfo) object;
-        return Objects.equals(name, taskInfo.name);
-    }
-
-    @Override
-    public int hashCode()
-    {
-        return Objects.hash(name);
-    }
-
-    @Override
-    public String toString()
-    {
-        return new StringJoiner(", ", TaskInfo.class.getSimpleName() + "[", "]")
-                .add("name='" + name + "'")
-                .toString();
-    }
-
-    public List<TaskInfo> getChildren()
-    {
-        return children;
-    }
-
-    public TaskInfo getParent()
-    {
-        return parent;
-    }
-
-    public void merge(TaskInfo other)
-    {
-        if (other == null)
-        {
-            throw new IllegalArgumentException("Cannot merge with null TaskInfo.");
-        }
-
-        // Merge task times (sum the durations)
-        this.data.addAll(other.getData()); // Add all data entries from the other TaskInfo
-
-        // Merge the children
-        for (TaskInfo child : other.getChildren())
-        {
-            // Check if the child task already exists in the current task's children
-            Optional<TaskInfo> existingChildOpt = this.children.stream()
-                    .filter(existingChild -> existingChild.getName().equals(child.getName()))
-                    .findFirst();
-
-            if (existingChildOpt.isPresent())
-            {
-                // Merge the data entries for the existing child
-                TaskInfo existingChild = existingChildOpt.get();
-                existingChild.mergeData(child);  // Merge data for this specific child task
-            }
-            else
-            {
-                // If the child doesn't exist, add the child task
-                this.addChild(child);
-            }
-        }
-    }
-
-    private void mergeData(TaskInfo other)
-    {
-        if (other == null)
-        {
-            return; // If the other task is null, nothing to merge
-        }
-
-        // Merge the task data (elapsed times)
-        this.data.addAll(other.getData());
-    }
-
-    void addMeasurement(long sample)
-    {
-        this.data.add(sample);
-    }
+    TaskInfo getParent();
 }

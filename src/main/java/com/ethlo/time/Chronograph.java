@@ -85,8 +85,8 @@ public class Chronograph
 {
     private final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
 
-    private final Deque<TaskInfo> taskStack = new ArrayDeque<>(); // Tracks the active task
-    private final Map<String, TaskInfo> tasksByName = new LinkedHashMap<>();
+    private final Deque<MutableTaskInfo> taskStack = new ArrayDeque<>(); // Tracks the active task
+    private final Map<String, MutableTaskInfo> tasksByName = new LinkedHashMap<>();
 
     private final CaptureConfig captureConfig;
     private final String name;
@@ -687,15 +687,15 @@ public class Chronograph
             throw new IllegalArgumentException("task cannot be null");
         }
 
-        final TaskInfo taskInfo = tasksByName.computeIfAbsent(task, t ->
+        final MutableTaskInfo taskInfo = tasksByName.computeIfAbsent(task, t ->
         {
-            final TaskInfo parent = taskStack.peek();
+            final MutableTaskInfo parent = taskStack.peek();
             if (captureConfig.getMinInterval().equals(Duration.ZERO))
             {
-                TaskInfo newTask;
+                MutableTaskInfo newTask;
                 if (captureConfig.getMinInterval().equals(Duration.ZERO))
                 {
-                    newTask = new TaskInfo(task, parent);
+                    newTask = new MutableTaskInfo(task, parent);
                 }
                 else
                 {
@@ -715,7 +715,7 @@ public class Chronograph
         final long ts = System.nanoTime();
         if (!taskStack.isEmpty())
         {
-            final TaskInfo task = taskStack.pop();
+            final MutableTaskInfo task = taskStack.pop();
             return task.stopped(ts);
         }
         return false;
@@ -749,7 +749,7 @@ public class Chronograph
 
     public boolean isRunning(String task)
     {
-        return findByName(task).map(TaskInfo::isRunning).orElse(false);
+        return Optional.ofNullable(tasksByName.get(task)).map(MutableTaskInfo::isRunning).orElse(false);
     }
 
     public Duration getTotalTime()
@@ -767,7 +767,7 @@ public class Chronograph
         final long ts = System.nanoTime();
         while (!taskStack.isEmpty())
         {
-            final TaskInfo task = taskStack.pop();
+            final MutableTaskInfo task = taskStack.pop();
             task.stopped(ts);
         }
     }
