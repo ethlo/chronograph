@@ -74,6 +74,7 @@ import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 
 import com.ethlo.ascii.TableTheme;
+import com.ethlo.ascii.TableThemes;
 
 /**
  * A utility for tracking and timing tasks with high precision.
@@ -686,12 +687,12 @@ public class Chronograph
 
     public String prettyPrint(final String title)
     {
-        return prettyPrint(OutputConfig.DEFAULT.title(title), TableTheme.DEFAULT);
+        return prettyPrint(OutputConfig.DEFAULT.title(title), TableThemes.ASCII);
     }
 
     public String prettyPrint()
     {
-        return prettyPrint(OutputConfig.DEFAULT, TableTheme.DEFAULT);
+        return prettyPrint(OutputConfig.DEFAULT, TableThemes.ASCII);
     }
 
     public String prettyPrint(OutputConfig outputConfig, TableTheme tableTheme)
@@ -701,7 +702,7 @@ public class Chronograph
 
     public String prettyPrint(OutputConfig outputConfig)
     {
-        return prettyPrint(outputConfig, TableTheme.DEFAULT);
+        return prettyPrint(outputConfig, TableThemes.ASCII);
     }
 
     public String prettyPrint(TableTheme tableTheme)
@@ -752,13 +753,6 @@ public class Chronograph
     public boolean isAnyRunning()
     {
         return !taskStack.isEmpty();
-    }
-
-    public void stop(String task)
-    {
-        final long ts = System.nanoTime();
-        final TaskInfo taskInfo = findByName(task).orElseThrow(() -> new IllegalStateException("No started task with name " + task));
-        taskInfo.stopped(ts);
     }
 
     public void resetAll()

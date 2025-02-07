@@ -4,6 +4,7 @@ import java.util.Optional;
 
 import com.ethlo.Beta;
 import com.ethlo.ascii.TableTheme;
+import com.ethlo.ascii.TableThemes;
 
 @Beta
 public class ChronographContext
@@ -40,7 +41,7 @@ public class ChronographContext
 
     public static TableTheme getTheme()
     {
-        return Optional.ofNullable(theme).orElse(TableTheme.DEFAULT);
+        return Optional.ofNullable(theme).orElse(TableThemes.ASCII);
     }
 
     public static void setTheme(final TableTheme theme)

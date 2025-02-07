@@ -41,7 +41,7 @@ public class OutputConfig
 
     public static final OutputConfig EXTENDED = new OutputConfig()
             .average(true)
-            .percentiles(95D, 99, 99.9D)
+            .percentiles(95D, 99D, 99.9D)
             .median(true)
             .min(true)
             .max(true)

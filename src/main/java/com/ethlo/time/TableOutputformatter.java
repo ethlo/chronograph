@@ -20,6 +20,8 @@ package com.ethlo.time;
  * #L%
  */
 
+import static com.ethlo.ascii.Table.EMPTY_CONTENT;
+
 import java.math.RoundingMode;
 import java.text.NumberFormat;
 import java.time.Duration;
@@ -34,9 +36,8 @@ import com.ethlo.ascii.Table;
 import com.ethlo.ascii.TableCell;
 import com.ethlo.ascii.TableRow;
 import com.ethlo.ascii.TableTheme;
+import com.ethlo.ascii.TableThemes;
 import com.ethlo.time.statistics.PerformanceStatistics;
-
-import static com.ethlo.ascii.Table.EMPTY_CONTENT;
 
 public class TableOutputformatter implements OutputFormatter
 {
@@ -51,7 +52,7 @@ public class TableOutputformatter implements OutputFormatter
 
     public TableOutputformatter()
     {
-        this(TableTheme.DEFAULT, OutputConfig.DEFAULT);
+        this(TableThemes.ASCII, OutputConfig.DEFAULT);
     }
 
     private static TableRow getTableRow(final OutputConfig outputConfig, Duration totalTime, TaskInfo taskInfo, final NumberFormat pf, final NumberFormat nf)

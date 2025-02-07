@@ -24,12 +24,14 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 
+import com.ethlo.ascii.TableTheme;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ethlo.ascii.TableTheme;
+import com.ethlo.ascii.TableThemes;
 import com.ethlo.util.SleepUtil;
 
 public class ChronographTest
@@ -57,37 +59,63 @@ public class ChronographTest
     @Test
     void hierarchicalTest()
     {
-        final Chronograph chronograph = Chronograph.create();
+        final Chronograph c = Chronograph.create();
 
-        chronograph.time("Request", () ->
+        c.time("Request", () ->
         {
             for (int i = 0; i < 13; i++)
             {
-                chronograph.time("Fetch", () -> busy(12));
+                c.time("Fetch", () -> busy(12));
             }
 
             // Overhead
             busy(300);
 
-            chronograph.time("De-serialize", () ->
+            c.time("De-serialize", () ->
             {
                 // Overhead
                 busy(14);
-                chronograph.time("JSON de-serialize", () -> busy(44));
+                c.time("JSON de-serialize", () -> busy(44));
             });
         });
 
-        chronograph.time("Response", () ->
+        c.time("Response", () ->
         {
-            chronograph.time("Serialize", () ->
+            c.time("Logging", () -> busy(11));
+
+            c.time("Serialize", () ->
             {
                 // Overhead
-                busy(19);
-                chronograph.time("JSON serialize", () -> busy(27));
+                busy(14);
+                c.time("JSON serialize", () -> busy(27));
             });
         });
 
-        logger.info(chronograph.prettyPrint(OutputConfig.DEFAULT.overheadName("<overhead>").percentage(true).median(true).max(true)));
+        logger.info(c.prettyPrint(OutputConfig.COMPACT.overheadName("<overhead>")
+                .percentage(true)
+                .standardDeviation(false)
+                .median(true)
+                .max(true), TableThemes.OCEAN_BREEZE));
+
+        output(c, TableThemes.ASCII);
+        output(c, TableThemes.OCEAN_BREEZE);
+        output(c, TableThemes.MIDNIGHT_GOLD);
+        output(c, TableThemes.SILVER_STEEL);
+        output(c, TableThemes.RED_HERRING);
+        output(c, TableThemes.GRAPHITE_EMBER);
+        output(c, TableThemes.ROYAL_INDIGO);
+        output(c, TableThemes.SINGLE);
+        output(c, TableThemes.DOUBLE);
+        output(c, TableThemes.ROUNDED);
+        output(c, TableThemes.MINIMAL);
+        output(c, TableThemes.COMPACT);
+        assertThat(true).isTrue();
+    }
+
+    private void output(final Chronograph c, TableTheme theme)
+    {
+        System.out.println(theme.getName());
+        System.out.println(c.prettyPrint(theme));
     }
 
     private void busy(long millis)
@@ -307,7 +335,7 @@ public class ChronographTest
         chronograph1.stop();
         chronograph2.stop();
 
-        System.out.println(chronograph1.prettyPrint(TableTheme.DOUBLE));
+        System.out.println(chronograph1.prettyPrint(TableThemes.DOUBLE));
         System.out.println(chronograph2.prettyPrint(OutputConfig.COMPACT));
         final ChronographData merged = chronograph2.getTaskData().merge("merged", chronograph1.getTaskData());
 

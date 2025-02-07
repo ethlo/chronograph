@@ -23,67 +23,6 @@ package com.ethlo.ascii;
 public class TableTheme
 {
     // Inspiration: https://www.compart.com/en/unicode/search?q=Box+Drawings#characters
-
-    public static final TableTheme ASCII = TableTheme.builder().name("ASCII").build();
-
-    public static final TableTheme SINGLE = TableTheme.builder()
-            .name("Single")
-            .cross("┼")
-            .rightCross("┤")
-            .leftCross("├")
-            .topCross("┬")
-            .bottomCross("┴")
-            .leftTop("┌")
-            .rightTop("┐")
-            .leftBottom("└")
-            .rightBottom("┘")
-            .verticalSeparator("─")
-            .horizontalSeparator("│")
-            .build();
-
-    public static final TableTheme DOUBLE = TableTheme.builder()
-            .name("Double")
-            .cross("╬")
-            .rightCross("╣")
-            .leftCross("╠")
-            .topCross("╦")
-            .bottomCross("╩")
-            .leftTop("╔")
-            .rightTop("╗")
-            .leftBottom("╚")
-            .rightBottom("╝")
-            .verticalSeparator("═")
-            .horizontalSeparator("║")
-            .build();
-    public static final TableTheme RED_HERRING = TableTheme.builder()
-            .name("Red Herring")
-            .stringColor(AnsiColor.BRIGHT_WHITE)
-            .numericColor(AnsiColor.GREEN)
-            .verticalSpacerColor(AnsiColor.RED)
-            .horizontalSpacerColor(AnsiColor.RED)
-            .build();
-    public static final TableTheme MINIMAL = TableTheme.builder()
-            .name("Minimal")
-            .stringColor(AnsiColor.GRAY)
-            .numericColor(AnsiColor.GREEN)
-            .horizontalSeparator(" ")
-            .verticalSpacerColor(AnsiColor.GRAY)
-            .horizontalSpacerColor(AnsiColor.GRAY)
-            .build();
-    public static final TableTheme COMPACT = TableTheme.builder()
-            .name("Compact")
-            .verticalSeparator("")
-            .horizontalSeparator("")
-            .padding(" ")
-            .build();
-    public static final TableTheme DEFAULT = ASCII;
-    public static final TableTheme ROUNDED = SINGLE.begin()
-            .name("Rounded")
-            .leftTop("╭")
-            .rightTop("╮")
-            .leftBottom("╰")
-            .rightBottom("╯")
-            .build();
     private final AnsiColor stringColor;
     private final AnsiColor numericColor;
     private final AnsiColor horizontalSpacerColor;
