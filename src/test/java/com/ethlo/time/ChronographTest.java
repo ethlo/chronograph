@@ -24,13 +24,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 
-import com.ethlo.ascii.TableTheme;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.ethlo.ascii.TableTheme;
 import com.ethlo.ascii.TableThemes;
 import com.ethlo.util.SleepUtil;
 
@@ -195,12 +194,11 @@ public class ChronographTest
         }
     }
 
-    /*
     @Test
     void stopBeforeStart()
     {
         final Chronograph chronograph = Chronograph.create();
-        Assertions.assertThrows(IllegalStateException.class, () -> chronograph.stop());
+        chronograph.stop(); // Does nothing, we are not running
     }
 
     @Test
@@ -209,9 +207,8 @@ public class ChronographTest
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
         chronograph.stop();
-        Assertions.assertThrows(IllegalStateException.class, () -> chronograph.stop());
+        chronograph.stop(); // Does nothing
     }
-*/
 
     @Test
     void nullTask()
@@ -231,7 +228,7 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        Assertions.assertThrows(IllegalStateException.class, () -> chronograph.start(taskName));
+        chronograph.start(taskName); // Does nothing, already running
     }
 
     @Test
