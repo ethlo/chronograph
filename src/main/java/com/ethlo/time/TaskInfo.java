@@ -34,7 +34,7 @@ import com.ethlo.util.LongList;
 
 public class TaskInfo
 {
-    protected final IndexedCollection<Long> data;
+    private final IndexedCollection<Long> data;
     private final String name;
     private final TaskInfo parent;
     private final List<TaskInfo> children = new ArrayList<>(0);
@@ -43,9 +43,14 @@ public class TaskInfo
 
     TaskInfo(final String name, final TaskInfo parent)
     {
+        this(name, parent, new LongList());
+    }
+
+    public TaskInfo(String name, final TaskInfo parent, IndexedCollection<Long> data)
+    {
         this.name = name;
         this.parent = parent;
-        this.data = new LongList();
+        this.data = data;
         if (parent != null)
         {
             parent.children.add(this);
@@ -54,21 +59,12 @@ public class TaskInfo
 
     void start()
     {
-        if (running)
-        {
-            throw new IllegalStateException("Task " + name + " is already started");
-        }
         running = true;
         taskStartTimestamp = System.nanoTime();
     }
 
     void stopped(final long ts)
     {
-        if (!running)
-        {
-            throw new IllegalStateException("Task " + name + " is not started");
-        }
-
         long duration = ts - taskStartTimestamp;
         logElapsedDuration(duration);
         running = false;
@@ -115,7 +111,7 @@ public class TaskInfo
         return taskStartTimestamp;
     }
 
-    protected IndexedCollection<Long> getData()
+    public IndexedCollection<Long> getData()
     {
         return data;
     }
@@ -139,7 +135,7 @@ public class TaskInfo
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
-    public int depth()
+    public int getDepth()
     {
         int depth = 0;
         TaskInfo current = this;
@@ -192,7 +188,6 @@ public class TaskInfo
         }
 
         // Merge task times (sum the durations)
-        long totalDuration = this.getTotalTaskTime().toNanos() + other.getTotalTaskTime().toNanos();
         this.data.addAll(other.getData()); // Add all data entries from the other TaskInfo
 
         // Merge the children
@@ -226,5 +221,10 @@ public class TaskInfo
 
         // Merge the task data (elapsed times)
         this.data.addAll(other.getData());
+    }
+
+    public void addMeasurement(long sample)
+    {
+        this.data.add(sample);
     }
 }

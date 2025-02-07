@@ -41,7 +41,7 @@ public class ChronographTest
     private final String taskName = "a long task name";
 
     @Test
-    public void startStopSequenceSingleTask()
+    void startStopSequenceSingleTask()
     {
         final Chronograph chronograph = Chronograph.create();
 
@@ -131,7 +131,7 @@ public class ChronographTest
     }
 
     @Test
-    public void sequenceMultipleFunctionTasks()
+    void sequenceMultipleFunctionTasks()
     {
         final Chronograph chronograph = Chronograph.create();
 
@@ -142,7 +142,7 @@ public class ChronographTest
     }
 
     @Test
-    public void sequenceMultipleRunnableTasks()
+    void sequenceMultipleRunnableTasks()
     {
         final Chronograph chronograph = Chronograph.create();
 
@@ -197,14 +197,14 @@ public class ChronographTest
 
     /*
     @Test
-    public void stopBeforeStart()
+    void stopBeforeStart()
     {
         final Chronograph chronograph = Chronograph.create();
         Assertions.assertThrows(IllegalStateException.class, () -> chronograph.stop());
     }
 
     @Test
-    public void stopAfterStopped()
+    void stopAfterStopped()
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
@@ -214,20 +214,20 @@ public class ChronographTest
 */
 
     @Test
-    public void nullTask()
+    void nullTask()
     {
         final Chronograph chronograph = Chronograph.create();
         Assertions.assertThrows(IllegalArgumentException.class, () -> chronograph.start(null));
     }
 
     @Test
-    public void noData()
+    void noData()
     {
         assertThat(Chronograph.create().prettyPrint()).isEqualTo("No performance data");
     }
 
     @Test
-    public void sequentialStart()
+    void sequentialStart()
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
@@ -235,7 +235,7 @@ public class ChronographTest
     }
 
     @Test
-    public void testSimpleSingleInvocations()
+    void testSimpleSingleInvocations()
     {
         final Chronograph chronograph = Chronograph.create();
         for (int i = 0; i < 10; i++)
@@ -248,7 +248,7 @@ public class ChronographTest
     }
 
     @Test
-    public void testGranularity()
+    void testGranularity()
     {
         final Chronograph chronograph = Chronograph.create();
         for (int i = 0; i < 1_000_000; i++)
@@ -262,7 +262,7 @@ public class ChronographTest
     }
 
     @Test
-    public void resetAll()
+    void resetAll()
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
@@ -273,7 +273,7 @@ public class ChronographTest
     }
 
     @Test
-    public void testIsRunning()
+    void testIsRunning()
     {
         final Chronograph chronograph = Chronograph.create();
         assertThat(chronograph.isRunning(taskName)).isFalse();
@@ -284,7 +284,7 @@ public class ChronographTest
     }
 
     @Test
-    public void getTaskInfo()
+    void getTaskInfo()
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start("a");
@@ -292,10 +292,11 @@ public class ChronographTest
         chronograph.start("c");
         chronograph.stopAll();
         assertThat(chronograph.getRootTasks()).hasSize(1);
+        assertThat(chronograph.getTasks()).hasSize(3);
     }
 
     @Test
-    public void getTotalTaskTimeForEmpty()
+    void getTotalTaskTimeForEmpty()
     {
         final Chronograph chronograph = Chronograph.create();
         assertThat(chronograph.getTotalTime()).isEqualTo(Duration.ZERO);
@@ -306,7 +307,7 @@ public class ChronographTest
     }
 
     @Test
-    public void testIsAnyRunning()
+    void testIsAnyRunning()
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
@@ -316,7 +317,7 @@ public class ChronographTest
     }
 
     @Test
-    public void testGetAverageForNonStoppedTask()
+    void testGetAverageForNonStoppedTask()
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);

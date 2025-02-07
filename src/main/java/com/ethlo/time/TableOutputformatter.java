@@ -59,7 +59,7 @@ public class TableOutputformatter implements OutputFormatter
     {
         final TableRow row = new TableRow();
 
-        row.append(new TableCell("  ".repeat(taskInfo.depth()) + taskInfo.getName()));
+        row.append(new TableCell("  ".repeat(taskInfo.getDepth()) + taskInfo.getName()));
 
         final long invocations = taskInfo.getPerformanceStatistics().getTotalInvocations();
         final boolean multipleInvocations = invocations > 1;
@@ -97,7 +97,7 @@ public class TableOutputformatter implements OutputFormatter
         {
             final ChronoUnit summaryResolution = ReportUtil.getSummaryResolution(totalTime);
             final String str = ReportUtil.humanReadable(taskInfo.getPerformanceStatistics().getElapsedTotal(), summaryResolution);
-            row.append(new TableCell("  ".repeat(taskInfo.depth()) + str, true, true));
+            row.append(new TableCell("  ".repeat(taskInfo.getDepth()) + str, true, true));
         }
     }
 
@@ -106,7 +106,7 @@ public class TableOutputformatter implements OutputFormatter
         if (outputConfig.percentage())
         {
             final double pct = totalTime.isZero() ? 0D : taskInfo.getPerformanceStatistics().getElapsedTotal().toNanos() / (double) (taskInfo.getParent() != null ? taskInfo.getParent().getTotalTaskTime().toNanos() : totalTime.toNanos());
-            row.append(new TableCell("  ".repeat(taskInfo.depth()) + pf.format(pct), true, true));
+            row.append(new TableCell("  ".repeat(taskInfo.getDepth()) + pf.format(pct), true, true));
         }
     }
 
@@ -266,7 +266,7 @@ public class TableOutputformatter implements OutputFormatter
         if (diff / (double) parentDuration.toNanos() > 0.02)
         {
             final TaskInfo overheadTask = new TaskInfo(outputConfig.overheadName(), children.get(0).getParent());
-            overheadTask.data.add(diff);
+            overheadTask.addMeasurement(diff);
             combined.add(overheadTask);
         }
 

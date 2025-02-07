@@ -22,6 +22,7 @@ package com.ethlo.time;
 
 import java.time.Duration;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -654,37 +655,6 @@ public class Chronograph
         }
     }
 
-    /// LEGACY
-
-    /**
-     * Use {@link #time(String, Supplier)}()
-     */
-    @Deprecated
-    public <T> T timedSupplier(String taskName, Supplier<T> supplier)
-    {
-        return time(taskName, supplier);
-    }
-
-    /**
-     * Use {@link #time(String, Runnable)}()
-     */
-    @Deprecated
-    public void timed(String taskName, Runnable runnable)
-    {
-        time(taskName, runnable);
-    }
-
-    /**
-     * Use {@link #time(String, Function, Object)}
-     */
-    @Deprecated
-    public <T, R> R timedFunction(String taskName, Function<T, R> runnable, T input)
-    {
-        return time(taskName, runnable, input);
-    }
-
-    ///
-
     public String prettyPrint(final String title)
     {
         return prettyPrint(OutputConfig.DEFAULT.title(title), TableThemes.ASCII);
@@ -773,7 +743,7 @@ public class Chronograph
 
     public List<TaskInfo> getRootTasks()
     {
-        return List.copyOf(tasksByName.values().stream().filter(t -> t.depth() == 0).toList());
+        return List.copyOf(tasksByName.values().stream().filter(t -> t.getDepth() == 0).toList());
     }
 
     public boolean isRunning(String task)
@@ -799,5 +769,10 @@ public class Chronograph
             final TaskInfo task = taskStack.pop();
             task.stopped(ts);
         }
+    }
+
+    public List<TaskInfo> getTasks()
+    {
+        return new ArrayList<>(tasksByName.values());
     }
 }

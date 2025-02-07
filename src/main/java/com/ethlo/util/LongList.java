@@ -152,10 +152,20 @@ public class LongList implements IndexedCollection<Long>
     }
 
     @Override
-    public IndexedCollection<Long> addAll(final Iterable<Long> values)
+    public LongList addAll(final Iterable<Long> values)
     {
         values.forEach(this::add);
         return this;
+    }
+
+    public long sum()
+    {
+        long sum = 0;
+        for (long l : this)
+        {
+            sum += l;
+        }
+        return sum;
     }
 
     @Override
