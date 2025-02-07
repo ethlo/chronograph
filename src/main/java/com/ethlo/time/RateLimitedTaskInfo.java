@@ -28,35 +28,32 @@ import com.ethlo.sampler.ScheduledSampleRater;
 import com.ethlo.time.statistics.PerformanceStatistics;
 import com.ethlo.util.IndexedCollectionStatistics;
 
-public class RateLimitedTaskInfo extends TaskInfo
+public class RateLimitedTaskInfo extends MutableTaskInfo
 {
     private final SampleRater<Long> sampleRater;
     private int totalInvocations;
     private long totalElapsed;
 
-    RateLimitedTaskInfo(final String name, Duration minInterval, final ScheduledExecutorService scheduledExecutorService)
+    RateLimitedTaskInfo(final String name, Duration minInterval, final ScheduledExecutorService scheduledExecutorService, final MutableTaskInfo parent)
     {
-        super(name);
+        super(name, parent);
         this.sampleRater = new ScheduledSampleRater<>(scheduledExecutorService, minInterval, prg -> logElapsedDuration(prg.progress()));
     }
 
     @Override
-    boolean stopped(final long ts, final boolean ignoreState)
+    boolean stopped(final long ts)
     {
-        if (!isRunning() && !ignoreState)
+        if (!isRunning())
         {
             throw new IllegalStateException("Task " + getName() + " is not started");
         }
 
-        if (isRunning())
-        {
-            final long elapsed = ts - super.getTaskStartTimestamp();
-            totalInvocations++;
-            totalElapsed += elapsed;
-            sampleRater.update(elapsed);
-            running = false;
-            return true;
-        }
+        final long elapsed = ts - super.getTaskStartTimestamp();
+        totalInvocations++;
+        totalElapsed += elapsed;
+        sampleRater.update(elapsed);
+        running = false;
+
         return false;
     }
 
@@ -73,9 +70,9 @@ public class RateLimitedTaskInfo extends TaskInfo
     }
 
     @Override
-    public PerformanceStatistics getDurationStatistics()
+    public PerformanceStatistics getPerformanceStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(getData());
-        return new PerformanceStatistics(stats, totalInvocations, totalElapsed);
+        return new PerformanceStatistics(stats, totalInvocations, totalElapsed, getSelfTime().toNanos());
     }
 }

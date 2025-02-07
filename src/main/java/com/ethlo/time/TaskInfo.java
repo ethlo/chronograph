@@ -21,97 +21,31 @@ package com.ethlo.time;
  */
 
 import java.time.Duration;
+import java.util.List;
 
 import com.ethlo.time.statistics.PerformanceStatistics;
-import com.ethlo.util.IndexedCollection;
-import com.ethlo.util.IndexedCollectionStatistics;
-import com.ethlo.util.LongList;
 
-public class TaskInfo
+public interface TaskInfo
 {
-    private final String name;
-    private final IndexedCollection<Long> data;
-    protected boolean running = false;
-    private long taskStartTimestamp;
+    String getName();
 
-    TaskInfo(final String name)
-    {
-        this.name = name;
-        this.data = new LongList();
-    }
+    Duration getTotalTaskTime();
 
-    long start()
-    {
-        if (running)
-        {
-            throw new IllegalStateException("Task " + name + " is already started");
-        }
-        running = true;
+    long getTotalTaskInvocations();
 
-        // The very last operation
-        taskStartTimestamp = System.nanoTime();
-        return taskStartTimestamp;
-    }
+    long getSampleSize();
 
-    public String getName()
-    {
-        return name;
-    }
+    PerformanceStatistics getPerformanceStatistics();
 
-    public long getTotalTaskInvocations()
-    {
-        return data.size();
-    }
+    long getTaskStartTimestamp();
 
-    public long getSampleSize()
-    {
-        return data.size();
-    }
+    Duration getSelfTime();
 
-    public boolean isRunning()
-    {
-        return running;
-    }
+    Duration getSubTaskTime();
 
-    boolean stopped(final long ts, boolean ignoreState)
-    {
-        if (!running && !ignoreState)
-        {
-            throw new IllegalStateException("Task " + name + " is not started");
-        }
+    int getDepth();
 
-        if (running)
-        {
-            logElapsedDuration(ts - getTaskStartTimestamp());
-            running = false;
-            return true;
-        }
-        return false;
-    }
+    List<TaskInfo> getChildren();
 
-    void logElapsedDuration(final long duration)
-    {
-        data.add(duration);
-    }
-
-    public PerformanceStatistics getDurationStatistics()
-    {
-        final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
-        return new PerformanceStatistics(stats, getTotalTaskInvocations(), stats.sum());
-    }
-
-    public Duration getTotalTaskTime()
-    {
-        return Duration.ofNanos(data.stream().reduce(0L, Long::sum));
-    }
-
-    protected long getTaskStartTimestamp()
-    {
-        return taskStartTimestamp;
-    }
-
-    protected IndexedCollection<Long> getData()
-    {
-        return data;
-    }
+    TaskInfo getParent();
 }

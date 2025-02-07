@@ -22,23 +22,20 @@ package com.ethlo.time;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
-import com.ethlo.time.statistics.PerformanceStatistics;
+import java.util.Optional;
 
 public class ChronographData
 {
     private final String name;
-    private final List<TaskPerformanceStatistics> taskStatistics;
+    private final List<TaskInfo> rootTasks;
     private final Duration totalTime;
 
-    public ChronographData(final String name, final List<TaskPerformanceStatistics> taskStatistics)
+    public ChronographData(final String name, final List<TaskInfo> rootTasks)
     {
         this.name = name;
-        this.taskStatistics = taskStatistics;
-        this.totalTime = Duration.ofNanos(taskStatistics.stream().mapToLong(t -> t.performanceStatistics().getElapsedTotal().toNanos()).sum());
+        this.rootTasks = rootTasks;
+        this.totalTime = Duration.ofNanos(rootTasks.stream().mapToLong(t -> t.getTotalTaskTime().toNanos()).sum());
     }
 
     public static ChronographData combine(final String name, final List<Chronograph> toCombine)
@@ -62,14 +59,51 @@ public class ChronographData
         }
     }
 
+    private static void flattenTaskInfo(TaskInfo task, List<TaskInfo> result)
+    {
+        result.add(task);
+        for (TaskInfo child : task.getChildren())
+        {
+            flattenTaskInfo(child, result);
+        }
+    }
+
+    private static List<TaskInfo> mergeTaskInfoLists(List<TaskInfo> list1, List<TaskInfo> list2)
+    {
+        // Create a new list to hold the merged results
+        List<TaskInfo> mergedList = new ArrayList<>(list1);
+
+        for (TaskInfo task2 : list2)
+        {
+            // Check if task2 already exists in the merged list
+            Optional<TaskInfo> existingTaskOpt = mergedList.stream()
+                    .filter(existingTask -> existingTask.getName().equals(task2.getName()))
+                    .findFirst();
+
+            if (existingTaskOpt.isPresent())
+            {
+                // If the task exists, merge the data
+                MutableTaskInfo existingTask = (MutableTaskInfo) existingTaskOpt.get();
+                existingTask.merge((MutableTaskInfo) task2);  // Merge the data from task2 into the existing task
+            }
+            else
+            {
+                // If the task does not exist, add it to the merged list
+                mergedList.add(task2);
+            }
+        }
+
+        return mergedList;
+    }
+
     public String getName()
     {
         return name;
     }
 
-    public List<TaskPerformanceStatistics> getTaskStatistics()
+    public List<TaskInfo> getRootTasks()
     {
-        return taskStatistics;
+        return rootTasks;
     }
 
     public Duration getTotalTime()
@@ -79,23 +113,18 @@ public class ChronographData
 
     public boolean isEmpty()
     {
-        return this.taskStatistics.isEmpty();
+        return this.rootTasks.isEmpty();
     }
 
     public ChronographData merge(String chronographName, ChronographData chronographData)
     {
-        final Map<String, TaskPerformanceStatistics> joined = new LinkedHashMap<>(Math.max(this.taskStatistics.size(), chronographData.taskStatistics.size()));
-        this.taskStatistics.forEach(t -> joined.put(t.name(), t));
-        chronographData.taskStatistics.forEach(t -> joined.compute(t.name(), (k, v) ->
-        {
-            if (v != null)
-            {
-                final long sampleSize = v.sampleSize() + t.sampleSize();
-                final PerformanceStatistics durationStatistics = t.performanceStatistics().merge(v.performanceStatistics());
-                return new TaskPerformanceStatistics(k, sampleSize, durationStatistics);
-            }
-            return t;
-        }));
-        return new ChronographData(chronographName, new ArrayList<>(joined.values()));
+        return new ChronographData(chronographName, mergeTaskInfoLists(this.rootTasks, chronographData.rootTasks));
+    }
+
+    public List<TaskInfo> getTasks()
+    {
+        final List<TaskInfo> result = new ArrayList<>();
+        getRootTasks().forEach(root -> flattenTaskInfo(root, result));
+        return result;
     }
 }

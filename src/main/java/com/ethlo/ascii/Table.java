@@ -30,6 +30,7 @@ public class Table
 {
     private static final String NEWLINE = System.lineSeparator();
 
+    public static final String EMPTY_CONTENT = "";
     private final List<TableRow> rows;
     private final Map<Integer, Integer> minColumnWidths;
     private final int tableWidth;
@@ -42,26 +43,25 @@ public class Table
         this.rows = rows;
 
         final Map<Integer, Boolean> hasContent = getHasColumnContent(rows);
-        this.minColumnWidths = getMaxContentLengths(rows, hasContent);
+        this.minColumnWidths = getMaxContentLengths(rows);
+        hasContent.entrySet().stream().filter(e -> !e.getValue()).forEach(e -> minColumnWidths.remove(e.getKey()));
         this.tableWidth = calculateTotalWidth(minColumnWidths);
     }
 
-    private static Map<Integer, Integer> getMaxContentLengths(final List<TableRow> rows, final Map<Integer, Boolean> hasContent)
+    private static Map<Integer, Integer> getMaxContentLengths(final List<TableRow> rows)
     {
         final Map<Integer, Integer> maxLengths = new HashMap<>();
         for (TableRow row : rows)
         {
-            for (int i = 0; i < row.getCells().size(); i++)
+            for (int column = 0; column < row.getCells().size(); column++)
             {
-                maxLengths.compute(i, (key, value) ->
+                maxLengths.compute(column, (col, existing) ->
                 {
-                    final int cellLength = row.getCells().get(key).getValue().length();
-                    return value != null ? Math.max(value, cellLength) : cellLength;
+                    final String cellValue = row.getCells().get(col).getValue();
+                    return Math.max(existing != null ? existing : 0, cellValue.length());
                 });
             }
         }
-
-        hasContent.entrySet().stream().filter(e -> !e.getValue()).forEach(e -> maxLengths.remove(e.getKey()));
 
         return maxLengths;
     }
@@ -69,11 +69,15 @@ public class Table
     private Map<Integer, Boolean> getHasColumnContent(final List<TableRow> rows)
     {
         final Map<Integer, Boolean> result = new HashMap<>();
-        for (TableRow row : rows)
+        for (TableRow row : rows.subList(2, rows.size()))
         {
-            for (int i = 0; i < row.getCells().size(); i++)
+            for (int column = 0; column < row.getCells().size(); column++)
             {
-                result.compute(i, (key, value) -> !row.getCells().get(key).getValue().isEmpty());
+                result.compute(column, (col, value) ->
+                {
+                    final TableCell cell = row.getCells().get(col);
+                    return value != null && value || !cell.getValue().isEmpty();
+                });
             }
         }
         return result;
@@ -201,7 +205,7 @@ public class Table
             }
             else
             {
-                sb.append(new TableCell(" ").render(theme, minWidth));
+                sb.append(new TableCell(EMPTY_CONTENT).render(theme, minWidth));
             }
         }
 

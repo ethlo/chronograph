@@ -39,7 +39,7 @@ public class LongListTest
     }
 
     @Test
-    public void averageSmall()
+    void averageSmall()
     {
         final LongList l = new LongList();
         for (int i = 1; i <= 1000; i++)
@@ -50,7 +50,7 @@ public class LongListTest
     }
 
     @Test
-    public void averageLargeNumbers()
+    void averageLargeNumbers()
     {
         final LongList l = new LongList();
         for (int i = 1; i <= 2_600_000; i++)
@@ -61,7 +61,7 @@ public class LongListTest
     }
 
     @Test
-    public void sortUneven()
+    void sortUneven()
     {
         final LongList l = createList(100_101, true);
         l.sort();
@@ -69,7 +69,7 @@ public class LongListTest
     }
 
     @Test
-    public void testSet()
+    void testSet()
     {
         final LongList l = createList(100_101, true);
         l.set(100_000, 42L);
@@ -77,7 +77,7 @@ public class LongListTest
     }
 
     @Test
-    public void sortEven()
+    void sortEven()
     {
         final LongList l = createList(100_000, true);
         l.sort();
@@ -85,14 +85,14 @@ public class LongListTest
     }
 
     @Test
-    public void medianEven()
+    void medianEven()
     {
         final LongList l = createList(100_000, true);
         assertThat(new IndexedCollectionStatistics(l).getMedian()).isEqualTo(49_999L);
     }
 
     @Test
-    public void medianOdd()
+    void medianOdd()
     {
         final LongList l = createList(100_001, true);
         assertThat(new IndexedCollectionStatistics(l).getMedian()).isEqualTo(50_000);
@@ -109,28 +109,28 @@ public class LongListTest
     }
 
     @Test
-    public void percentile()
+    void percentile()
     {
         final LongList l = createList(100_001, true);
         assertThat(new IndexedCollectionStatistics(l).getPercentile(90D)).isEqualTo(90_000);
     }
 
     @Test
-    public void getOutOfBounds()
+    void getOutOfBounds()
     {
         final LongList l = createList(10, false);
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> l.get(10));
     }
 
     @Test
-    public void getOutOfBoundsNegative()
+    void getOutOfBoundsNegative()
     {
         final LongList l = createList(10, false);
         assertThrows(ArrayIndexOutOfBoundsException.class, () -> l.get(-1));
     }
 
     @Test
-    public void get()
+    void get()
     {
         final int size = 25_000_005;
         final LongList l = createList(size, true);
@@ -142,7 +142,7 @@ public class LongListTest
     }
 
     @Test
-    public void iterator()
+    void iterator()
     {
         final LongList l = createList(10, true);
         l.sort();

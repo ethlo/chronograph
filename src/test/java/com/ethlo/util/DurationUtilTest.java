@@ -31,49 +31,49 @@ import com.ethlo.time.ReportUtil;
 public class DurationUtilTest
 {
     @Test
-    public void humanReadableFormatMoreThanHour()
+    void humanReadableFormatMoreThanHour()
     {
         assertThat(ReportUtil.humanReadable(Duration.ofSeconds(4712).withNanos(123456789))).isEqualTo("1:18:32");
     }
 
     @Test
-    public void humanReadableFormatLessThanHour()
+    void humanReadableFormatLessThanHour()
     {
         assertThat(ReportUtil.humanReadable(Duration.ofSeconds(2000).withNanos(123456789))).isEqualTo("33:20");
     }
 
     @Test
-    public void humanReadableFormatLessThanMinute()
+    void humanReadableFormatLessThanMinute()
     {
         assertThat(ReportUtil.humanReadable(Duration.ofSeconds(8).withNanos(125_956_789))).isEqualTo("8.126 s");
     }
 
     @Test
-    public void humanReadableFormatLessThanMinute2()
+    void humanReadableFormatLessThanMinute2()
     {
         assertThat(ReportUtil.humanReadable(Duration.ofSeconds(8).withNanos(1_000_000))).isEqualTo("8.001 s");
     }
 
     @Test
-    public void humanReadableFormatLessThanMinute3()
+    void humanReadableFormatLessThanMinute3()
     {
         assertThat(ReportUtil.humanReadable(Duration.ofSeconds(8))).isEqualTo("8.000 s");
     }
 
     @Test
-    public void humanReadableFormatLessThanSecond()
+    void humanReadableFormatLessThanSecond()
     {
         assertThat(ReportUtil.humanReadable(Duration.ofNanos(123_456_789))).isEqualTo("123.46 ms");
     }
 
     @Test
-    public void humanReadableFormatLessThanMillisecond()
+    void humanReadableFormatLessThanMillisecond()
     {
         assertThat(ReportUtil.humanReadable(Duration.ofNanos(456_789))).isEqualTo("456.79 us");
     }
 
     @Test
-    public void humanReadableFormatLessThanMicrosecond()
+    void humanReadableFormatLessThanMicrosecond()
     {
         assertThat(ReportUtil.humanReadable(Duration.ofNanos(489))).isEqualTo("489 ns");
     }

@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.ethlo.ascii.TableTheme;
+import com.ethlo.ascii.TableThemes;
 import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographData;
@@ -113,7 +114,7 @@ class ListPerformanceTest
     void performanceTestMediumAdd()
     {
         final Chronograph c = performAddBenchmark(10, 500_000);
-        output(c, TableTheme.RED_HERRING);
+        output(c, TableThemes.RED_HERRING);
         assertThat(true).isTrue();
     }
 
@@ -134,13 +135,18 @@ class ListPerformanceTest
     void performanceTestMediumSort()
     {
         final Chronograph c = performSortBenchmark(10, 500_000);
-        output(c, TableTheme.DEFAULT);
-        output(c, TableTheme.RED_HERRING);
-        output(c, TableTheme.SINGLE);
-        output(c, TableTheme.DOUBLE);
-        output(c, TableTheme.ROUNDED);
-        output(c, TableTheme.MINIMAL);
-        output(c, TableTheme.COMPACT);
+        output(c, TableThemes.ASCII);
+        output(c, TableThemes.OCEAN_BREEZE);
+        output(c, TableThemes.MIDNIGHT_GOLD);
+        output(c, TableThemes.SILVER_STEEL);
+        output(c, TableThemes.RED_HERRING);
+        output(c, TableThemes.GRAPHITE_EMBER);
+        output(c, TableThemes.ROYAL_INDIGO);
+        output(c, TableThemes.SINGLE);
+        output(c, TableThemes.DOUBLE);
+        output(c, TableThemes.ROUNDED);
+        output(c, TableThemes.MINIMAL);
+        output(c, TableThemes.COMPACT);
         assertThat(true).isTrue();
     }
 
@@ -179,7 +185,7 @@ class ListPerformanceTest
     private void output(final Chronograph c, TableTheme theme)
     {
         System.out.println(theme.getName());
-        System.out.println(c.prettyPrint(OutputConfig.EXTENDED.benchmarkMode(true), theme));
+        System.out.println(c.prettyPrint(theme));
     }
 
     private LongList addLongList(int count)
