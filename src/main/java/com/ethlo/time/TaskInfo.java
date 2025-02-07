@@ -59,19 +59,25 @@ public class TaskInfo
 
     boolean start()
     {
-        final boolean wasStarted = !running;
-        running = true;
-        taskStartTimestamp = System.nanoTime();
-        return wasStarted;
+        if (!running)
+        {
+            running = true;
+            taskStartTimestamp = System.nanoTime();
+            return true;
+        }
+        return false;
     }
 
     boolean stopped(final long ts)
     {
-        final boolean wasStopped = running;
-        long duration = ts - taskStartTimestamp;
-        logElapsedDuration(duration);
-        running = false;
-        return wasStopped;
+        if (running)
+        {
+            final long duration = ts - taskStartTimestamp;
+            logElapsedDuration(duration);
+            running = false;
+            return true;
+        }
+        return false;
     }
 
     public Duration getTotalTaskTime()
@@ -227,7 +233,7 @@ public class TaskInfo
         this.data.addAll(other.getData());
     }
 
-    public void addMeasurement(long sample)
+    void addMeasurement(long sample)
     {
         this.data.add(sample);
     }
