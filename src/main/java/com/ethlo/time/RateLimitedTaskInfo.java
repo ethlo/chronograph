@@ -41,7 +41,7 @@ public class RateLimitedTaskInfo extends TaskInfo
     }
 
     @Override
-    void stopped(final long ts)
+    boolean stopped(final long ts)
     {
         if (!isRunning())
         {
@@ -53,7 +53,8 @@ public class RateLimitedTaskInfo extends TaskInfo
         totalElapsed += elapsed;
         sampleRater.update(elapsed);
         running = false;
-        
+
+        return false;
     }
 
     @Override

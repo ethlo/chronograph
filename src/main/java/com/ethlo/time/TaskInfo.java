@@ -57,17 +57,21 @@ public class TaskInfo
         }
     }
 
-    void start()
+    boolean start()
     {
+        final boolean wasStarted = !running;
         running = true;
         taskStartTimestamp = System.nanoTime();
+        return wasStarted;
     }
 
-    void stopped(final long ts)
+    boolean stopped(final long ts)
     {
+        final boolean wasStopped = running;
         long duration = ts - taskStartTimestamp;
         logElapsedDuration(duration);
         running = false;
+        return wasStopped;
     }
 
     public Duration getTotalTaskTime()

@@ -680,7 +680,7 @@ public class Chronograph
         return prettyPrint(OutputConfig.DEFAULT, tableTheme);
     }
 
-    public void start(String task)
+    public boolean start(String task)
     {
         if (task == null)
         {
@@ -707,17 +707,18 @@ public class Chronograph
             return new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService, parent);
         });
         taskStack.push(taskInfo);
-        taskInfo.start();
+        return taskInfo.start();
     }
 
-    public void stop()
+    public boolean stop()
     {
         final long ts = System.nanoTime();
         if (!taskStack.isEmpty())
         {
             final TaskInfo task = taskStack.pop();
-            task.stopped(ts);
+            return task.stopped(ts);
         }
+        return false;
     }
 
     public boolean isAnyRunning()

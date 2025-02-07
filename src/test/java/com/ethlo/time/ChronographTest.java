@@ -198,7 +198,7 @@ public class ChronographTest
     void stopBeforeStart()
     {
         final Chronograph chronograph = Chronograph.create();
-        chronograph.stop(); // Does nothing, we are not running
+        assertThat(chronograph.stop()).isFalse(); // Does nothing, we are not running
     }
 
     @Test
@@ -206,8 +206,8 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        chronograph.stop();
-        chronograph.stop(); // Does nothing
+        assertThat(chronograph.stop()).isTrue();
+        assertThat(chronograph.stop()).isFalse(); // Does nothing, already stopped
     }
 
     @Test
@@ -227,8 +227,8 @@ public class ChronographTest
     void sequentialStart()
     {
         final Chronograph chronograph = Chronograph.create();
-        chronograph.start(taskName);
-        chronograph.start(taskName); // Does nothing, already running
+        assertThat(chronograph.start(taskName)).isTrue();
+        assertThat(chronograph.start(taskName)).isFalse(); // Does nothing, already running
     }
 
     @Test
