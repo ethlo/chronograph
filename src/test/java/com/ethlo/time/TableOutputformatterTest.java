@@ -55,7 +55,7 @@ class TableOutputformatterTest
         assertThat(result).isEqualToIgnoringWhitespace("""
                 My test
                 +----------+---------+-------+--------+---------+-----------+---------+---------+---------+
-                | Task     | Timing   | Count | %      | Median  | Std dev   | Mean    | Min     | Max     |
+                | Task     | Timing   | Count | %      | Median  | Std dev  | Average | Min     | Max     |
                 +----------+---------+-------+--------+---------+-----------+---------+---------+---------+
                 | Quick    | 0.000 s |     5 |   0.0% |  504 ns |     53 ns |  525 ns |  454 ns |  604 ns |
                 | Moderate | 0.004 s |     4 |   0.1% | 1.13 ms |  73.95 us | 1.11 ms | 1.00 ms | 1.20 ms |

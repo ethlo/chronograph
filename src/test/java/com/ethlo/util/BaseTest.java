@@ -9,9 +9,9 @@ package com.ethlo.util;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.ethlo.ascii.TableTheme;
 import com.ethlo.ascii.TableThemes;
 import com.ethlo.time.Chronograph;
+import com.ethlo.time.ChronographUtil;
 import com.ethlo.time.OutputConfig;
 import com.ethlo.time.TableOutputFormatter;
 
@@ -47,8 +48,8 @@ public class BaseTest
 
     protected void output(final Chronograph c)
     {
-        final String result = new TableOutputFormatter(TableThemes.ASCII, OutputConfig.DEFAULT).format(c.getTaskData());
-        logger.info(result);
+        logger.info(ChronographUtil.asciiTable(c));
+        logger.info(ChronographUtil.json(c, OutputConfig.EXTENDED.percentiles(90, 95, 99, 99.9)));
     }
 
     protected void output(final Chronograph c, TableTheme tableTheme)

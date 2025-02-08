@@ -117,12 +117,12 @@ public class Chronograph
      */
     public static Chronograph create()
     {
-        return new Chronograph("");
+        return new Chronograph(null);
     }
 
     public static Chronograph create(final CaptureConfig captureConfig)
     {
-        return create("", captureConfig);
+        return create(null, captureConfig);
     }
 
     public static Chronograph create(String name)

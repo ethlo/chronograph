@@ -177,7 +177,7 @@ public class TableOutputFormatter implements OutputFormatter
         }
         if (outputConfig.mean())
         {
-            headerRow.append("Mean");
+            headerRow.append("Average");
         }
         if (outputConfig.min())
         {

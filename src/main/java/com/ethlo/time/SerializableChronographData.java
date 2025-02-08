@@ -25,20 +25,27 @@ import java.util.List;
 
 public class SerializableChronographData implements Serializable
 {
+    private final String name;
     private final List<SerializableTaskInfo> tasks;
 
-    public SerializableChronographData(ChronographData data)
+    public SerializableChronographData(ChronographData data, OutputConfig outputConfig)
     {
-        this.tasks = data.getRootTasks().stream().map(SerializableTaskInfo::create).toList();
+        this(data.getName(), data.getRootTasks().stream().map(task -> SerializableTaskInfo.create(task, outputConfig)).toList());
     }
 
-    public SerializableChronographData(final List<SerializableTaskInfo> tasks)
+    public SerializableChronographData(String name, final List<SerializableTaskInfo> tasks)
     {
+        this.name = name;
         this.tasks = tasks;
     }
 
     public List<SerializableTaskInfo> getTasks()
     {
         return tasks;
+    }
+
+    public String getName()
+    {
+        return name;
     }
 }

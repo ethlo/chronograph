@@ -23,8 +23,11 @@ package com.ethlo.time;
 import java.io.Serializable;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.ethlo.time.statistics.PerformanceStatistics;
 
@@ -49,25 +52,29 @@ public class SerializableTaskInfo implements Serializable
         this.statistics = taskStatistics;
     }
 
-    public static SerializableTaskInfo create(TaskInfo source)
+    public static SerializableTaskInfo create(TaskInfo source, OutputConfig config)
     {
         final List<SerializableTaskInfo> processed = new ArrayList<>();
-        processChildren(source.getChildren(), processed);
+        processChildren(source.getChildren(), processed, config);
 
         SerializableTaskStatistics taskStatistics = null;
         if (source.getTotalTaskInvocations() > 1)
         {
             final PerformanceStatistics statistics = source.getPerformanceStatistics();
-            taskStatistics = new SerializableTaskStatistics(statistics.getAverage(), statistics.getMin(), statistics.getMax());
+            final Map<Double, Duration> percentiles = Arrays.stream(config.percentiles()).boxed()
+                    .collect(Collectors.toMap(l -> l, statistics::getPercentile));
+            taskStatistics = new SerializableTaskStatistics(statistics.getAverage(), statistics.getMedian(),
+                    statistics.getMin(), statistics.getMax(), statistics.getStandardDeviation(), percentiles
+            );
         }
         return new SerializableTaskInfo(source.getName(), processed, source.getTotalTaskTime(), source.getChildren().isEmpty() ? null : source.getSubTaskTime(), source.getSelfTime(), source.getTotalTaskInvocations(), taskStatistics);
     }
 
-    private static void processChildren(List<TaskInfo> children, final List<SerializableTaskInfo> processed)
+    private static void processChildren(List<TaskInfo> children, final List<SerializableTaskInfo> processed, OutputConfig outputConfig)
     {
         for (TaskInfo child : children)
         {
-            processed.add(create(child));
+            processed.add(create(child, outputConfig));
         }
     }
 
@@ -106,7 +113,8 @@ public class SerializableTaskInfo implements Serializable
         return statistics;
     }
 
-    public record SerializableTaskStatistics(Duration average, Duration min, Duration max)
+    public record SerializableTaskStatistics(Duration average, Duration median, Duration min, Duration max,
+                                             Duration standardDeviation, Map<Double, Duration> percentiles)
     {
 
     }
