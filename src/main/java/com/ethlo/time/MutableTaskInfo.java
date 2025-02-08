@@ -116,7 +116,7 @@ public class MutableTaskInfo implements TaskInfo
     public PerformanceStatistics getPerformanceStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
-        return new PerformanceStatistics(stats, getTotalTaskInvocations(), getTotalTaskTime().toNanos(), getSelfTime().toNanos());
+        return new PerformanceStatistics(stats, getTotalTaskInvocations(), getTotalTaskTime().toNanos());
     }
 
     @Override

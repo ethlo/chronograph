@@ -32,19 +32,17 @@ public class PerformanceStatistics
     private final IndexedCollectionStatistics collectionStatistics;
     private final long totalInvocations;
     private final long elapsedTotal;
-    private final long elapsedSelfTime;
 
-    public PerformanceStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, long elapsedTotal, long elapsedSelfTime)
+    public PerformanceStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, long elapsedTotal)
     {
         this.collectionStatistics = collectionStatistics;
         this.totalInvocations = totalInvocations;
         this.elapsedTotal = elapsedTotal;
-        this.elapsedSelfTime = elapsedSelfTime;
     }
 
     public PerformanceStatistics(IndexedCollectionStatistics collectionStatistics)
     {
-        this(collectionStatistics, collectionStatistics.size(), collectionStatistics.sum(), collectionStatistics.sum());
+        this(collectionStatistics, collectionStatistics.size(), collectionStatistics.sum());
     }
 
     public long getTotalInvocations()
@@ -60,11 +58,6 @@ public class PerformanceStatistics
     public Duration getElapsedTotal()
     {
         return Duration.ofNanos(elapsedTotal);
-    }
-
-    public Duration getElapsedSelfTime()
-    {
-        return Duration.ofNanos(elapsedSelfTime);
     }
 
 
@@ -101,11 +94,6 @@ public class PerformanceStatistics
     public Duration getStandardDeviation()
     {
         return getDuration(collectionStatistics.getStandardDeviation());
-    }
-
-    public PerformanceStatistics merge(final PerformanceStatistics other)
-    {
-        return new PerformanceStatistics(this.collectionStatistics.merge(other.collectionStatistics), totalInvocations + other.totalInvocations, elapsedTotal + other.elapsedTotal, elapsedSelfTime + other.elapsedSelfTime);
     }
 
     private Duration getDuration(Number d)

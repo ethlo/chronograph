@@ -36,11 +36,6 @@ public class ScheduledSampleRater<T> extends SampleRater<T>
     private final ScheduledExecutorService executor;
     private volatile boolean ready = true;
 
-    public ScheduledSampleRater(final Consumer<TaskProgress<T>> sampledProgressListener)
-    {
-        this(new ScheduledThreadPoolExecutor(1), Duration.ofSeconds(1), sampledProgressListener);
-    }
-
     public ScheduledSampleRater(Duration interval, final Consumer<TaskProgress<T>> sampledProgressListener)
     {
         this(new ScheduledThreadPoolExecutor(1), interval, sampledProgressListener);

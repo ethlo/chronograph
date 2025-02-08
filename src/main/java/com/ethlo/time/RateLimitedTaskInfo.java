@@ -73,6 +73,6 @@ public class RateLimitedTaskInfo extends MutableTaskInfo
     public PerformanceStatistics getPerformanceStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(getData());
-        return new PerformanceStatistics(stats, totalInvocations, totalElapsed, getSelfTime().toNanos());
+        return new PerformanceStatistics(stats, totalInvocations, totalElapsed);
     }
 }
