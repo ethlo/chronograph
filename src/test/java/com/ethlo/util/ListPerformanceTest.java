@@ -33,15 +33,13 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ethlo.ascii.TableTheme;
 import com.ethlo.ascii.TableThemes;
 import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographData;
-import com.ethlo.time.OutputConfig;
-import com.ethlo.time.TableOutputformatter;
+import com.ethlo.time.TableOutputFormatter;
 
-class ListPerformanceTest
+class ListPerformanceTest extends BaseTest
 {
     private static final Logger logger = LoggerFactory.getLogger(ListPerformanceTest.class);
 
@@ -58,7 +56,7 @@ class ListPerformanceTest
             c.time("sort", () -> list.sort(Comparator.naturalOrder()));
         }
 
-        logger.info(c.prettyPrint("LinkedList"));
+        output(c);
         assertThat(true).isTrue();
     }
 
@@ -72,7 +70,7 @@ class ListPerformanceTest
             c.time("sort", () -> list.sort(Comparator.naturalOrder()));
         }
 
-        logger.info(c.prettyPrint("ArrayList"));
+        output(c);
         assertThat(true).isTrue();
     }
 
@@ -86,7 +84,7 @@ class ListPerformanceTest
             c.time("sort", list::sort);
         }
 
-        logger.info(c.prettyPrint("LongList"));
+        output(c);
         assertThat(true).isTrue();
     }
 
@@ -105,7 +103,7 @@ class ListPerformanceTest
             c.time("Adding", () -> list.add(randomNano()));
         }
 
-        System.out.println(c.prettyPrint());
+        output(c);
 
         assertThat(true).isTrue();
     }
@@ -174,18 +172,11 @@ class ListPerformanceTest
         final Chronograph b = performAddBenchmark(10, 10_000);
         final Chronograph c = performAddBenchmark(5, 10_000);
         final Chronograph d = performSortBenchmark(8, 10_000);
-        final ChronographData combined = ChronographData.combine("Combined", Arrays.asList(a, b, c, d));
+        final ChronographData combined = ChronographData.merge("Combined", Arrays.asList(a, b, c, d));
 
-        System.out.println(new TableOutputformatter().format(combined));
+        System.out.println(new TableOutputFormatter().format(combined));
 
         assertThat(true).isTrue();
-    }
-
-
-    private void output(final Chronograph c, TableTheme theme)
-    {
-        System.out.println(theme.getName());
-        System.out.println(c.prettyPrint(theme));
     }
 
     private LongList addLongList(int count)

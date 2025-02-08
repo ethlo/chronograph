@@ -49,7 +49,7 @@ class TableOutputformatterTest
         assertThat(chronographData.getTotalTime().toNanos()).isEqualTo(4_404_752_627L);
 
         // Format the data
-        var result = new TableOutputformatter().format(chronographData);
+        var result = new TableOutputFormatter().format(chronographData);
 
         // Assert the result
         assertThat(result).isEqualToIgnoringWhitespace("""

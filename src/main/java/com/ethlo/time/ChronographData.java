@@ -38,22 +38,34 @@ public class ChronographData
         this.totalTime = Duration.ofNanos(rootTasks.stream().mapToLong(t -> t.getTotalTaskTime().toNanos()).sum());
     }
 
-    public static ChronographData combine(final String name, final List<Chronograph> toCombine)
+    public static ChronographData merge(final List<Chronograph> input)
     {
-        if (toCombine.isEmpty())
+        return merge(null, input);
+    }
+
+    /**
+     * Merge all data from multiple instances.
+     *
+     * @param name  The name of the merged data
+     * @param input The instances to merge
+     * @return A merged instance
+     */
+    public static ChronographData merge(final String name, final List<Chronograph> input)
+    {
+        if (input.isEmpty())
         {
             throw new IllegalArgumentException("No results to combine");
         }
-        if (toCombine.size() == 1)
+        if (input.size() == 1)
         {
-            return toCombine.get(0).getTaskData();
+            return input.get(0).getTaskData();
         }
         else
         {
-            ChronographData last = toCombine.get(0).getTaskData();
-            for (int i = 1; i < toCombine.size(); i++)
+            ChronographData last = input.get(0).getTaskData();
+            for (int i = 1; i < input.size(); i++)
             {
-                last = last.merge(name, toCombine.get(i).getTaskData());
+                last = last.merge(name, input.get(i).getTaskData());
             }
             return last;
         }

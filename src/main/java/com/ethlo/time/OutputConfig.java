@@ -50,7 +50,6 @@ public class OutputConfig
             .total(true)
             .percentage(true);
 
-    private String title;
     private double[] percentiles;
     private boolean median;
     private boolean average;
@@ -69,7 +68,6 @@ public class OutputConfig
 
     private OutputConfig(Builder builder)
     {
-        this.title = builder.title;
         this.percentiles = builder.percentiles;
         this.median = builder.median;
         this.average = builder.average;
@@ -82,11 +80,6 @@ public class OutputConfig
         this.overheadName = builder.overheadName;
 
 
-    }
-
-    public String title()
-    {
-        return title;
     }
 
     public double[] percentiles()
@@ -219,7 +212,6 @@ public class OutputConfig
             this.percentiles = config.percentiles;
             this.invocations = config.invocations;
             this.average = config.average;
-            this.title = config.title;
             this.overheadName = config.overheadName;
         }
 

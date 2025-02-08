@@ -22,7 +22,6 @@ package com.ethlo.time;
 
 import java.time.Duration;
 import java.util.ArrayDeque;
-import java.util.ArrayList;
 import java.util.Deque;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -74,12 +73,21 @@ import java.util.function.ToLongBiFunction;
 import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 
-import com.ethlo.ascii.TableTheme;
-import com.ethlo.ascii.TableThemes;
-
 /**
  * A utility for tracking and timing tasks with high precision.
- * Supports capturing execution statistics for various task types.
+ * <p>
+ * Chronograph allows measuring execution times for different types of tasks,
+ * supports hierarchical task structures, and provides formatted output of the collected timing data.
+ * </p>
+ *
+ * <div> Features:
+ * <ul>
+ *     <li>Supports nested task timing</li>
+ *     <li>Provides a structured summary of task execution times</li>
+ *     <li>Offers various timing methods for functions, consumers, and suppliers</li>
+ *     <li>Formats results for easy visualization</li>
+ * </ul>
+ * </div>
  */
 public class Chronograph
 {
@@ -127,6 +135,12 @@ public class Chronograph
         return new Chronograph(name, captureConfig);
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     */
     public void time(final String taskName, final Runnable task)
     {
         try
@@ -139,6 +153,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param input    The input to the function
+     */
     public <R, T> R time(final String taskName, final Function<T, R> task, T input)
     {
         try
@@ -151,6 +172,12 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     */
     public <R> R time(final String taskName, final Supplier<R> task)
     {
         try
@@ -163,6 +190,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     * @param u        the second value
+     */
     public <T, U> void time(final String taskName, final BiConsumer<T, U> task, T t, U u)
     {
         try
@@ -175,6 +210,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     * @param u        the second value
+     */
     public <T, U, R> R time(final String taskName, final BiFunction<T, U, R> task, T t, U u)
     {
         try
@@ -187,6 +230,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t1       the first value
+     * @param t2       the second value
+     */
     public <T> T time(final String taskName, final BinaryOperator<T> task, T t1, T t2)
     {
         try
@@ -199,6 +250,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     * @param u        the second value
+     */
     public <T, U> boolean time(final String taskName, final BiPredicate<T, U> task, T t, U u)
     {
         try
@@ -211,6 +270,12 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     */
     public boolean time(final String taskName, final BooleanSupplier task)
     {
         try
@@ -223,6 +288,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     */
     public <T> void time(final String taskName, final Consumer<T> task, T t)
     {
         try
@@ -235,6 +307,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param d1       the first value
+     * @param d2       the second value
+     */
     public double time(final String taskName, final DoubleBinaryOperator task, double d1, double d2)
     {
         try
@@ -247,6 +327,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param d        The value to process
+     */
     public void time(final String taskName, final DoubleConsumer task, double d)
     {
         try
@@ -259,6 +346,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param d        the value to process
+     */
     public <R> R time(final String taskName, final DoubleFunction<R> task, double d)
     {
         try
@@ -271,6 +365,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param d        the value to process
+     */
     public boolean time(final String taskName, final DoublePredicate task, double d)
     {
         try
@@ -283,6 +384,12 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     **/
     public double time(final String taskName, final DoubleSupplier task)
     {
         try
@@ -295,6 +402,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param d        the value to convert
+     */
     public int time(final String taskName, final DoubleToIntFunction task, double d)
     {
         try
@@ -307,6 +421,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param d        the value to convert
+     */
     public long time(final String taskName, final DoubleToLongFunction task, double d)
     {
         try
@@ -319,6 +440,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param d        the value to process
+     */
     public double time(final String taskName, final DoubleUnaryOperator task, double d)
     {
         try
@@ -331,6 +459,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param i1       the first value
+     * @param i2       the second value
+     */
     public int time(final String taskName, final IntBinaryOperator task, int i1, int i2)
     {
         try
@@ -343,6 +479,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param i        the value to evaluate
+     */
     public void time(final String taskName, final IntConsumer task, int i)
     {
         try
@@ -355,6 +498,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param i        the value to process
+     */
     public <R> R time(final String taskName, final IntFunction<R> task, int i)
     {
         try
@@ -367,6 +517,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param i        the value to evaluate
+     */
     public boolean time(final String taskName, final IntPredicate task, int i)
     {
         try
@@ -379,6 +536,12 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     */
     public int time(final String taskName, final IntSupplier task)
     {
         try
@@ -391,6 +554,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param i        the value to process
+     */
     public double time(final String taskName, final IntToDoubleFunction task, int i)
     {
         try
@@ -403,6 +573,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param i        the value to convert
+     */
     public long time(final String taskName, final IntToLongFunction task, int i)
     {
         try
@@ -415,6 +592,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param i        the value to process
+     */
     public int time(final String taskName, final IntUnaryOperator task, int i)
     {
         try
@@ -427,6 +611,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param l1       the first value
+     * @param l2       the second value
+     */
     public long time(final String taskName, final LongBinaryOperator task, long l1, long l2)
     {
         try
@@ -439,6 +631,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param l        the value to consume
+     */
     public void time(final String taskName, final LongConsumer task, long l)
     {
         try
@@ -451,6 +650,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param l        the value to process
+     */
     public <R> R time(final String taskName, final LongFunction<R> task, long l)
     {
         try
@@ -463,6 +669,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param l        the value to process
+     */
     public boolean time(final String taskName, final LongPredicate task, long l)
     {
         try
@@ -475,6 +688,12 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     */
     public long time(final String taskName, final LongSupplier task)
     {
         try
@@ -487,6 +706,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param l        the value to convert
+     */
     public double time(final String taskName, final LongToDoubleFunction task, long l)
     {
         try
@@ -499,6 +725,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param l        the value to convert
+     */
     public int time(final String taskName, final LongToIntFunction task, long l)
     {
         try
@@ -511,6 +744,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param l        the value to process
+     */
     public long time(final String taskName, final LongUnaryOperator task, long l)
     {
         try
@@ -523,6 +763,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     * @param d        the second value
+     */
     public <T> void time(final String taskName, final ObjDoubleConsumer<T> task, T t, double d)
     {
         try
@@ -535,6 +783,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     * @param i        the second value
+     */
     public <T> void time(final String taskName, final ObjIntConsumer<T> task, T t, int i)
     {
         try
@@ -547,6 +803,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     * @param l        the second value
+     */
     public <T> void time(final String taskName, final ObjLongConsumer<T> task, T t, long l)
     {
         try
@@ -559,6 +823,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     * @param u        the second value
+     */
     public <T, U> double time(final String taskName, final ToDoubleBiFunction<T, U> task, T t, U u)
     {
         try
@@ -571,6 +843,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the value to process
+     */
     public <T> double time(final String taskName, final ToDoubleFunction<T> task, T t)
     {
         try
@@ -583,6 +862,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     * @param u        the second value
+     */
     public <T, U> int time(final String taskName, final ToIntBiFunction<T, U> task, T t, U u)
     {
         try
@@ -595,6 +882,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the value to process
+     */
     public <T> int time(final String taskName, final ToIntFunction<T> task, T t)
     {
         try
@@ -607,6 +901,14 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     * @param u        the second value
+     */
     public <T, U> long time(final String taskName, final ToLongBiFunction<T, U> task, T t, U u)
     {
         try
@@ -619,6 +921,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     */
     public <T> long time(final String taskName, final ToLongFunction<T> task, T t)
     {
         try
@@ -631,6 +940,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName The name of the task being measured.
+     * @param task     The task to execute.
+     * @param t        the first value
+     */
     public <T> T time(final String taskName, final UnaryOperator<T> task, T t)
     {
         try
@@ -643,6 +959,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Measures execution time for a given task.
+     *
+     * @param taskName  The name of the task being measured.
+     * @param predicate The task to execute.
+     * @param t         the value to evaluate
+     */
     public <T> boolean time(String taskName, Predicate<T> predicate, T t)
     {
         try
@@ -653,31 +976,6 @@ public class Chronograph
         {
             stop();
         }
-    }
-
-    public String prettyPrint(final String title)
-    {
-        return prettyPrint(OutputConfig.DEFAULT.title(title), TableThemes.ASCII);
-    }
-
-    public String prettyPrint()
-    {
-        return prettyPrint(OutputConfig.DEFAULT, TableThemes.ASCII);
-    }
-
-    public String prettyPrint(OutputConfig outputConfig, TableTheme tableTheme)
-    {
-        return new TableOutputformatter(tableTheme, outputConfig).format(getTaskData());
-    }
-
-    public String prettyPrint(OutputConfig outputConfig)
-    {
-        return prettyPrint(outputConfig, TableThemes.ASCII);
-    }
-
-    public String prettyPrint(TableTheme tableTheme)
-    {
-        return prettyPrint(OutputConfig.DEFAULT, tableTheme);
     }
 
     public boolean start(String task)
@@ -732,7 +1030,7 @@ public class Chronograph
         tasksByName.clear();
     }
 
-    public TaskInfo getRootTasks(final String task)
+    public TaskInfo getTask(final String task)
     {
         return findByName(task).orElseThrow(() -> new IllegalStateException("Unknown task " + task));
     }
@@ -742,7 +1040,7 @@ public class Chronograph
         return Optional.ofNullable(tasksByName.get(task));
     }
 
-    public List<TaskInfo> getRootTasks()
+    public List<TaskInfo> getTasks()
     {
         return List.copyOf(tasksByName.values().stream().filter(t -> t.getDepth() == 0).toList());
     }
@@ -759,7 +1057,7 @@ public class Chronograph
 
     public ChronographData getTaskData()
     {
-        return new ChronographData(name, getRootTasks());
+        return new ChronographData(name, getTasks());
     }
 
     public void stopAll()
@@ -770,10 +1068,5 @@ public class Chronograph
             final MutableTaskInfo task = taskStack.pop();
             task.stopped(ts);
         }
-    }
-
-    public List<TaskInfo> getTasks()
-    {
-        return new ArrayList<>(tasksByName.values());
     }
 }

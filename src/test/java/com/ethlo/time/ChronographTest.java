@@ -26,17 +26,13 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import com.ethlo.ascii.TableTheme;
 import com.ethlo.ascii.TableThemes;
+import com.ethlo.util.BaseTest;
 import com.ethlo.util.SleepUtil;
 
-public class ChronographTest
+public class ChronographTest extends BaseTest
 {
-    private static final Logger logger = LoggerFactory.getLogger(ChronographTest.class);
-
     private final String taskName = "a long task name";
 
     @Test
@@ -51,7 +47,7 @@ public class ChronographTest
             chronograph.stop();
         }
 
-        logger.info(chronograph.prettyPrint());
+        output(chronograph);
         assertThat(true).isTrue();
     }
 
@@ -90,11 +86,11 @@ public class ChronographTest
             });
         });
 
-        logger.info(c.prettyPrint(OutputConfig.COMPACT.overheadName("<overhead>")
+        output(c, OutputConfig.COMPACT.overheadName("<overhead>")
                 .percentage(true)
                 .standardDeviation(false)
                 .median(true)
-                .max(true), TableThemes.OCEAN_BREEZE));
+                .max(true), TableThemes.OCEAN_BREEZE);
 
         output(c, TableThemes.ASCII);
         output(c, TableThemes.OCEAN_BREEZE);
@@ -109,12 +105,6 @@ public class ChronographTest
         output(c, TableThemes.MINIMAL);
         output(c, TableThemes.COMPACT);
         assertThat(true).isTrue();
-    }
-
-    private void output(final Chronograph c, TableTheme theme)
-    {
-        System.out.println(theme.getName());
-        System.out.println(c.prettyPrint(theme));
     }
 
     private void busy(long millis)
@@ -153,8 +143,8 @@ public class ChronographTest
             chronograph.time("baz baz baz baz baz baz", this::microsecondTask);
         }
 
-        assertThat(chronograph.getRootTasks()).hasSize(3);
-        logger.info(chronograph.prettyPrint());
+        assertThat(chronograph.getTasks()).hasSize(3);
+        output(chronograph);
     }
 
     private void millisecondTask()
@@ -220,7 +210,7 @@ public class ChronographTest
     @Test
     void noData()
     {
-        assertThat(Chronograph.create().prettyPrint()).isEqualTo("No performance data");
+        assertThat(new TableOutputFormatter().format(Chronograph.create().getTaskData())).isEqualTo("No performance data");
     }
 
     @Test
@@ -240,7 +230,7 @@ public class ChronographTest
             chronograph.time("Task-" + i, () -> {
             });
         }
-        logger.info(chronograph.prettyPrint());
+        output(chronograph);
         assertThat(true).isTrue();
     }
 
@@ -253,7 +243,7 @@ public class ChronographTest
             chronograph.start(taskName);
             chronograph.stop();
         }
-        final Duration median = chronograph.getRootTasks(taskName).getPerformanceStatistics().getMedian();
+        final Duration median = chronograph.getTask(taskName).getPerformanceStatistics().getMedian();
         logger.info("Granularity: {}", ReportUtil.humanReadable(median));
         assertThat(median.toNanos()).isGreaterThan(0);
     }
@@ -264,9 +254,9 @@ public class ChronographTest
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
         chronograph.stop();
-        assertThat(chronograph.getRootTasks().stream().map(TaskInfo::getName)).containsExactly(taskName);
+        assertThat(chronograph.getTasks().stream().map(TaskInfo::getName)).containsExactly(taskName);
         chronograph.resetAll();
-        assertThat(chronograph.getRootTasks()).isEmpty();
+        assertThat(chronograph.getTasks()).isEmpty();
     }
 
     @Test
@@ -288,8 +278,7 @@ public class ChronographTest
         chronograph.start("b");
         chronograph.start("c");
         chronograph.stopAll();
-        assertThat(chronograph.getRootTasks()).hasSize(1);
-        assertThat(chronograph.getTasks()).hasSize(3);
+        assertThat(chronograph.getTasks()).hasSize(1);
     }
 
     @Test
@@ -318,7 +307,7 @@ public class ChronographTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        assertThat(chronograph.getRootTasks(taskName).getPerformanceStatistics().getAverage()).isEqualTo(Duration.ZERO);
+        assertThat(chronograph.getTask(taskName).getPerformanceStatistics().getAverage()).isEqualTo(Duration.ZERO);
     }
 
     @Test
@@ -333,11 +322,11 @@ public class ChronographTest
         chronograph1.stop();
         chronograph2.stop();
 
-        System.out.println(chronograph1.prettyPrint(TableThemes.DOUBLE));
-        System.out.println(chronograph2.prettyPrint(OutputConfig.COMPACT));
+        output(chronograph1, TableThemes.DOUBLE);
+        output(chronograph2, TableThemes.COMPACT);
         final ChronographData merged = chronograph2.getTaskData().merge("merged", chronograph1.getTaskData());
 
-        System.out.println(new TableOutputformatter().format(merged));
+        System.out.println(new TableOutputFormatter().format(merged));
 
         assertThat(true).isTrue();
     }

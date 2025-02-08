@@ -27,11 +27,8 @@ import java.util.Optional;
 import java.util.WeakHashMap;
 
 import com.ethlo.Beta;
-import com.ethlo.ascii.TableTheme;
-import com.ethlo.ascii.TableThemes;
 import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
-import com.ethlo.time.ChronographData;
 import com.ethlo.time.OutputConfig;
 
 @Beta
@@ -40,7 +37,6 @@ public class ChronographContext
     private final Map<Thread, Chronograph> instances = new WeakHashMap<>();
     private OutputConfig outputConfig;
     private CaptureConfig captureConfig;
-    private TableTheme theme;
 
     public Chronograph get()
     {
@@ -58,25 +54,9 @@ public class ChronographContext
         }
     }
 
-    public String prettyPrint()
-    {
-        return get().prettyPrint(getConfig(), getTheme());
-    }
-
     private OutputConfig getConfig()
     {
         return Optional.ofNullable(outputConfig).orElse(OutputConfig.DEFAULT);
-    }
-
-    public TableTheme getTheme()
-    {
-        return Optional.ofNullable(theme).orElse(TableThemes.ASCII);
-    }
-
-    public ChronographContext setTheme(final TableTheme theme)
-    {
-        this.theme = theme;
-        return this;
     }
 
     public OutputConfig getOutputConfig()
@@ -110,21 +90,5 @@ public class ChronographContext
     public List<Chronograph> getAll()
     {
         return new ArrayList<>(instances.values());
-    }
-
-    /**
-     * Merge all the data from multiple instances
-     *
-     * @param input The instances to merge data for
-     * @return The merged result
-     */
-    public ChronographData merged(List<Chronograph> input)
-    {
-        ChronographData mergedData = new ChronographData(null, List.of());
-        for (Chronograph c : input)
-        {
-            mergedData = mergedData.merge(c.getTaskData().getName(), c.getTaskData());
-        }
-        return mergedData;
     }
 }

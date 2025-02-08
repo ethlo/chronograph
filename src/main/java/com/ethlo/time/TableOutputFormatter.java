@@ -39,18 +39,18 @@ import com.ethlo.ascii.TableTheme;
 import com.ethlo.ascii.TableThemes;
 import com.ethlo.time.statistics.PerformanceStatistics;
 
-public class TableOutputformatter implements OutputFormatter
+public class TableOutputFormatter implements OutputFormatter
 {
     private final TableTheme tableTheme;
     private final OutputConfig outputConfig;
 
-    public TableOutputformatter(TableTheme tableTheme, OutputConfig outputConfig)
+    public TableOutputFormatter(TableTheme tableTheme, OutputConfig outputConfig)
     {
         this.tableTheme = Objects.requireNonNull(tableTheme, "tableTheme cannot be null");
         this.outputConfig = Objects.requireNonNull(outputConfig, "outputConfig cannot be null");
     }
 
-    public TableOutputformatter()
+    public TableOutputFormatter()
     {
         this(TableThemes.ASCII, OutputConfig.DEFAULT);
     }
@@ -248,7 +248,7 @@ public class TableOutputformatter implements OutputFormatter
         }
 
         rows.add(SeparatorRow.getInstance());
-        return new Table(tableTheme, rows).render(outputConfig.title() != null ? outputConfig.title() : chronographData.getName());
+        return new Table(tableTheme, rows).render(chronographData.getName());
     }
 
     private void doOutputTasks(final Duration totalTime, Duration parentDuration, List<TaskInfo> children, List<TableRow> rows, NumberFormat pf, NumberFormat nf)

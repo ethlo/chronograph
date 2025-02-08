@@ -9,9 +9,9 @@ package com.ethlo.time.context;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,7 +35,7 @@ import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographData;
 import com.ethlo.time.OutputConfig;
-import com.ethlo.time.TableOutputformatter;
+import com.ethlo.time.TableOutputFormatter;
 
 class ChronographContextTest
 {
@@ -47,7 +47,6 @@ class ChronographContextTest
         // Set up any necessary configurations or defaults if needed
         chronographContext.setCaptureConfig(CaptureConfig.DEFAULT);
         chronographContext.setOutputConfig(OutputConfig.DEFAULT);
-        chronographContext.setTheme(TableThemes.ASCII);
     }
 
     @Test
@@ -66,8 +65,6 @@ class ChronographContextTest
                     busy();
                     chronographContext.get().time("SubTask", this::busy);
                 });
-
-                System.out.println(chronographContext.prettyPrint());
             });
         }
 
@@ -84,8 +81,8 @@ class ChronographContextTest
         // Assert that the list contains 3 Chronograph instances (one per thread)
         assertThat(allChronographs).hasSize(threadCount);
 
-        final ChronographData merged = chronographContext.merged(allChronographs);
-        System.out.println(new TableOutputformatter().format(merged));
+        final ChronographData merged = ChronographData.merge(allChronographs);
+        System.out.println(new TableOutputFormatter().format(merged));
     }
 
     private void busy()
