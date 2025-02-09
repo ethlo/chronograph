@@ -75,6 +75,8 @@ import java.util.function.UnaryOperator;
 
 import com.ethlo.time.internal.MutableTaskInfo;
 import com.ethlo.time.internal.RateLimitedTaskInfo;
+import com.ethlo.time.output.table.TableOutputFormatter;
+import com.ethlo.time.output.table.TableThemes;
 
 /**
  * A utility for tracking and timing tasks with high precision.
@@ -94,6 +96,7 @@ import com.ethlo.time.internal.RateLimitedTaskInfo;
  */
 public class Chronograph
 {
+    private static final TableOutputFormatter DEFAULT_FORMATTER = new TableOutputFormatter(TableThemes.ASCII, OutputConfig.DEFAULT);
     private final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
 
     private final Deque<MutableTaskInfo> taskStack = new ArrayDeque<>(); // Tracks the active task
@@ -1210,5 +1213,11 @@ public class Chronograph
             final MutableTaskInfo task = taskStack.pop();
             task.stopped(ts);
         }
+    }
+
+    @Override
+    public String toString()
+    {
+        return DEFAULT_FORMATTER.format(getTaskData());
     }
 }

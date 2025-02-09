@@ -6,6 +6,7 @@
 Easy to use Java stopwatch allowing measurement of elapsed time.
 
 ## Features
+  * New in 4.0: Hierarchical task tracking - Start several nested tasks.
   * The same task can be timed multiple times for aggregated/cumulative data.
   * Supports numerous metrics:
      - mean
@@ -18,12 +19,11 @@ Easy to use Java stopwatch allowing measurement of elapsed time.
      - count
      - total time
   * Human-readable durations
-  * Highly tweaked code for minimal overhead. Custom list for capturing results with as low overhead as possible.
-  * Dynamic ASCII/UTF-8 table support for detailed result output on the console or in logs
-  * Support for colored output (ANSI console)
-  * Easy to fetch the underlying data for when you need your own output format
-  * Configurable sample interval for very fast running tasks
-  * No dependencies (~35KB jar file)
+  * Highly tweaked code for minimal overhead.
+  * Dynamic ASCII/Unicode table support for detailed result output on the console or in logs with support for colored output (ANSI console)
+  * Easy to fetch the underlying data for when you need your own output format, like JSON
+  * Configurable sample interval for very short running tasks
+  * No dependencies
 
 ## Getting started
 
@@ -34,7 +34,7 @@ Easy to use Java stopwatch allowing measurement of elapsed time.
 <dependency>
   <groupId>com.ethlo.time</groupId>
   <artifactId>chronograph</artifactId>
-  <version>3.0.0</version>
+  <version>4.0.0</version>
 </dependency>
 ``` 
 ### Usage 
@@ -54,7 +54,7 @@ System.out.printn(chronograph.prettyPrint());
 final List<Long> myList = ...;
 final Chronograph chronograph = Chronograph.create();     
 chronograph.time("List sort", () -> linkedList.sort(Comparator.naturalOrder()));
-System.out.printn(chronograph.prettyPrint());
+System.out.println(chronograph);
 ```
 
 ### Choice of output columns
@@ -62,20 +62,21 @@ Empty columns will be dropped automatically. Included columns can be configured.
 
 Begin from scratch:
 ```java
-final OutputConfig cfg = new OutputConfig()
+final OutputConfig outputConfig = new OutputConfig()
   .median(true)
-  .standardDeviation(true));
+  .standardDeviation(true);
 ``` 
 
 Begin from DEFAULT configuration:
 ```java
-final OutputConfig cfg = Chronograph.configure(OutputConfig.DEFAULT
+final OutputConfig outputConfig = Chronograph.configure(OutputConfig.DEFAULT
   .percentiles(75, 90, 99, 99.9, 99.99));
 ```
 
 ```java
 // Then use it like this
-System.out.println(chronograph.prettyPrint(cfg, TableTheme.RED_HERRING);
+
+System.out.println(new TableOutputFormatter(outputConfig, TableTheme.RED_HERRING).format(chronograph.getData()));
 ```
 ### Reduced sample interval
 If you run very quick tasks (typically less than milliseconds) in a loop, it may be beneficial to not capture every iteration, but instead sample some of them. This can be achieved by
@@ -88,12 +89,6 @@ final Chronograph chronograph = Chronograph
 ### Themes
 
 You can choose to output the results using different styles and colors. Below are a few examples.
-
-```java 
-final Chronograph chronograph = Chronograph.create();
-final OutputConfig cfg = ...;
-System.out.println(chronograph.prettyPrint(cfg, TableTheme.RED_HERRING));
-```
 
 ![Themes](doc/themes.png "Themes")
 
