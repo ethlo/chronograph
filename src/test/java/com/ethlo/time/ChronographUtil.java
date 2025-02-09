@@ -1,10 +1,32 @@
 package com.ethlo.time;
 
+/*-
+ * #%L
+ * Chronograph
+ * %%
+ * Copyright (C) 2019 - 2025 Morten Haraldsen (ethlo)
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.text.DecimalFormat;
 import java.time.Duration;
 
+import com.ethlo.time.output.json.JsonOutputFormatter;
+import com.ethlo.time.output.table.TableOutputFormatter;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -23,6 +45,7 @@ public abstract class ChronographUtil
             .configure(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS, true)
             .findAndRegisterModules();
     private static final TableOutputFormatter formatter = new TableOutputFormatter();
+    private static final JsonOutputFormatter jsonOutputFormatter;
 
     static
     {
@@ -31,24 +54,28 @@ public abstract class ChronographUtil
         mapper.registerModule(module);
 
         mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
+
+        jsonOutputFormatter = new JsonOutputFormatter(OutputConfig.EXTENDED.percentiles(75, 90, 95, 99, 99.9), data ->
+        {
+            try
+            {
+                return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
+            }
+            catch (JsonProcessingException e)
+            {
+                throw new UncheckedIOException(e);
+            }
+        });
     }
 
-    public static String asciiTable(Chronograph chronograph)
+    public static String table(Chronograph chronograph)
     {
         return formatter.format(chronograph.getTaskData());
     }
 
-    public static String json(Chronograph chronograph, OutputConfig outputConfig)
+    public static String json(Chronograph chronograph)
     {
-        final SerializableChronographData serializable = new SerializableChronographData(chronograph.getTaskData(), outputConfig);
-        try
-        {
-            return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(serializable);
-        }
-        catch (JsonProcessingException e)
-        {
-            throw new UncheckedIOException(e);
-        }
+        return jsonOutputFormatter.format(chronograph.getTaskData());
     }
 
     static class PlainDurationSerializer extends JsonSerializer<Duration>

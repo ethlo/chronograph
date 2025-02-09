@@ -24,8 +24,8 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
-import com.ethlo.sampler.SampleRater;
-import com.ethlo.sampler.ScheduledSampleRater;
+import com.ethlo.time.internal.sampler.SampleRater;
+import com.ethlo.time.internal.sampler.ScheduledSampleRater;
 
 class SampleRaterTest
 {

@@ -1,4 +1,4 @@
-package com.ethlo.ascii;
+package com.ethlo.time.internal.ascii;
 
 /*-
  * #%L

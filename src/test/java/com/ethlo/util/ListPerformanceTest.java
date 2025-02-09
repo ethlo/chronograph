@@ -29,15 +29,18 @@ import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.ethlo.time.internal.util.IndexedCollection;
+import com.ethlo.time.internal.util.LongList;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ethlo.ascii.TableThemes;
+import com.ethlo.time.internal.ascii.TableThemes;
 import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographData;
-import com.ethlo.time.TableOutputFormatter;
+import com.ethlo.time.output.table.TableOutputFormatter;
 
 class ListPerformanceTest extends BaseTest
 {

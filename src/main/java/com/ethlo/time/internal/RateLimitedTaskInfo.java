@@ -1,4 +1,4 @@
-package com.ethlo.time;
+package com.ethlo.time.internal;
 
 /*-
  * #%L
@@ -23,10 +23,10 @@ package com.ethlo.time;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.ethlo.sampler.SampleRater;
-import com.ethlo.sampler.ScheduledSampleRater;
+import com.ethlo.time.internal.sampler.SampleRater;
+import com.ethlo.time.internal.sampler.ScheduledSampleRater;
 import com.ethlo.time.statistics.PerformanceStatistics;
-import com.ethlo.util.IndexedCollectionStatistics;
+import com.ethlo.time.internal.util.IndexedCollectionStatistics;
 
 public class RateLimitedTaskInfo extends MutableTaskInfo
 {
@@ -34,14 +34,14 @@ public class RateLimitedTaskInfo extends MutableTaskInfo
     private int totalInvocations;
     private long totalElapsed;
 
-    RateLimitedTaskInfo(final String name, Duration minInterval, final ScheduledExecutorService scheduledExecutorService, final MutableTaskInfo parent)
+    public RateLimitedTaskInfo(final String name, Duration minInterval, final ScheduledExecutorService scheduledExecutorService, final MutableTaskInfo parent)
     {
         super(name, parent);
         this.sampleRater = new ScheduledSampleRater<>(scheduledExecutorService, minInterval, prg -> logElapsedDuration(prg.progress()));
     }
 
     @Override
-    boolean stopped(final long ts)
+    public boolean stopped(final long ts)
     {
         if (!isRunning())
         {

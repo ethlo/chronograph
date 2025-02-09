@@ -20,6 +20,8 @@ package com.ethlo.time;
  * #L%
  */
 
+import com.ethlo.time.internal.MutableTaskInfo;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;

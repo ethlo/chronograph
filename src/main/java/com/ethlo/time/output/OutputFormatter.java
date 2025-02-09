@@ -1,4 +1,4 @@
-package com.ethlo.time;
+package com.ethlo.time.output;
 
 /*-
  * #%L
@@ -19,6 +19,8 @@ package com.ethlo.time;
  * limitations under the License.
  * #L%
  */
+
+import com.ethlo.time.ChronographData;
 
 @FunctionalInterface
 public interface OutputFormatter

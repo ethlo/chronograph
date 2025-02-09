@@ -1,4 +1,4 @@
-package com.ethlo.time;
+package com.ethlo.time.output.json;
 
 /*-
  * #%L
@@ -29,6 +29,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import com.ethlo.time.OutputConfig;
+import com.ethlo.time.TaskInfo;
 import com.ethlo.time.statistics.PerformanceStatistics;
 
 public class SerializableTaskInfo implements Serializable

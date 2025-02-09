@@ -73,6 +73,9 @@ import java.util.function.ToLongBiFunction;
 import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 
+import com.ethlo.time.internal.MutableTaskInfo;
+import com.ethlo.time.internal.RateLimitedTaskInfo;
+
 /**
  * A utility for tracking and timing tasks with high precision.
  * <p>

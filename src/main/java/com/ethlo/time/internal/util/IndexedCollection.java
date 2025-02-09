@@ -1,12 +1,10 @@
-package com.ethlo.sampler;
-
-import java.time.Duration;
+package com.ethlo.time.internal.util;
 
 /*-
  * #%L
  * Chronograph
  * %%
- * Copyright (C) 2019 - 2023 Morten Haraldsen (ethlo)
+ * Copyright (C) 2019 Morten Haraldsen (ethlo)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +19,24 @@ import java.time.Duration;
  * limitations under the License.
  * #L%
  */
-public record TaskProgress<T>(T lastProgress, T progress, Duration duration)
-{
 
+import java.util.stream.Stream;
+
+public interface IndexedCollection<T> extends Iterable<T>
+{
+    void add(long T);
+
+    T get(int index);
+
+    int size();
+
+    void set(int index, T value);
+
+    void sort();
+
+    Stream<T> stream();
+
+    IndexedCollection<Long> addAll(Iterable<T> values);
+
+    boolean isEmpty();
 }

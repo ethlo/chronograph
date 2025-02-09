@@ -1,4 +1,4 @@
-package com.ethlo.util;
+package com.ethlo.time.internal.ascii;
 
 /*-
  * #%L
@@ -20,23 +20,27 @@ package com.ethlo.util;
  * #L%
  */
 
-import java.util.stream.Stream;
+import java.util.LinkedList;
+import java.util.List;
 
-public interface IndexedCollection<T> extends Iterable<T>
+public class TableRow
 {
-    void add(long T);
+    private final List<TableCell> cells = new LinkedList<>();
 
-    T get(int index);
+    public List<TableCell> getCells()
+    {
+        return cells;
+    }
 
-    int size();
+    public TableRow append(final TableCell cell)
+    {
+        cells.add(cell);
+        return this;
+    }
 
-    void set(int index, T value);
-
-    void sort();
-
-    Stream<T> stream();
-
-    IndexedCollection<Long> addAll(Iterable<T> values);
-
-    boolean isEmpty();
+    public TableRow append(final String value)
+    {
+        this.append(new TableCell(value));
+        return this;
+    }
 }

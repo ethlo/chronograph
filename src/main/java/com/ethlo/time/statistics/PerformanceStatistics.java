@@ -25,19 +25,19 @@ import java.math.RoundingMode;
 import java.time.Duration;
 import java.util.Optional;
 
-import com.ethlo.util.IndexedCollectionStatistics;
+import com.ethlo.time.internal.util.IndexedCollectionStatistics;
 
 public class PerformanceStatistics
 {
     private final IndexedCollectionStatistics collectionStatistics;
     private final long totalInvocations;
-    private final long elapsedTotal;
+    private final long totalElapsed;
 
-    public PerformanceStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, long elapsedTotal)
+    public PerformanceStatistics(final IndexedCollectionStatistics collectionStatistics, long totalInvocations, long totalElapsed)
     {
         this.collectionStatistics = collectionStatistics;
         this.totalInvocations = totalInvocations;
-        this.elapsedTotal = elapsedTotal;
+        this.totalElapsed = totalElapsed;
     }
 
     public PerformanceStatistics(IndexedCollectionStatistics collectionStatistics)
@@ -55,9 +55,9 @@ public class PerformanceStatistics
         return collectionStatistics.getList().isEmpty();
     }
 
-    public Duration getElapsedTotal()
+    public Duration getTotalElapsed()
     {
-        return Duration.ofNanos(elapsedTotal);
+        return Duration.ofNanos(totalElapsed);
     }
 
 
@@ -68,7 +68,7 @@ public class PerformanceStatistics
             return Duration.ZERO;
         }
 
-        return Duration.ofNanos(BigDecimal.valueOf(getElapsedTotal().toNanos()).divide(BigDecimal.valueOf(getTotalInvocations()), RoundingMode.HALF_UP).longValue());
+        return Duration.ofNanos(BigDecimal.valueOf(getTotalElapsed().toNanos()).divide(BigDecimal.valueOf(getTotalInvocations()), RoundingMode.HALF_UP).longValue());
     }
 
     public Duration getMedian()

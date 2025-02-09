@@ -1,4 +1,4 @@
-package com.ethlo.ascii;
+package com.ethlo.time.internal.ascii;
 
 /*-
  * #%L
@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.ethlo.util.StringUtil;
+import com.ethlo.time.internal.util.StringUtil;
 
 public class Table
 {

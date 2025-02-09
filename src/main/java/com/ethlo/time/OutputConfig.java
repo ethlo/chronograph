@@ -60,6 +60,7 @@ public class OutputConfig
     private boolean total;
     private boolean percentage;
     private String overheadName = "<unknown>";
+    private double overheadThreshold = 0.05;
 
     public OutputConfig()
     {
@@ -78,8 +79,7 @@ public class OutputConfig
         this.total = builder.total;
         this.percentage = builder.percentage;
         this.overheadName = builder.overheadName;
-
-
+        this.overheadThreshold = builder.overheadThreshold;
     }
 
     public double[] percentiles()
@@ -92,7 +92,7 @@ public class OutputConfig
         return median;
     }
 
-    public boolean mean()
+    public boolean average()
     {
         return average;
     }
@@ -125,11 +125,6 @@ public class OutputConfig
     public boolean percentage()
     {
         return percentage;
-    }
-
-    public OutputConfig title(final String title)
-    {
-        return new OutputConfig(new Builder(this).title(title));
     }
 
     public OutputConfig percentiles(final double... percentiles)
@@ -187,9 +182,27 @@ public class OutputConfig
         return new OutputConfig(new Builder(this).overheadName(overheadName));
     }
 
+    public OutputConfig overheadThreshold(double threshold)
+    {
+        if (threshold <= 0)
+        {
+            throw new IllegalArgumentException("Number is too small. Must be between 0 and 1");
+        }
+        if (threshold >= 1)
+        {
+            throw new IllegalArgumentException("Number is too large. Must be between 0 and 1");
+        }
+
+        return new OutputConfig(new Builder(this).overheadThreshold(threshold));
+    }
+
+    public double overheadThreshold()
+    {
+        return overheadThreshold;
+    }
+
     public static class Builder
     {
-        private String title;
         private double[] percentiles;
         private boolean median;
         private boolean average;
@@ -200,6 +213,7 @@ public class OutputConfig
         private boolean total;
         private boolean percentage;
         private String overheadName;
+        private double overheadThreshold;
 
         private Builder(OutputConfig config)
         {
@@ -213,12 +227,7 @@ public class OutputConfig
             this.invocations = config.invocations;
             this.average = config.average;
             this.overheadName = config.overheadName;
-        }
-
-        public Builder title(final String title)
-        {
-            this.title = title;
-            return this;
+            this.overheadThreshold = config.overheadThreshold;
         }
 
         public Builder percentiles(final double... percentiles)
@@ -278,6 +287,12 @@ public class OutputConfig
         public Builder overheadName(final String overheadName)
         {
             this.overheadName = overheadName;
+            return this;
+        }
+
+        public Builder overheadThreshold(double threshold)
+        {
+            this.overheadThreshold = threshold;
             return this;
         }
     }

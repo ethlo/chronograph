@@ -1,4 +1,4 @@
-package com.ethlo.time;
+package com.ethlo.time.output.table;
 
 /*-
  * #%L
@@ -20,7 +20,7 @@ package com.ethlo.time;
  * #L%
  */
 
-import static com.ethlo.ascii.Table.EMPTY_CONTENT;
+import static com.ethlo.time.internal.ascii.Table.EMPTY_CONTENT;
 
 import java.math.RoundingMode;
 import java.text.NumberFormat;
@@ -31,12 +31,18 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
-import com.ethlo.ascii.SeparatorRow;
-import com.ethlo.ascii.Table;
-import com.ethlo.ascii.TableCell;
-import com.ethlo.ascii.TableRow;
-import com.ethlo.ascii.TableTheme;
-import com.ethlo.ascii.TableThemes;
+import com.ethlo.time.ChronographData;
+import com.ethlo.time.OutputConfig;
+import com.ethlo.time.TaskInfo;
+import com.ethlo.time.internal.MutableTaskInfo;
+import com.ethlo.time.internal.ascii.ReportUtil;
+import com.ethlo.time.internal.ascii.SeparatorRow;
+import com.ethlo.time.internal.ascii.Table;
+import com.ethlo.time.internal.ascii.TableCell;
+import com.ethlo.time.internal.ascii.TableRow;
+import com.ethlo.time.internal.ascii.TableTheme;
+import com.ethlo.time.internal.ascii.TableThemes;
+import com.ethlo.time.output.OutputFormatter;
 import com.ethlo.time.statistics.PerformanceStatistics;
 
 public class TableOutputFormatter implements OutputFormatter
@@ -72,7 +78,7 @@ public class TableOutputFormatter implements OutputFormatter
 
         conditionalOutput(row, multipleInvocations, outputConfig.median(), performanceStatistics.getMedian());
         conditionalOutput(row, multipleInvocations, outputConfig.standardDeviation(), performanceStatistics.getStandardDeviation());
-        conditionalOutput(row, multipleInvocations, outputConfig.mean(), performanceStatistics.getAverage());
+        conditionalOutput(row, multipleInvocations, outputConfig.average(), performanceStatistics.getAverage());
         conditionalOutput(row, multipleInvocations, outputConfig.min(), performanceStatistics.getMin());
         conditionalOutput(row, multipleInvocations, outputConfig.max(), performanceStatistics.getMax());
         outputPercentiles(outputConfig, row, multipleInvocations, performanceStatistics);
@@ -96,7 +102,7 @@ public class TableOutputFormatter implements OutputFormatter
         if (outputConfig.total())
         {
             final ChronoUnit summaryResolution = ReportUtil.getSummaryResolution(totalTime);
-            final String str = ReportUtil.humanReadable(taskInfo.getPerformanceStatistics().getElapsedTotal(), summaryResolution);
+            final String str = ReportUtil.humanReadable(taskInfo.getPerformanceStatistics().getTotalElapsed(), summaryResolution);
             row.append(new TableCell("  ".repeat(taskInfo.getDepth()) + str, true, true));
         }
     }
@@ -105,7 +111,7 @@ public class TableOutputFormatter implements OutputFormatter
     {
         if (outputConfig.percentage())
         {
-            final double pct = totalTime.isZero() ? 0D : taskInfo.getPerformanceStatistics().getElapsedTotal().toNanos() / (double) (taskInfo.getParent() != null ? taskInfo.getParent().getTotalTaskTime().toNanos() : totalTime.toNanos());
+            final double pct = totalTime.isZero() ? 0D : taskInfo.getPerformanceStatistics().getTotalElapsed().toNanos() / (double) (taskInfo.getParent() != null ? taskInfo.getParent().getTotalTaskTime().toNanos() : totalTime.toNanos());
             row.append(new TableCell("  ".repeat(taskInfo.getDepth()) + pf.format(pct), true, true));
         }
     }
@@ -175,7 +181,7 @@ public class TableOutputFormatter implements OutputFormatter
         {
             headerRow.append("Std dev");
         }
-        if (outputConfig.mean())
+        if (outputConfig.average())
         {
             headerRow.append("Average");
         }
@@ -263,7 +269,7 @@ public class TableOutputFormatter implements OutputFormatter
         // Find all at this level
         final long allAtLevel = children.stream().mapToLong(c -> c.getTotalTaskTime().toNanos()).sum();
         final long diff = parentDuration.toNanos() - allAtLevel;
-        if (diff / (double) parentDuration.toNanos() > 0.02)
+        if (diff / (double) parentDuration.toNanos() > outputConfig.overheadThreshold())
         {
             final MutableTaskInfo overheadTask = new MutableTaskInfo(outputConfig.overheadName(), (MutableTaskInfo) children.get(0).getParent());
             overheadTask.addMeasurement(diff);

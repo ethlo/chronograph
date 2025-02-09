@@ -1,4 +1,4 @@
-package com.ethlo.ascii;
+package com.ethlo.time.internal.ascii;
 
 /*-
  * #%L
@@ -20,7 +20,7 @@ package com.ethlo.ascii;
  * #L%
  */
 
-import com.ethlo.util.StringUtil;
+import com.ethlo.time.internal.util.StringUtil;
 
 public class TableCell
 {

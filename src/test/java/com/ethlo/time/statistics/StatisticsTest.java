@@ -27,9 +27,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.ethlo.util.IndexedCollection;
-import com.ethlo.util.IndexedCollectionStatistics;
-import com.ethlo.util.LongList;
+import com.ethlo.time.internal.util.IndexedCollection;
+import com.ethlo.time.internal.util.IndexedCollectionStatistics;
+import com.ethlo.time.internal.util.LongList;
 
 class StatisticsTest
 {

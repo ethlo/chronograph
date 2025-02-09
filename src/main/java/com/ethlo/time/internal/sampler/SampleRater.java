@@ -1,4 +1,4 @@
-package com.ethlo.sampler;
+package com.ethlo.time.internal.sampler;
 
 /*-
  * #%L

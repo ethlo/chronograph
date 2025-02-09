@@ -1,4 +1,4 @@
-package com.ethlo.time;
+package com.ethlo.time.output.json;
 
 /*-
  * #%L
@@ -19,6 +19,9 @@ package com.ethlo.time;
  * limitations under the License.
  * #L%
  */
+
+import com.ethlo.time.ChronographData;
+import com.ethlo.time.OutputConfig;
 
 import java.io.Serializable;
 import java.util.List;

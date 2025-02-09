@@ -1,4 +1,4 @@
-package com.ethlo.ascii;
+package com.ethlo.time.internal.ascii;
 
 /*-
  * #%L
@@ -20,27 +20,17 @@ package com.ethlo.ascii;
  * #L%
  */
 
-import java.util.LinkedList;
-import java.util.List;
-
-public class TableRow
+public class SeparatorRow extends TableRow
 {
-    private final List<TableCell> cells = new LinkedList<>();
+    private static final SeparatorRow instance = new SeparatorRow();
 
-    public List<TableCell> getCells()
+    private SeparatorRow()
     {
-        return cells;
+
     }
 
-    public TableRow append(final TableCell cell)
+    public static SeparatorRow getInstance()
     {
-        cells.add(cell);
-        return this;
-    }
-
-    public TableRow append(final String value)
-    {
-        this.append(new TableCell(value));
-        return this;
+        return instance;
     }
 }

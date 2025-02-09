@@ -23,12 +23,12 @@ package com.ethlo.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ethlo.ascii.TableTheme;
-import com.ethlo.ascii.TableThemes;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographUtil;
 import com.ethlo.time.OutputConfig;
-import com.ethlo.time.TableOutputFormatter;
+import com.ethlo.time.internal.ascii.TableTheme;
+import com.ethlo.time.internal.ascii.TableThemes;
+import com.ethlo.time.output.table.TableOutputFormatter;
 
 public class BaseTest
 {
@@ -48,8 +48,8 @@ public class BaseTest
 
     protected void output(final Chronograph c)
     {
-        logger.info(ChronographUtil.asciiTable(c));
-        logger.info(ChronographUtil.json(c, OutputConfig.EXTENDED.percentiles(90, 95, 99, 99.9)));
+        logger.info(ChronographUtil.table(c));
+        logger.info(ChronographUtil.json(c));
     }
 
     protected void output(final Chronograph c, TableTheme tableTheme)

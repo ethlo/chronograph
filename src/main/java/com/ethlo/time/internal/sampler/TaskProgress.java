@@ -1,10 +1,12 @@
-package com.ethlo.ascii;
+package com.ethlo.time.internal.sampler;
+
+import java.time.Duration;
 
 /*-
  * #%L
  * Chronograph
  * %%
- * Copyright (C) 2019 Morten Haraldsen (ethlo)
+ * Copyright (C) 2019 - 2023 Morten Haraldsen (ethlo)
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,18 +21,7 @@ package com.ethlo.ascii;
  * limitations under the License.
  * #L%
  */
-
-public class SeparatorRow extends TableRow
+public record TaskProgress<T>(T lastProgress, T progress, Duration duration)
 {
-    private static final SeparatorRow instance = new SeparatorRow();
 
-    private SeparatorRow()
-    {
-
-    }
-
-    public static SeparatorRow getInstance()
-    {
-        return instance;
-    }
 }

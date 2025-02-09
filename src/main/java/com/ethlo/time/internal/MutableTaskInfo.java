@@ -1,4 +1,4 @@
-package com.ethlo.time;
+package com.ethlo.time.internal;
 
 /*-
  * #%L
@@ -27,10 +27,11 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+import com.ethlo.time.TaskInfo;
 import com.ethlo.time.statistics.PerformanceStatistics;
-import com.ethlo.util.IndexedCollection;
-import com.ethlo.util.IndexedCollectionStatistics;
-import com.ethlo.util.LongList;
+import com.ethlo.time.internal.util.IndexedCollection;
+import com.ethlo.time.internal.util.IndexedCollectionStatistics;
+import com.ethlo.time.internal.util.LongList;
 
 public class MutableTaskInfo implements TaskInfo
 {
@@ -41,7 +42,7 @@ public class MutableTaskInfo implements TaskInfo
     protected boolean running = false;
     private long taskStartTimestamp;
 
-    MutableTaskInfo(final String name, final MutableTaskInfo parent)
+    public MutableTaskInfo(final String name, final MutableTaskInfo parent)
     {
         this(name, parent, new LongList());
     }
@@ -57,7 +58,7 @@ public class MutableTaskInfo implements TaskInfo
         }
     }
 
-    boolean start()
+    public boolean start()
     {
         if (!running)
         {
@@ -68,7 +69,7 @@ public class MutableTaskInfo implements TaskInfo
         return false;
     }
 
-    boolean stopped(final long ts)
+    public boolean stopped(final long ts)
     {
         if (running)
         {
@@ -240,7 +241,7 @@ public class MutableTaskInfo implements TaskInfo
         this.data.addAll(((MutableTaskInfo) other).getData());
     }
 
-    void addMeasurement(long sample)
+    public void addMeasurement(long sample)
     {
         this.data.add(sample);
     }

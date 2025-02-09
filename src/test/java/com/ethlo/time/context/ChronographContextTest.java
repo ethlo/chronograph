@@ -30,12 +30,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.ethlo.ascii.TableThemes;
 import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographData;
 import com.ethlo.time.OutputConfig;
-import com.ethlo.time.TableOutputFormatter;
+import com.ethlo.time.output.table.TableOutputFormatter;
 
 class ChronographContextTest
 {

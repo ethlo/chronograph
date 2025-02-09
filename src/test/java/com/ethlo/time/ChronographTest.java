@@ -24,10 +24,13 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 
+import com.ethlo.time.internal.ascii.ReportUtil;
+import com.ethlo.time.output.table.TableOutputFormatter;
+
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.ethlo.ascii.TableThemes;
+import com.ethlo.time.internal.ascii.TableThemes;
 import com.ethlo.util.BaseTest;
 import com.ethlo.util.SleepUtil;
 
@@ -87,6 +90,7 @@ public class ChronographTest extends BaseTest
         });
 
         output(c, OutputConfig.COMPACT.overheadName("<overhead>")
+                .overheadThreshold(0.1)
                 .percentage(true)
                 .standardDeviation(false)
                 .median(true)

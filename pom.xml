@@ -88,6 +88,7 @@
                 </executions>
                 <configuration>
                     <show>public</show>
+                    <excludePackageNames>com.ethlo.time.internal,com.ethlo.time.internal.*</excludePackageNames>
                 </configuration>
             </plugin>
             <plugin>
