@@ -30,7 +30,7 @@ import com.ethlo.time.output.table.TableOutputFormatter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import com.ethlo.time.internal.ascii.TableThemes;
+import com.ethlo.time.output.table.TableThemes;
 import com.ethlo.util.BaseTest;
 import com.ethlo.util.SleepUtil;
 

@@ -23,8 +23,8 @@ package com.ethlo.time.internal;
 import java.time.Duration;
 import java.util.concurrent.ScheduledExecutorService;
 
-import com.ethlo.time.internal.sampler.SampleRater;
-import com.ethlo.time.internal.sampler.ScheduledSampleRater;
+import com.ethlo.sampler.SampleRater;
+import com.ethlo.sampler.ScheduledSampleRater;
 import com.ethlo.time.statistics.PerformanceStatistics;
 import com.ethlo.time.internal.util.IndexedCollectionStatistics;
 

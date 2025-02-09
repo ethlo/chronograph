@@ -1,4 +1,4 @@
-package com.ethlo.time.internal.sampler;
+package com.ethlo.sampler;
 
 import java.time.Duration;
 

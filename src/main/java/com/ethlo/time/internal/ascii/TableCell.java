@@ -21,6 +21,9 @@ package com.ethlo.time.internal.ascii;
  */
 
 import com.ethlo.time.internal.util.StringUtil;
+import com.ethlo.time.output.table.AnsiBackgroundColor;
+import com.ethlo.time.output.table.AnsiColor;
+import com.ethlo.time.output.table.TableTheme;
 
 public class TableCell
 {

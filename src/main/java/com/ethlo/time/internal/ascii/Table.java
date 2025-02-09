@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ethlo.time.internal.util.StringUtil;
+import com.ethlo.time.output.table.AnsiColor;
+import com.ethlo.time.output.table.TableTheme;
 
 public class Table
 {

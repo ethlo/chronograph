@@ -40,8 +40,6 @@ import com.ethlo.time.internal.ascii.SeparatorRow;
 import com.ethlo.time.internal.ascii.Table;
 import com.ethlo.time.internal.ascii.TableCell;
 import com.ethlo.time.internal.ascii.TableRow;
-import com.ethlo.time.internal.ascii.TableTheme;
-import com.ethlo.time.internal.ascii.TableThemes;
 import com.ethlo.time.output.OutputFormatter;
 import com.ethlo.time.statistics.PerformanceStatistics;
 
