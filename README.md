@@ -25,6 +25,123 @@ Easy to use Java stopwatch allowing measurement of elapsed time.
   * Configurable sample interval for very short running tasks
   * No dependencies
 
+## Sample usage
+```java
+final Chronograph c = Chronograph.create();
+c.time("Request", () ->
+{
+    for (int i = 0; i < 13; i++)
+    {
+        c.time("Fetch", () -> busy(12));
+    }
+
+    // Overhead
+    busy(300);
+
+    c.time("De-serialize", () ->
+    {
+        // Overhead
+        busy(14);
+        c.time("JSON de-serialize", () -> busy(44));
+    });
+});
+```
+
+Sample output in tables:
+![Table output](doc/default2.png "Table output")
+
+Or in JSON format if you need it for later analysis:
+
+```json
+{
+  "tasks" : [ {
+    "name" : "Request",
+    "subtasks" : [ {
+      "name" : "Fetch",
+      "total_time" : "0.15757311",
+      "subtasks_time" : "0",
+      "self_time" : "0.15757311",
+      "invocation_count" : 13,
+      "statistics" : {
+        "average" : "0.012121008",
+        "median" : "0.012110195",
+        "min" : "0.01208667",
+        "max" : "0.012215087",
+        "standard_deviation" : "0.000038184",
+        "percentiles" : {
+          "75.0" : "0.012130908",
+          "90.0" : "0.012183143",
+          "95.0" : "0.012215087",
+          "99.0" : "0.012215087",
+          "99.9" : "0.012215087"
+        }
+      }
+    }, {
+      "name" : "De-serialize",
+      "subtasks" : [ {
+        "name" : "JSON de-serialize",
+        "total_time" : "0.044214251",
+        "subtasks_time" : "0",
+        "self_time" : "0.044214251",
+        "invocation_count" : 1
+      }, {
+        "name" : "<overhead>",
+        "total_time" : "0.015809396",
+        "subtasks_time" : "0",
+        "self_time" : "0.015809396",
+        "invocation_count" : 1
+      } ],
+      "total_time" : "0.060023647",
+      "subtasks_time" : "0.060023647",
+      "self_time" : "0",
+      "invocation_count" : 1
+    }, {
+      "name" : "<overhead>",
+      "total_time" : "0.301883674",
+      "subtasks_time" : "0",
+      "self_time" : "0.301883674",
+      "invocation_count" : 1
+    } ],
+    "total_time" : "0.519480431",
+    "subtasks_time" : "0.519480431",
+    "self_time" : "0",
+    "invocation_count" : 1
+  }, {
+    "name" : "Response",
+    "subtasks" : [ {
+      "name" : "Logging",
+      "total_time" : "0.011222603",
+      "subtasks_time" : "0",
+      "self_time" : "0.011222603",
+      "invocation_count" : 1
+    }, {
+      "name" : "Serialize",
+      "subtasks" : [ {
+        "name" : "JSON serialize",
+        "total_time" : "0.027233243",
+        "subtasks_time" : "0",
+        "self_time" : "0.027233243",
+        "invocation_count" : 1
+      }, {
+        "name" : "<overhead>",
+        "total_time" : "0.014704076",
+        "subtasks_time" : "0",
+        "self_time" : "0.014704076",
+        "invocation_count" : 1
+      } ],
+      "total_time" : "0.041937319",
+      "subtasks_time" : "0.041937319",
+      "self_time" : "0",
+      "invocation_count" : 1
+    } ],
+    "total_time" : "0.053987607",
+    "subtasks_time" : "0.053159922",
+    "self_time" : "0.000827685",
+    "invocation_count" : 1
+  } ]
+}
+```
+
 ## Getting started
 
 ### Include in your project
@@ -90,7 +207,10 @@ final Chronograph chronograph = Chronograph
 
 You can choose to output the results using different styles and colors. Below are a few examples.
 
-![Themes](doc/themes.png "Themes")
+![Themes](doc/limited.png "Theme sample")
+![Themes](doc/default1.png "Theme sample")
+![Themes](doc/default2.png "Theme sample")
+![Themes](doc/default3.png "Theme sample")
 
 #### Make your own
 ```java
