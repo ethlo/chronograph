@@ -24,12 +24,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
 
-import com.ethlo.time.internal.ascii.ReportUtil;
-import com.ethlo.time.output.table.TableOutputFormatter;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+import com.ethlo.time.internal.ascii.ReportUtil;
+import com.ethlo.time.output.table.TableOutputFormatter;
 import com.ethlo.time.output.table.TableThemes;
 import com.ethlo.util.BaseTest;
 import com.ethlo.util.SleepUtil;
@@ -160,7 +159,7 @@ public class ChronographTest extends BaseTest
         }
         catch (InterruptedException e)
         {
-            throw new RuntimeException(e);
+            Thread.currentThread().notify();
         }
     }
 

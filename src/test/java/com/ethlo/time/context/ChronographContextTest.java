@@ -22,6 +22,7 @@ package com.ethlo.time.context;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,6 +47,71 @@ class ChronographContextTest
         // Set up any necessary configurations or defaults if needed
         chronographContext.setCaptureConfig(CaptureConfig.DEFAULT);
         chronographContext.setOutputConfig(OutputConfig.DEFAULT);
+    }
+
+    @Test
+    void testGetReturnsSameInstanceForSameThread()
+    {
+        Chronograph first = chronographContext.get();
+        Chronograph second = chronographContext.get();
+        assertThat(first).isSameAs(second);
+    }
+
+    @Test
+    void testGetReturnsDifferentInstanceForDifferentThreads() throws InterruptedException
+    {
+        Chronograph[] otherThreadInstance = new Chronograph[1];
+
+        Thread thread = new Thread(() -> otherThreadInstance[0] = chronographContext.get());
+        thread.start();
+        thread.join();
+
+        assertThat(otherThreadInstance[0]).isNotNull().isNotSameAs(chronographContext.get());
+    }
+
+    @Test
+    void testRemoveDeletesInstanceForCurrentThread()
+    {
+        Chronograph instance = chronographContext.get();
+        chronographContext.remove();
+        assertThat(chronographContext.get()).isNotSameAs(instance);
+    }
+
+    @Test
+    void testSetAndGetOutputConfig()
+    {
+        OutputConfig config = new OutputConfig();
+        chronographContext.setOutputConfig(config);
+        assertThat(chronographContext.getOutputConfig()).isSameAs(config);
+    }
+
+    @Test
+    void testSetAndGetCaptureConfig()
+    {
+        CaptureConfig config = CaptureConfig.minInterval(Duration.ofNanos(100_000));
+        chronographContext.setCaptureConfig(config);
+        assertThat(chronographContext.getCaptureConfig()).isSameAs(config);
+    }
+
+    @Test
+    void testGetAllReturnsAllInstances()
+    {
+        Chronograph instance1 = chronographContext.get();
+
+        Chronograph[] instance2 = new Chronograph[1];
+        Thread thread = new Thread(() -> instance2[0] = chronographContext.get());
+        thread.start();
+        try
+        {
+            thread.join();
+        }
+        catch (InterruptedException e)
+        {
+            throw new RuntimeException(e);
+        }
+
+        List<Chronograph> allInstances = chronographContext.getAll();
+        assertThat(allInstances).containsExactlyInAnyOrder(instance1, instance2[0]);
     }
 
     @Test
@@ -74,7 +140,7 @@ class ChronographContextTest
             // Ensure all threads have completed
         }
 
-        // Verify that ChronographContext.getAll() contains all instances created by the threads
+        // Verify that ChronographchronographContext.getAll() contains all instances created by the threads
         final List<Chronograph> allChronographs = chronographContext.getAll();
 
         // Assert that the list contains 3 Chronograph instances (one per thread)

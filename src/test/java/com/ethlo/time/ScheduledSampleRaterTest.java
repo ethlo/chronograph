@@ -19,6 +19,8 @@ package com.ethlo.time;
  * #L%
  */
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.math.BigInteger;
 import java.time.Duration;
 
@@ -32,13 +34,13 @@ class SampleRaterTest
     @Test
     void test()
     {
-        final SampleRater<BigInteger> taskPerformance = new ScheduledSampleRater<>(Duration.ofMillis(500), System.err::println);
+        final SampleRater<BigInteger> taskPerformance = new ScheduledSampleRater<>(Duration.ofMillis(5), System.err::println);
         BigInteger sum = BigInteger.valueOf(0);
-        for (long i = 0; i < 200_000_000L; i++)
+        for (long i = 0; i < 2_000_000L; i++)
         {
             sum = sum.add(BigInteger.valueOf(i));
             taskPerformance.update(sum);
         }
-        System.out.println(sum);
+        assertThat(sum).isEqualTo(BigInteger.valueOf(1_999_999_000_000L));
     }
 }
