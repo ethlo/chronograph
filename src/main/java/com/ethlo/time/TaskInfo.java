@@ -25,27 +25,79 @@ import java.util.List;
 
 import com.ethlo.time.statistics.PerformanceStatistics;
 
-public interface TaskInfo
-{
+/**
+ * Represents information about a task, including its performance data,
+ * execution times, and its relationship to other tasks (subtasks and parent).
+ */
+public interface TaskInfo {
+
+    /**
+     * Gets the name of the task.
+     *
+     * @return the name of the task
+     */
     String getName();
 
-    Duration getTotalTaskTime();
+    /**
+     * Gets the total execution time of the task.
+     *
+     * @return the total time taken by the task
+     */
+    Duration getTime();
 
-    long getTotalTaskInvocations();
+    /**
+     * Gets the number of times this task has been invoked.
+     *
+     * @return the number of invocations
+     */
+    long getInvocations();
 
+    /**
+     * Gets the sample size used for performance statistics.
+     *
+     * @return the sample size
+     */
     long getSampleSize();
 
-    PerformanceStatistics getPerformanceStatistics();
+    /**
+     * Gets the performance statistics for the task, including average times, etc.
+     *
+     * @return the performance statistics of the task
+     */
+    PerformanceStatistics getStatistics();
 
-    long getTaskStartTimestamp();
-
+    /**
+     * Gets the time spent executing the task itself, excluding time spent in subtasks.
+     *
+     * @return the self time of the task
+     */
     Duration getSelfTime();
 
-    Duration getSubTaskTime();
+    /**
+     * Gets the total time spent executing all subtasks of this task.
+     *
+     * @return the subtasks time
+     */
+    Duration getSubtasksTime();
 
+    /**
+     * Gets the depth of the task within its hierarchy.
+     *
+     * @return the depth of the task
+     */
     int getDepth();
 
-    List<TaskInfo> getChildren();
+    /**
+     * Gets the list of subtasks associated with this task.
+     *
+     * @return the list of subtasks
+     */
+    List<TaskInfo> getSubtasks();
 
+    /**
+     * Gets the parent task of this task.
+     *
+     * @return the parent task, or null if this is the top-level task
+     */
     TaskInfo getParent();
 }

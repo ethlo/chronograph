@@ -65,9 +65,9 @@ public class TableOutputFormatter implements OutputFormatter
 
         row.append(new TableCell("  ".repeat(taskInfo.getDepth()) + taskInfo.getName()));
 
-        final long invocations = taskInfo.getPerformanceStatistics().getTotalInvocations();
+        final long invocations = taskInfo.getStatistics().getTotalInvocations();
         final boolean multipleInvocations = invocations > 1;
-        final PerformanceStatistics performanceStatistics = taskInfo.getPerformanceStatistics();
+        final PerformanceStatistics performanceStatistics = taskInfo.getStatistics();
 
         outputTotal(outputConfig, row, taskInfo, totalTime);
 
@@ -100,7 +100,7 @@ public class TableOutputFormatter implements OutputFormatter
         if (outputConfig.total())
         {
             final ChronoUnit summaryResolution = ReportUtil.getSummaryResolution(totalTime);
-            final String str = ReportUtil.humanReadable(taskInfo.getPerformanceStatistics().getTotalElapsed(), summaryResolution);
+            final String str = ReportUtil.humanReadable(taskInfo.getStatistics().getTotalElapsed(), summaryResolution);
             row.append(new TableCell("  ".repeat(taskInfo.getDepth()) + str, true, true));
         }
     }
@@ -109,7 +109,7 @@ public class TableOutputFormatter implements OutputFormatter
     {
         if (outputConfig.percentage())
         {
-            final double pct = totalTime.isZero() ? 0D : taskInfo.getPerformanceStatistics().getTotalElapsed().toNanos() / (double) (taskInfo.getParent() != null ? taskInfo.getParent().getTotalTaskTime().toNanos() : totalTime.toNanos());
+            final double pct = totalTime.isZero() ? 0D : taskInfo.getStatistics().getTotalElapsed().toNanos() / (double) (taskInfo.getParent() != null ? taskInfo.getParent().getTime().toNanos() : totalTime.toNanos());
             row.append(new TableCell("  ".repeat(taskInfo.getDepth()) + pf.format(pct), true, true));
         }
     }
@@ -205,7 +205,7 @@ public class TableOutputFormatter implements OutputFormatter
 
     private TableRow totals(final ChronographData chronographData)
     {
-        final long totalInvocations = chronographData.getTasks().stream().map(TaskInfo::getTotalTaskInvocations).reduce(0L, Long::sum);
+        final long totalInvocations = chronographData.getTasks().stream().map(TaskInfo::getInvocations).reduce(0L, Long::sum);
         final TableRow tableRow = new TableRow()
                 .append(new TableCell("Sum", false, false));
 
@@ -265,7 +265,7 @@ public class TableOutputFormatter implements OutputFormatter
         final List<TaskInfo> combined = new ArrayList<>(children);
 
         // Find all at this level
-        final long allAtLevel = children.stream().mapToLong(c -> c.getTotalTaskTime().toNanos()).sum();
+        final long allAtLevel = children.stream().mapToLong(c -> c.getTime().toNanos()).sum();
         final long diff = parentDuration.toNanos() - allAtLevel;
         if (diff / (double) parentDuration.toNanos() > outputConfig.overheadThreshold())
         {
@@ -279,7 +279,7 @@ public class TableOutputFormatter implements OutputFormatter
             rows.add(getTableRow(outputConfig, totalTime, taskInfo, pf, nf));
 
             // Recurse down the task hierarchy
-            doOutputTasks(totalTime, taskInfo.getTotalTaskTime(), taskInfo.getChildren(), rows, pf, nf);
+            doOutputTasks(totalTime, taskInfo.getTime(), taskInfo.getSubtasks(), rows, pf, nf);
         }
     }
 }

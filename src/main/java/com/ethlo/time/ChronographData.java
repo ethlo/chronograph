@@ -37,7 +37,7 @@ public class ChronographData
     {
         this.name = name;
         this.rootTasks = rootTasks;
-        this.totalTime = Duration.ofNanos(rootTasks.stream().mapToLong(t -> t.getTotalTaskTime().toNanos()).sum());
+        this.totalTime = Duration.ofNanos(rootTasks.stream().mapToLong(t -> t.getTime().toNanos()).sum());
     }
 
     public static ChronographData merge(final List<Chronograph> input)
@@ -76,7 +76,7 @@ public class ChronographData
     private static void flattenTaskInfo(TaskInfo task, List<TaskInfo> result)
     {
         result.add(task);
-        for (TaskInfo child : task.getChildren())
+        for (TaskInfo child : task.getSubtasks())
         {
             flattenTaskInfo(child, result);
         }

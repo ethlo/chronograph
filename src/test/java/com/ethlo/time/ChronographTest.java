@@ -248,7 +248,7 @@ public class ChronographTest extends BaseTest
             chronograph.start(taskName);
             chronograph.stop();
         }
-        final Duration median = chronograph.getTask(taskName).getPerformanceStatistics().getMedian();
+        final Duration median = chronograph.getTask(taskName).getStatistics().getMedian();
         logger.info("Granularity: {}", ReportUtil.humanReadable(median));
         assertThat(median.toNanos()).isGreaterThan(0);
     }
@@ -312,7 +312,7 @@ public class ChronographTest extends BaseTest
     {
         final Chronograph chronograph = Chronograph.create();
         chronograph.start(taskName);
-        assertThat(chronograph.getTask(taskName).getPerformanceStatistics().getAverage()).isEqualTo(Duration.ZERO);
+        assertThat(chronograph.getTask(taskName).getStatistics().getAverage()).isEqualTo(Duration.ZERO);
     }
 
     @Test

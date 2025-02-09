@@ -58,19 +58,19 @@ public class RateLimitedTaskInfo extends MutableTaskInfo
     }
 
     @Override
-    public long getTotalTaskInvocations()
+    public long getInvocations()
     {
         return totalInvocations;
     }
 
     @Override
-    public Duration getTotalTaskTime()
+    public Duration getTime()
     {
         return Duration.ofNanos(totalElapsed);
     }
 
     @Override
-    public PerformanceStatistics getPerformanceStatistics()
+    public PerformanceStatistics getStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(getData());
         return new PerformanceStatistics(stats, totalInvocations, totalElapsed);

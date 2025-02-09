@@ -57,19 +57,19 @@ public class SerializableTaskInfo implements Serializable
     public static SerializableTaskInfo create(TaskInfo source, OutputConfig config)
     {
         final List<SerializableTaskInfo> processed = new ArrayList<>();
-        processChildren(source.getChildren(), processed, config);
+        processChildren(source.getSubtasks(), processed, config);
 
         SerializableTaskStatistics taskStatistics = null;
-        if (source.getTotalTaskInvocations() > 1)
+        if (source.getInvocations() > 1)
         {
-            final PerformanceStatistics statistics = source.getPerformanceStatistics();
+            final PerformanceStatistics statistics = source.getStatistics();
             final Map<Double, Duration> percentiles = Arrays.stream(config.percentiles()).boxed()
                     .collect(Collectors.toMap(l -> l, statistics::getPercentile));
             taskStatistics = new SerializableTaskStatistics(statistics.getAverage(), statistics.getMedian(),
                     statistics.getMin(), statistics.getMax(), statistics.getStandardDeviation(), percentiles
             );
         }
-        return new SerializableTaskInfo(source.getName(), processed, source.getTotalTaskTime(), source.getSubTaskTime(), source.getSelfTime(), source.getTotalTaskInvocations(), taskStatistics);
+        return new SerializableTaskInfo(source.getName(), processed, source.getTime(), source.getSubtasksTime(), source.getSelfTime(), source.getInvocations(), taskStatistics);
     }
 
     private static void processChildren(List<TaskInfo> children, final List<SerializableTaskInfo> processed, OutputConfig outputConfig)

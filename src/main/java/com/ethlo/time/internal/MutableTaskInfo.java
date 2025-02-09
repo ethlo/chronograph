@@ -81,7 +81,7 @@ public class MutableTaskInfo implements TaskInfo
         return false;
     }
 
-    public Duration getTotalTaskTime()
+    public Duration getTime()
     {
         return Duration.ofNanos(data.stream().reduce(0L, Long::sum));
     }
@@ -93,7 +93,7 @@ public class MutableTaskInfo implements TaskInfo
     }
 
     @Override
-    public long getTotalTaskInvocations()
+    public long getInvocations()
     {
         return data.size();
     }
@@ -114,13 +114,12 @@ public class MutableTaskInfo implements TaskInfo
         data.add(duration);
     }
 
-    public PerformanceStatistics getPerformanceStatistics()
+    public PerformanceStatistics getStatistics()
     {
         final IndexedCollectionStatistics stats = new IndexedCollectionStatistics(data);
-        return new PerformanceStatistics(stats, getTotalTaskInvocations(), getTotalTaskTime().toNanos());
+        return new PerformanceStatistics(stats, getInvocations(), getTime().toNanos());
     }
 
-    @Override
     public long getTaskStartTimestamp()
     {
         return taskStartTimestamp;
@@ -139,16 +138,16 @@ public class MutableTaskInfo implements TaskInfo
     @Override
     public Duration getSelfTime()
     {
-        final Duration totalTime = getTotalTaskTime();
-        final Duration subTaskTime = getSubTaskTime();
+        final Duration totalTime = getTime();
+        final Duration subTaskTime = getSubtasksTime();
         return totalTime.minus(subTaskTime);
     }
 
     @Override
-    public Duration getSubTaskTime()
+    public Duration getSubtasksTime()
     {
         return children.stream()
-                .map(MutableTaskInfo::getTotalTaskTime)
+                .map(MutableTaskInfo::getTime)
                 .reduce(Duration.ZERO, Duration::plus);
     }
 
@@ -188,7 +187,7 @@ public class MutableTaskInfo implements TaskInfo
                 .toString();
     }
 
-    public List<TaskInfo> getChildren()
+    public List<TaskInfo> getSubtasks()
     {
         return new ArrayList<>(children);
     }
@@ -209,7 +208,7 @@ public class MutableTaskInfo implements TaskInfo
         this.data.addAll(other.getData()); // Add all data entries from the other TaskInfo
 
         // Merge the children
-        for (TaskInfo child : other.getChildren())
+        for (TaskInfo child : other.getSubtasks())
         {
             // Check if the child task already exists in the current task's children
             Optional<MutableTaskInfo> existingChildOpt = this.children.stream()
