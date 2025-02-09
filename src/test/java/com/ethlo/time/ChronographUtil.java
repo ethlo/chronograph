@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -28,6 +29,8 @@ public abstract class ChronographUtil
         final SimpleModule module = new SimpleModule();
         module.addSerializer(Duration.class, new PlainDurationSerializer());
         mapper.registerModule(module);
+
+        mapper.setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE);
     }
 
     public static String asciiTable(Chronograph chronograph)

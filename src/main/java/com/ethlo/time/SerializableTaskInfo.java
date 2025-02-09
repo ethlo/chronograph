@@ -34,19 +34,19 @@ import com.ethlo.time.statistics.PerformanceStatistics;
 public class SerializableTaskInfo implements Serializable
 {
     private final String name;
-    private final List<SerializableTaskInfo> children;
-    private final Duration totalTaskTime;
-    private final Duration subTaskTime;
+    private final List<SerializableTaskInfo> subtasks;
+    private final Duration totalTime;
+    private final Duration subtasksTime;
     private final Duration selfTime;
     private final long invocationCount;
     private final SerializableTaskStatistics statistics;
 
-    public SerializableTaskInfo(String name, List<SerializableTaskInfo> children, Duration totalTaskTime, Duration subTaskTime, final Duration selfTime, final long invocationCount, SerializableTaskStatistics taskStatistics)
+    public SerializableTaskInfo(String name, List<SerializableTaskInfo> subtasks, Duration totalTime, Duration subtasksTime, final Duration selfTime, final long invocationCount, SerializableTaskStatistics taskStatistics)
     {
         this.name = name;
-        this.children = children;
-        this.totalTaskTime = totalTaskTime;
-        this.subTaskTime = subTaskTime;
+        this.subtasks = subtasks;
+        this.totalTime = totalTime;
+        this.subtasksTime = subtasksTime;
         this.selfTime = selfTime;
         this.invocationCount = invocationCount;
         this.statistics = taskStatistics;
@@ -67,7 +67,7 @@ public class SerializableTaskInfo implements Serializable
                     statistics.getMin(), statistics.getMax(), statistics.getStandardDeviation(), percentiles
             );
         }
-        return new SerializableTaskInfo(source.getName(), processed, source.getTotalTaskTime(), source.getChildren().isEmpty() ? null : source.getSubTaskTime(), source.getSelfTime(), source.getTotalTaskInvocations(), taskStatistics);
+        return new SerializableTaskInfo(source.getName(), processed, source.getTotalTaskTime(), source.getSubTaskTime(), source.getSelfTime(), source.getTotalTaskInvocations(), taskStatistics);
     }
 
     private static void processChildren(List<TaskInfo> children, final List<SerializableTaskInfo> processed, OutputConfig outputConfig)
@@ -83,19 +83,19 @@ public class SerializableTaskInfo implements Serializable
         return name;
     }
 
-    public List<SerializableTaskInfo> getChildren()
+    public List<SerializableTaskInfo> getSubtasks()
     {
-        return Optional.ofNullable(children).filter(l -> !l.isEmpty()).orElse(null);
+        return Optional.ofNullable(subtasks).filter(l -> !l.isEmpty()).orElse(null);
     }
 
-    public Duration getTotalTaskTime()
+    public Duration getTotalTime()
     {
-        return totalTaskTime;
+        return totalTime;
     }
 
-    public Duration getSubTaskTime()
+    public Duration getSubtasksTime()
     {
-        return subTaskTime;
+        return subtasksTime;
     }
 
     public Duration getSelfTime()

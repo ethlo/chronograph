@@ -104,6 +104,7 @@ public class ChronographTest extends BaseTest
         output(c, TableThemes.ROUNDED);
         output(c, TableThemes.MINIMAL);
         output(c, TableThemes.COMPACT);
+        output(c);
         assertThat(true).isTrue();
     }
 
