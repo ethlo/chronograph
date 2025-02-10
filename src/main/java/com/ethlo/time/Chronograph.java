@@ -1215,6 +1215,13 @@ public class Chronograph
         }
     }
 
+    /**
+     * Outputs the data in a format that may change over time. Please use a @{@link com.ethlo.time.output.OutputFormatter} to have more control over the output
+     *
+     * @return A string representation of the performance data
+     * @see com.ethlo.time.output.table.TableOutputFormatter
+     * @see com.ethlo.time.output.json.JsonOutputFormatter
+     */
     @Override
     public String toString()
     {
