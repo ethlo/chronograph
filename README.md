@@ -1,7 +1,7 @@
 # Chronograph
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.ethlo.time/chronograph)](http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.ethlo.time%22%20a%3A%22chronograph%22)
-[![javadoc](https://javadoc.io/badge2/com.ethlo.time/chronograph/javadoc.svg)]([![javadoc](https://javadoc.io/badge2/com.ethlo.time/chronograph/javadoc.svg)](https://javadoc.io/doc/com.ethlo.time/chronograph))
+[![javadoc](https://javadoc.io/badge2/com.ethlo.time/chronograph/javadoc.svg)](https://javadoc.io/doc/com.ethlo.time/chronograph/latest/com/ethlo/time/Chronograph.html)
 [![Codacy Badge](https://app.codacy.com/project/badge/Grade/0d9d2c9bfddc400f84203aa82a55f211)](https://app.codacy.com/gh/ethlo/chronograph/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 [![Hex.pm](https://img.shields.io/hexpm/l/plug.svg)](LICENSE)
 
