@@ -24,13 +24,11 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
 import java.util.List;
 
-import com.ethlo.time.internal.MutableTaskInfo;
-
-import com.ethlo.time.output.table.TableOutputFormatter;
-
 import org.junit.jupiter.api.Test;
 
+import com.ethlo.time.internal.MutableTaskInfo;
 import com.ethlo.time.internal.util.LongList;
+import com.ethlo.time.output.table.TableOutputFormatter;
 
 class TableOutputformatterTest
 {

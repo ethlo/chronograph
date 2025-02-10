@@ -20,29 +20,29 @@ package com.ethlo.time.output.json;
  * #L%
  */
 
-import com.ethlo.time.ChronographData;
-import com.ethlo.time.OutputConfig;
-
 import java.io.Serializable;
 import java.util.List;
 
-public class SerializableChronographData implements Serializable
+import com.ethlo.time.ChronographData;
+import com.ethlo.time.OutputConfig;
+
+public class JsonChronographData implements Serializable
 {
     private final String name;
-    private final List<SerializableTaskInfo> tasks;
+    private final List<JsonTaskInfo> tasks;
 
-    public SerializableChronographData(ChronographData data, OutputConfig outputConfig)
+    public JsonChronographData(ChronographData data, OutputConfig outputConfig)
     {
-        this(data.getName(), data.getRootTasks().stream().map(task -> SerializableTaskInfo.create(task, outputConfig)).toList());
+        this(data.getName(), data.getRootTasks().stream().map(task -> JsonTaskInfo.create(task, outputConfig)).toList());
     }
 
-    public SerializableChronographData(String name, final List<SerializableTaskInfo> tasks)
+    public JsonChronographData(String name, final List<JsonTaskInfo> tasks)
     {
         this.name = name;
         this.tasks = tasks;
     }
 
-    public List<SerializableTaskInfo> getTasks()
+    public List<JsonTaskInfo> getTasks()
     {
         return tasks;
     }

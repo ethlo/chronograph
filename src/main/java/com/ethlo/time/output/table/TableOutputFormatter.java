@@ -43,6 +43,11 @@ import com.ethlo.time.internal.ascii.TableRow;
 import com.ethlo.time.output.OutputFormatter;
 import com.ethlo.time.statistics.PerformanceStatistics;
 
+/**
+ * Formats output in an ASCII table for better readability.
+ * This implementation of {@link OutputFormatter} ensures that data is
+ * presented in a structured and aligned manner using ASCII characters.
+ */
 public class TableOutputFormatter implements OutputFormatter
 {
     private final TableTheme tableTheme;
@@ -205,7 +210,7 @@ public class TableOutputFormatter implements OutputFormatter
 
     private TableRow totals(final ChronographData chronographData)
     {
-        final long totalInvocations = chronographData.getTasks().stream().map(TaskInfo::getInvocations).reduce(0L, Long::sum);
+        final long totalInvocations = chronographData.getTotalInvocations();
         final TableRow tableRow = new TableRow()
                 .append(new TableCell("Sum", false, false));
 

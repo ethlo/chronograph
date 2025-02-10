@@ -23,6 +23,7 @@ package com.ethlo.time;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.Duration;
+import java.util.List;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -108,7 +109,12 @@ public class ChronographTest extends BaseTest
         output(c, TableThemes.MINIMAL);
         output(c, TableThemes.COMPACT);
         output(c);
-        assertThat(true).isTrue();
+
+        final List<String> flatList = c.getTaskData().getTasks().stream().map(TaskInfo::getName).toList();
+        assertThat(flatList).containsExactly("Request", "Fetch", "De-serialize",
+                "JSON de-serialize", "<overhead>", "<overhead>", "Response", "Logging",
+                "Serialize", "JSON serialize", "<overhead>"
+        );
     }
 
     private void busy(long millis)

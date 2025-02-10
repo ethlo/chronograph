@@ -28,10 +28,10 @@ import java.util.Optional;
 import java.util.StringJoiner;
 
 import com.ethlo.time.TaskInfo;
-import com.ethlo.time.statistics.PerformanceStatistics;
 import com.ethlo.time.internal.util.IndexedCollection;
 import com.ethlo.time.internal.util.IndexedCollectionStatistics;
 import com.ethlo.time.internal.util.LongList;
+import com.ethlo.time.statistics.PerformanceStatistics;
 
 public class MutableTaskInfo implements TaskInfo
 {

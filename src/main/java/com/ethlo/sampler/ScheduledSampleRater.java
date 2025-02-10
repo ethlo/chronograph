@@ -27,20 +27,35 @@ import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 /**
- * A sample rate limiter that is focusing on minimum overhead for the executing task thread to sample values
+ * A sample rate limiter that minimizes overhead for the executing task thread by scheduling periodic progress updates.
+ * Progress is emitted at a fixed interval defined by the user.
  *
- * @param <T> The result type to sample
+ * @param <T> The result type to sample.
  */
 public class ScheduledSampleRater<T> extends SampleRater<T>
 {
     private final ScheduledExecutorService executor;
     private volatile boolean ready = true;
 
+    /**
+     * Constructs a ScheduledSampleRater with the specified sampling interval and listener for progress updates.
+     * Uses a single-threaded executor for scheduling.
+     *
+     * @param interval                The time interval between progress updates.
+     * @param sampledProgressListener The listener to receive progress updates.
+     */
     public ScheduledSampleRater(Duration interval, final Consumer<TaskProgress<T>> sampledProgressListener)
     {
         this(new ScheduledThreadPoolExecutor(1), interval, sampledProgressListener);
     }
 
+    /**
+     * Constructs a ScheduledSampleRater with the specified executor, sampling interval, and listener for progress updates.
+     *
+     * @param executor                The executor service used for scheduling progress updates.
+     * @param interval                The time interval between progress updates.
+     * @param sampledProgressListener The listener to receive progress updates.
+     */
     public ScheduledSampleRater(final ScheduledExecutorService executor, final Duration interval, final Consumer<TaskProgress<T>> sampledProgressListener)
     {
         super(sampledProgressListener);
@@ -48,6 +63,13 @@ public class ScheduledSampleRater<T> extends SampleRater<T>
         scheduleNext(interval);
     }
 
+    /**
+     * Determines whether progress should be emitted. Progress is emitted once every scheduled interval.
+     * Only emits if the sample rate limiter is ready.
+     *
+     * @param progress The current progress of the task.
+     * @return True if progress should be emitted, otherwise false.
+     */
     @Override
     protected boolean shouldEmit(final T progress)
     {
@@ -59,6 +81,11 @@ public class ScheduledSampleRater<T> extends SampleRater<T>
         return false;
     }
 
+    /**
+     * Schedules the next progress update at the specified interval.
+     *
+     * @param interval The time interval between updates.
+     */
     private void scheduleNext(Duration interval)
     {
         executor.schedule(() -> scheduleNext(interval), interval.toNanos(), TimeUnit.NANOSECONDS);

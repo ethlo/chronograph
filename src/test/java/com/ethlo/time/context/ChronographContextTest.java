@@ -45,8 +45,9 @@ class ChronographContextTest
     void setUp()
     {
         // Set up any necessary configurations or defaults if needed
-        chronographContext.setCaptureConfig(CaptureConfig.DEFAULT);
-        chronographContext.setOutputConfig(OutputConfig.DEFAULT);
+        assertThat(chronographContext
+                .setCaptureConfig(CaptureConfig.DEFAULT)
+                .setOutputConfig(OutputConfig.DEFAULT)).isSameAs(chronographContext);
     }
 
     @Test

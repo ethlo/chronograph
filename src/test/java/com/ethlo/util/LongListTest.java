@@ -23,9 +23,10 @@ package com.ethlo.util;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import org.junit.jupiter.api.Test;
+
 import com.ethlo.time.internal.util.IndexedCollectionStatistics;
 import com.ethlo.time.internal.util.LongList;
-import org.junit.jupiter.api.Test;
 
 public class LongListTest
 {

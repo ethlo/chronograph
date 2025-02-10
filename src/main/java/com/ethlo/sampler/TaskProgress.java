@@ -21,6 +21,14 @@ import java.time.Duration;
  * limitations under the License.
  * #L%
  */
+
+/**
+ *
+ * @param lastProgress The progress on the last invocation
+ * @param progress The current progress
+ * @param duration The duration since the last update
+ * @param <T> The progress data type
+ */
 public record TaskProgress<T>(T lastProgress, T progress, Duration duration)
 {
 

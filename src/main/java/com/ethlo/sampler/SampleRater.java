@@ -24,17 +24,34 @@ import java.time.Duration;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+/**
+ * Abstract class that rates the progress of a task by emitting progress updates based on custom criteria.
+ * Subclasses must implement the {@link #shouldEmit(Object)} method to define when progress should be sampled.
+ *
+ * @param <T> The type representing the progress of the task.
+ */
 public abstract class SampleRater<T>
 {
     protected final Consumer<TaskProgress<T>> sampledProgressListener;
     private T lastProgress;
     private long lastUpdated;
 
+    /**
+     * Constructs a SampleRater with a listener that receives sampled task progress updates.
+     *
+     * @param sampledProgressListener The listener to receive task progress updates.
+     */
     protected SampleRater(final Consumer<TaskProgress<T>> sampledProgressListener)
     {
         this.sampledProgressListener = Objects.requireNonNull(sampledProgressListener);
     }
 
+    /**
+     * Updates the progress and emits a progress update if the sampling criteria are met.
+     * The listener receives the progress along with the time elapsed since the last update.
+     *
+     * @param progress The current progress of the task.
+     */
     public final void update(T progress)
     {
         if (shouldEmit(progress))
@@ -45,5 +62,12 @@ public abstract class SampleRater<T>
         }
     }
 
+    /**
+     * Determines whether progress should be sampled and emitted. This method must be implemented by subclasses
+     * to define the sampling logic.
+     *
+     * @param progress The current progress of the task.
+     * @return True if the progress should be emitted, otherwise false.
+     */
     protected abstract boolean shouldEmit(T progress);
 }

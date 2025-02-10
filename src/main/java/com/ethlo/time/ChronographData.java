@@ -20,19 +20,28 @@ package com.ethlo.time;
  * #L%
  */
 
-import com.ethlo.time.internal.MutableTaskInfo;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import com.ethlo.time.internal.MutableTaskInfo;
+
+/**
+ * Holder of the data for a {@link Chronograph} run
+ */
 public class ChronographData
 {
     private final String name;
     private final List<TaskInfo> rootTasks;
     private final Duration totalTime;
 
+    /**
+     * Create a new insatnce with the given name and tasks
+     *
+     * @param name      The name of the {@link Chronograph}
+     * @param rootTasks The tasks collected
+     */
     public ChronographData(final String name, final List<TaskInfo> rootTasks)
     {
         this.name = name;
@@ -40,6 +49,12 @@ public class ChronographData
         this.totalTime = Duration.ofNanos(rootTasks.stream().mapToLong(t -> t.getTime().toNanos()).sum());
     }
 
+    /**
+     * Merge the data of the provided list
+     *
+     * @param input The data to merge
+     * @return The merged data
+     */
     public static ChronographData merge(final List<Chronograph> input)
     {
         return merge(null, input);
@@ -110,35 +125,77 @@ public class ChronographData
         return mergedList;
     }
 
+    /**
+     * Get the name of the Chronograph
+     *
+     * @return the name of the Chronograph or null if it was not set
+     */
     public String getName()
     {
         return name;
     }
 
+    /**
+     * Returns the root (top-level) tasks
+     *
+     * @return The root tasks
+     */
     public List<TaskInfo> getRootTasks()
     {
         return rootTasks;
     }
 
+    /**
+     * Get the total execution time of all tasks
+     *
+     * @return the total execution time of all tasks
+     */
     public Duration getTotalTime()
     {
         return totalTime;
     }
 
+    /**
+     * Check if there are any tasks
+     *
+     * @return True if empty, otherwise false
+     */
     public boolean isEmpty()
     {
         return this.rootTasks.isEmpty();
     }
 
-    public ChronographData merge(String chronographName, ChronographData chronographData)
+    /**
+     * Merge with another instance
+     *
+     * @param name            The name of the new instance
+     * @param chronographData The data to merge with
+     * @return A new instance with the data of this and the specified instance
+     */
+    public ChronographData merge(String name, ChronographData chronographData)
     {
-        return new ChronographData(chronographName, mergeTaskInfoLists(this.rootTasks, chronographData.rootTasks));
+        return new ChronographData(name, mergeTaskInfoLists(this.rootTasks, chronographData.rootTasks));
     }
 
+    /**
+     * Get a flat list of all the tasks
+     *
+     * @return a flat list of all the tasks
+     */
     public List<TaskInfo> getTasks()
     {
         final List<TaskInfo> result = new ArrayList<>();
         getRootTasks().forEach(root -> flattenTaskInfo(root, result));
         return result;
+    }
+
+    /**
+     * Get the total number of task invocations summed across all tasks
+     *
+     * @return the total number of task invocations
+     */
+    public long getTotalInvocations()
+    {
+        return getTasks().stream().map(TaskInfo::getInvocations).reduce(0L, Long::sum);
     }
 }

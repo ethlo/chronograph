@@ -29,7 +29,8 @@ import com.ethlo.time.statistics.PerformanceStatistics;
  * Represents information about a task, including its performance data,
  * execution times, and its relationship to other tasks (subtasks and parent).
  */
-public interface TaskInfo {
+public interface TaskInfo
+{
 
     /**
      * Gets the name of the task.

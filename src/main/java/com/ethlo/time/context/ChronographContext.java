@@ -31,6 +31,10 @@ import com.ethlo.time.CaptureConfig;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.OutputConfig;
 
+/**
+ * Manages thread-local instances of {@link Chronograph}, ensuring that each thread
+ * has its own separate instance. Provides configuration options for output and capture settings.
+ */
 @Beta
 public class ChronographContext
 {
@@ -38,6 +42,21 @@ public class ChronographContext
     private OutputConfig outputConfig;
     private CaptureConfig captureConfig;
 
+
+    /**
+     * Create a context with default capture and output config
+     */
+    public ChronographContext()
+    {
+
+    }
+
+    /**
+     * Retrieves the {@link Chronograph} instance for the current thread. If no instance exists,
+     * a new one is created using the current {@link CaptureConfig} settings.
+     *
+     * @return The {@link Chronograph} instance for the current thread.
+     */
     public Chronograph get()
     {
         synchronized (instances)
@@ -46,6 +65,9 @@ public class ChronographContext
         }
     }
 
+    /**
+     * Removes the {@link Chronograph} instance associated with the current thread.
+     */
     public void remove()
     {
         synchronized (instances)
@@ -54,27 +76,46 @@ public class ChronographContext
         }
     }
 
-    private OutputConfig getConfig()
-    {
-        return Optional.ofNullable(outputConfig).orElse(OutputConfig.DEFAULT);
-    }
-
+    /**
+     * Retrieves the current output configuration. If no custom configuration is set,
+     * the default {@link OutputConfig#DEFAULT} is returned.
+     *
+     * @return The current {@link OutputConfig}.
+     */
     public OutputConfig getOutputConfig()
     {
         return Optional.ofNullable(outputConfig).orElse(OutputConfig.DEFAULT);
     }
 
+    /**
+     * Sets a custom output configuration.
+     *
+     * @param outputConfig The output configuration to set.
+     * @return The updated {@link ChronographContext} instance.
+     */
     public ChronographContext setOutputConfig(final OutputConfig outputConfig)
     {
         this.outputConfig = outputConfig;
         return this;
     }
 
+    /**
+     * Retrieves the current capture configuration. If no custom configuration is set,
+     * the default {@link CaptureConfig#DEFAULT} is returned.
+     *
+     * @return The current {@link CaptureConfig}.
+     */
     public CaptureConfig getCaptureConfig()
     {
         return Optional.ofNullable(captureConfig).orElse(CaptureConfig.DEFAULT);
     }
 
+    /**
+     * Sets a custom capture configuration.
+     *
+     * @param captureConfig The capture configuration to set.
+     * @return The updated {@link ChronographContext} instance.
+     */
     public ChronographContext setCaptureConfig(final CaptureConfig captureConfig)
     {
         this.captureConfig = captureConfig;
@@ -82,10 +123,10 @@ public class ChronographContext
     }
 
     /**
-     * Returns all available Chronograph instances known across all threads. Useful for outputting data after
-     * a multithreaded test for example.
+     * Returns all available {@link Chronograph} instances known across all threads. Useful for
+     * outputting data after a multithreaded test, for example.
      *
-     * @return All instances known across all threads
+     * @return A list of all known {@link Chronograph} instances across all threads.
      */
     public List<Chronograph> getAll()
     {

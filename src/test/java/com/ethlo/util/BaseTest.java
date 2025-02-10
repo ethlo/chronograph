@@ -26,9 +26,9 @@ import org.slf4j.LoggerFactory;
 import com.ethlo.time.Chronograph;
 import com.ethlo.time.ChronographUtil;
 import com.ethlo.time.OutputConfig;
+import com.ethlo.time.output.table.TableOutputFormatter;
 import com.ethlo.time.output.table.TableTheme;
 import com.ethlo.time.output.table.TableThemes;
-import com.ethlo.time.output.table.TableOutputFormatter;
 
 public class BaseTest
 {

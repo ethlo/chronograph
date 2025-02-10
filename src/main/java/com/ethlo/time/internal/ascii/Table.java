@@ -30,9 +30,8 @@ import com.ethlo.time.output.table.TableTheme;
 
 public class Table
 {
-    private static final String NEWLINE = System.lineSeparator();
-
     public static final String EMPTY_CONTENT = "";
+    private static final String NEWLINE = System.lineSeparator();
     private final List<TableRow> rows;
     private final Map<Integer, Integer> minColumnWidths;
     private final int tableWidth;

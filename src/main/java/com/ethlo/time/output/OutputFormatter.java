@@ -22,8 +22,20 @@ package com.ethlo.time.output;
 
 import com.ethlo.time.ChronographData;
 
+/**
+ * Formatter interface for formatting @{@link ChronographData}
+ *
+ * @see com.ethlo.time.output.table.TableOutputFormatter
+ * @see com.ethlo.time.output.json.JsonOutputFormatter
+ */
 @FunctionalInterface
 public interface OutputFormatter
 {
+    /**
+     * Format the data according to the implementation
+     *
+     * @param data The data to format
+     * @return The formatted data as a String
+     */
     String format(ChronographData data);
 }

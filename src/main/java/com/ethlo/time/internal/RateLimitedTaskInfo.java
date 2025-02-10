@@ -25,8 +25,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
 import com.ethlo.sampler.SampleRater;
 import com.ethlo.sampler.ScheduledSampleRater;
-import com.ethlo.time.statistics.PerformanceStatistics;
 import com.ethlo.time.internal.util.IndexedCollectionStatistics;
+import com.ethlo.time.statistics.PerformanceStatistics;
 
 public class RateLimitedTaskInfo extends MutableTaskInfo
 {
