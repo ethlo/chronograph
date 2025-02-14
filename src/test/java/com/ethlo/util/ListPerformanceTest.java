@@ -31,13 +31,13 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.ethlo.time.CaptureConfig;
-import com.ethlo.time.Chronograph;
-import com.ethlo.time.ChronographData;
-import com.ethlo.time.internal.util.IndexedCollection;
-import com.ethlo.time.internal.util.LongList;
-import com.ethlo.time.output.table.TableOutputFormatter;
-import com.ethlo.time.output.table.TableThemes;
+import com.ethlo.time.chronograph.CaptureConfig;
+import com.ethlo.time.chronograph.Chronograph;
+import com.ethlo.time.chronograph.ChronographData;
+import com.ethlo.time.chronograph.internal.util.IndexedCollection;
+import com.ethlo.time.chronograph.internal.util.LongList;
+import com.ethlo.time.chronograph.output.table.TableOutputFormatter;
+import com.ethlo.time.chronograph.output.table.TableThemes;
 
 class ListPerformanceTest extends BaseTest
 {

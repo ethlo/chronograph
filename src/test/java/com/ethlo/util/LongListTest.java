@@ -25,8 +25,8 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
-import com.ethlo.time.internal.util.IndexedCollectionStatistics;
-import com.ethlo.time.internal.util.LongList;
+import com.ethlo.time.chronograph.internal.util.IndexedCollectionStatistics;
+import com.ethlo.time.chronograph.internal.util.LongList;
 
 public class LongListTest
 {
