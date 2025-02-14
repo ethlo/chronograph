@@ -26,7 +26,7 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
-import com.ethlo.time.chronograph.internal.ascii.ReportUtil;
+import com.ethlo.chronograph.internal.ascii.ReportUtil;
 
 public class DurationUtilTest
 {

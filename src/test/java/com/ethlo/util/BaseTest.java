@@ -23,12 +23,12 @@ package com.ethlo.util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ethlo.time.chronograph.Chronograph;
-import com.ethlo.time.chronograph.ChronographUtil;
-import com.ethlo.time.chronograph.OutputConfig;
-import com.ethlo.time.chronograph.output.table.TableOutputFormatter;
-import com.ethlo.time.chronograph.output.table.TableTheme;
-import com.ethlo.time.chronograph.output.table.TableThemes;
+import com.ethlo.chronograph.Chronograph;
+import com.ethlo.chronograph.ChronographUtil;
+import com.ethlo.chronograph.OutputConfig;
+import com.ethlo.chronograph.output.table.TableOutputFormatter;
+import com.ethlo.chronograph.output.table.TableTheme;
+import com.ethlo.chronograph.output.table.TableThemes;
 
 public class BaseTest
 {
