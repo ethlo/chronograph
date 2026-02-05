@@ -74,11 +74,11 @@ import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 
 import com.ethlo.chronograph.internal.MutableTaskInfo;
+import com.ethlo.chronograph.internal.RateLimitedTaskInfo;
+import com.ethlo.chronograph.output.OutputFormatter;
 import com.ethlo.chronograph.output.json.JsonOutputFormatter;
 import com.ethlo.chronograph.output.table.TableOutputFormatter;
 import com.ethlo.chronograph.output.table.TableThemes;
-import com.ethlo.chronograph.output.OutputFormatter;
-import com.ethlo.chronograph.internal.RateLimitedTaskInfo;
 
 /**
  * A utility for tracking and timing tasks with high precision.
@@ -1083,24 +1083,25 @@ public class Chronograph
         }
 
         final MutableTaskInfo taskInfo = tasksByName.computeIfAbsent(task, t ->
-        {
-            final MutableTaskInfo parent = taskStack.peek();
-            if (captureConfig.getMinInterval().equals(Duration.ZERO))
-            {
-                MutableTaskInfo newTask;
-                if (captureConfig.getMinInterval().equals(Duration.ZERO))
                 {
-                    newTask = new MutableTaskInfo(task, parent);
-                }
-                else
-                {
-                    newTask = new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService, parent);
-                }
+                    final MutableTaskInfo parent = taskStack.peek();
+                    if (captureConfig.getMinInterval().equals(Duration.ZERO))
+                    {
+                        MutableTaskInfo newTask;
+                        if (captureConfig.getMinInterval().equals(Duration.ZERO))
+                        {
+                            newTask = new MutableTaskInfo(task, parent);
+                        }
+                        else
+                        {
+                            newTask = new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService, parent);
+                        }
 
-                return newTask;
-            }
-            return new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService, parent);
-        });
+                        return newTask;
+                    }
+                    return new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService, parent);
+                }
+        );
         taskStack.push(taskInfo);
         return taskInfo.start();
     }
@@ -1187,11 +1188,14 @@ public class Chronograph
     /**
      * Get the total runtime for all tasks
      *
-     * @return th total runtime for all tasks
+     * @return the total runtime for all tasks
      */
     public Duration getTotalTime()
     {
-        return Duration.ofNanos(tasksByName.values().stream().map(TaskInfo::getTime).map(Duration::toNanos).reduce(0L, Long::sum));
+        return Duration.ofNanos(getTasks().stream()
+                .map(TaskInfo::getTime)
+                .map(Duration::toNanos)
+                .reduce(0L, Long::sum));
     }
 
     /**
