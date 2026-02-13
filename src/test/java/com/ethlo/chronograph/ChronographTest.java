@@ -340,4 +340,53 @@ public class ChronographTest extends BaseTest
 
         assertThat(true).isTrue();
     }
+
+    @Test
+    void recursiveStartCompatibility()
+    {
+        final Chronograph chronograph = Chronograph.create();
+        final String task = "recursive-task";
+
+        // Level 1
+        assertThat(chronograph.start(task)).isTrue();
+
+        // Level 2 (Same name)
+        assertThat(chronograph.start(task)).as("Should not allow re-entry of same name").isFalse();
+
+        // Level 3 (Still same name)
+        assertThat(chronograph.start(task)).isFalse();
+
+        // Verify stack integrity
+        assertThat(chronograph.isAnyRunning()).isTrue();
+
+        // Stop Level 1
+        assertThat(chronograph.stop()).isTrue();
+
+        // Everything should be closed now because levels 2 and 3 never "started"
+        assertThat(chronograph.isAnyRunning()).isFalse();
+        assertThat(chronograph.stop()).as("Extra stop should fail").isFalse();
+    }
+
+    @Test
+    void siblingSameName()
+    {
+        final Chronograph chronograph = Chronograph.create();
+
+        // Start A -> Sub
+        chronograph.start("A");
+        assertThat(chronograph.start("Sub")).isTrue();
+        chronograph.stop(); // Stop Sub
+        chronograph.stop(); // Stop A
+
+        // Start B -> Sub
+        chronograph.start("B");
+        // This should be TRUE because "Sub" is not currently in the active stack
+        assertThat(chronograph.start("Sub")).isTrue();
+        chronograph.stop();
+        chronograph.stop();
+
+        // The data should be separate now
+        assertThat(chronograph.getTaskData().getRootTasks()).hasSize(2); // A and B
+        assertThat(chronograph.getTaskData().getTasks()).hasSize(4); // All 4
+    }
 }

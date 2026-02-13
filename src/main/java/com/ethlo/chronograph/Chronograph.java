@@ -74,7 +74,6 @@ import java.util.function.ToLongFunction;
 import java.util.function.UnaryOperator;
 
 import com.ethlo.chronograph.internal.MutableTaskInfo;
-import com.ethlo.chronograph.internal.RateLimitedTaskInfo;
 import com.ethlo.chronograph.output.OutputFormatter;
 import com.ethlo.chronograph.output.json.JsonOutputFormatter;
 import com.ethlo.chronograph.output.table.TableOutputFormatter;
@@ -102,7 +101,7 @@ public class Chronograph
     private final ScheduledExecutorService scheduledExecutorService = new ScheduledThreadPoolExecutor(1);
 
     private final Deque<MutableTaskInfo> taskStack = new ArrayDeque<>(); // Tracks the active task
-    private final Map<String, MutableTaskInfo> tasksByName = new LinkedHashMap<>();
+    private final Map<Object, MutableTaskInfo> tasksByKey = new LinkedHashMap<>();
 
     private final CaptureConfig captureConfig;
     private final String name;
@@ -1079,31 +1078,33 @@ public class Chronograph
     {
         if (task == null)
         {
-            throw new IllegalArgumentException("task cannot be null");
+            throw new IllegalArgumentException("task must not be null");
         }
 
-        final MutableTaskInfo taskInfo = tasksByName.computeIfAbsent(task, t ->
-                {
-                    final MutableTaskInfo parent = taskStack.peek();
-                    if (captureConfig.getMinInterval().equals(Duration.ZERO))
-                    {
-                        MutableTaskInfo newTask;
-                        if (captureConfig.getMinInterval().equals(Duration.ZERO))
-                        {
-                            newTask = new MutableTaskInfo(task, parent);
-                        }
-                        else
-                        {
-                            newTask = new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService, parent);
-                        }
+        // COMPATIBILITY CHECK: Is this task name already active in the current stack?
+        for (MutableTaskInfo active : taskStack)
+        {
+            if (active.getName().equals(task))
+            {
+                return false;
+            }
+        }
 
-                        return newTask;
-                    }
-                    return new RateLimitedTaskInfo(task, captureConfig.getMinInterval(), scheduledExecutorService, parent);
-                }
+        final MutableTaskInfo parent = taskStack.peek();
+        final TaskKey key = new TaskKey(parent, task);
+
+        final MutableTaskInfo taskInfo = tasksByKey.computeIfAbsent(key, k ->
+                new MutableTaskInfo(task, parent)
         );
-        taskStack.push(taskInfo);
-        return taskInfo.start();
+
+        if (taskInfo.start())
+        {
+            taskStack.push(taskInfo);
+            return true;
+        }
+
+        // Task was already running in this specific context (parent/name pair)
+        return false;
     }
 
     /**
@@ -1114,9 +1115,9 @@ public class Chronograph
     public boolean stop()
     {
         final long ts = System.nanoTime();
-        if (!taskStack.isEmpty())
+        final MutableTaskInfo task = taskStack.pollFirst(); // pollFirst is slightly safer/clearer for Deque
+        if (task != null)
         {
-            final MutableTaskInfo task = taskStack.pop();
             return task.stopped(ts);
         }
         return false;
@@ -1138,11 +1139,11 @@ public class Chronograph
     public void resetAll()
     {
         taskStack.clear();
-        tasksByName.clear();
+        tasksByKey.clear();
     }
 
     /**
-     * Get a task by its name
+     * Get a task by its name. If multiple with same name, return the latest used.
      *
      * @param task The task name
      * @return The task
@@ -1159,9 +1160,22 @@ public class Chronograph
      * @param task Te task name
      * @return The task
      */
-    private Optional<TaskInfo> findByName(String task)
+    private Optional<MutableTaskInfo> findByName(String task)
     {
-        return Optional.ofNullable(tasksByName.get(task));
+        // Search from the active stack downwards first (most likely intent)
+        for (MutableTaskInfo active : taskStack)
+        {
+            if (active.getName().equals(task))
+            {
+                return Optional.of(active);
+            }
+        }
+
+        // Fallback: search all tracked nodes
+        return tasksByKey.values().stream()
+                .filter(t -> t.getName().equals(task))
+                .map(t -> t)
+                .findFirst();
     }
 
     /**
@@ -1171,7 +1185,10 @@ public class Chronograph
      */
     public List<TaskInfo> getTasks()
     {
-        return List.copyOf(tasksByName.values().stream().filter(t -> t.getDepth() == 0).toList());
+        return tasksByKey.values().stream()
+                .filter(t -> t.getParent() == null)
+                .map(t -> (TaskInfo) t)
+                .toList();
     }
 
     /**
@@ -1182,7 +1199,15 @@ public class Chronograph
      */
     public boolean isRunning(String task)
     {
-        return Optional.ofNullable(tasksByName.get(task)).map(MutableTaskInfo::isRunning).orElse(false);
+        // A task is only "running" if it is currently in the taskStack
+        for (MutableTaskInfo active : taskStack)
+        {
+            if (active.getName().equals(task))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -1216,6 +1241,8 @@ public class Chronograph
         final long ts = System.nanoTime();
         while (!taskStack.isEmpty())
         {
+            // We pop and stop each one individually to ensure
+            // every running flag is flipped to false.
             final MutableTaskInfo task = taskStack.pop();
             task.stopped(ts);
         }
@@ -1232,5 +1259,35 @@ public class Chronograph
     public String toString()
     {
         return DEFAULT_FORMATTER.format(getTaskData());
+    }
+
+    private static final class TaskKey
+    {
+        private final MutableTaskInfo parent;
+        private final String name;
+        private final int hashCode;
+
+        public TaskKey(MutableTaskInfo parent, String name)
+        {
+            this.parent = parent;
+            this.name = name;
+            // Pre-calculate hash for O(1) map performance
+            this.hashCode = 31 * System.identityHashCode(parent) + name.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object o)
+        {
+            if (this == o) return true;
+            if (!(o instanceof TaskKey that)) return false;
+            // Use == for parent because they are unique nodes in the tree
+            return parent == that.parent && name.equals(that.name);
+        }
+
+        @Override
+        public int hashCode()
+        {
+            return hashCode;
+        }
     }
 }
