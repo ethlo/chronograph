@@ -28,6 +28,12 @@ Easy to use Java stopwatch allowing measurement of elapsed time.
   * No dependencies
 
 ## Sample usage
+
+#### hierarchicalTasks <sup>[source](src/test/java/samples/usage/UsageSamples.java#L36-L63)</sup>
+
+Tasks can be nested. Time spent in a task that is not covered by its subtasks is reported as
+`<overhead>`.
+
 ```java
 final Chronograph c = Chronograph.create();
 c.time("Request", () ->
@@ -47,7 +53,40 @@ c.time("Request", () ->
         c.time("JSON de-serialize", () -> busy(44));
     });
 });
+
+System.out.println(c);
 ```
+
+#### startAndStop <sup>[source](src/test/java/samples/usage/UsageSamples.java#L65-L78)</sup>
+
+Start and stop a task explicitly. Printing the chronograph renders the results as a table.
+
+```java
+final Chronograph chronograph = Chronograph.create();
+chronograph.start("my-task");
+// perform a task
+chronograph.stop();
+System.out.println(chronograph);
+
+assertEquals(1, chronograph.getTask("my-task").getInvocations());
+```
+
+#### timeLambda <sup>[source](src/test/java/samples/usage/UsageSamples.java#L80-L94)</sup>
+
+Time a lambda. The overloads of `time` cover the functional interfaces in `java.util.function`, so
+a return value is passed through.
+
+```java
+final List<Long> myList = new ArrayList<>(Arrays.asList(5L, 3L, 9L, 1L));
+final Chronograph chronograph = Chronograph.create();
+chronograph.time("List sort", () -> myList.sort(Comparator.naturalOrder()));
+final Long max = chronograph.time("Find max", () -> myList.get(myList.size() - 1));
+System.out.println(chronograph);
+
+assertEquals(9L, max);
+```
+
+
 
 Sample output in tables:
 ![Table output](doc/default2.png "Table output")
@@ -153,57 +192,75 @@ Or in JSON format if you need it for later analysis:
 <dependency>
   <groupId>com.ethlo.time</groupId>
   <artifactId>chronograph</artifactId>
-  <version>4.0.0</version>
+  <version>5.0.1</version>
 </dependency>
-``` 
-### Usage 
-
-#### Simple
-```java
-final Chronograph chronograph = Chronograph.create();
-chronograph.start("my-task");
-// perform a task
-chronograph.stop();
-System.out.printn(chronograph.prettyPrint());
-```
-
-#### Functional style with lamda
-
-```java
-final List<Long> myList = ...;
-final Chronograph chronograph = Chronograph.create();     
-chronograph.time("List sort", () -> linkedList.sort(Comparator.naturalOrder()));
-System.out.println(chronograph);
 ```
 
 ### Choice of output columns
 Empty columns will be dropped automatically. Included columns can be configured.
 
-Begin from scratch:
+#### outputConfigFromScratch <sup>[source](src/test/java/samples/output/OutputSamples.java#L35-L46)</sup>
+
+Begin from scratch and enable only the columns you want.
+
 ```java
 final OutputConfig outputConfig = new OutputConfig()
-  .median(true)
-  .standardDeviation(true);
-``` 
+        .median(true)
+        .standardDeviation(true);
 
-Begin from DEFAULT configuration:
-```java
-final OutputConfig outputConfig = Chronograph.configure(OutputConfig.DEFAULT
-  .percentiles(75, 90, 99, 99.9, 99.99));
+assertTrue(outputConfig.median());
 ```
 
-```java
-// Then use it like this
+#### outputConfigFromDefault <sup>[source](src/test/java/samples/output/OutputSamples.java#L48-L59)</sup>
 
-System.out.println(new TableOutputFormatter(outputConfig, TableTheme.RED_HERRING).format(chronograph.getData()));
+Begin from one of the predefined configurations, `DEFAULT`, `COMPACT` or `EXTENDED`, and adjust it. Each
+call returns a new configuration.
+
+```java
+final OutputConfig outputConfig = OutputConfig.DEFAULT
+        .percentiles(75, 90, 99, 99.9, 99.99);
+
+assertEquals(5, outputConfig.percentiles().length);
 ```
+
+#### formatAsTable <sup>[source](src/test/java/samples/output/OutputSamples.java#L61-L76)</sup>
+
+Render the results as a table with a theme from `TableThemes` and your output configuration.
+
+```java
+final Chronograph chronograph = Chronograph.create();
+chronograph.time("my-task", () -> Math.sqrt(42));
+
+final OutputConfig outputConfig = OutputConfig.EXTENDED;
+final String table = new TableOutputFormatter(TableThemes.RED_HERRING, outputConfig)
+        .format(chronograph.getTaskData());
+System.out.println(table);
+
+assertTrue(table.contains("my-task"));
+```
+
+
 ### Reduced sample interval
-If you run very quick tasks (typically less than milliseconds) in a loop, it may be beneficial to not capture every iteration, but instead sample some of them. This can be achieved by
+If you run very quick tasks (typically less than milliseconds) in a loop, it may be beneficial to not capture every iteration, but instead sample some of them.
+
+#### minInterval <sup>[source](src/test/java/samples/sampling/SamplingSamples.java#L34-L51)</sup>
+
+Only capture an invocation when at least `minInterval` has passed since the last captured one. All
+invocations are still counted.
+
 ```java
 final Chronograph chronograph = Chronograph
-    .create(CaptureConfig
-        .minInterval(Duration.ofNanos(10_000))); // 10 microseconds
+        .create(CaptureConfig
+                .minInterval(Duration.ofNanos(10_000))); // 10 microseconds
+
+for (int i = 0; i < 100_000; i++)
+{
+    chronograph.time("quick-task", () -> Math.sqrt(42));
+}
+
+assertEquals(100_000, chronograph.getTask("quick-task").getInvocations());
 ```
+
 
 ### Themes
 
@@ -214,16 +271,38 @@ You can choose to output the results using different styles and colors. Below ar
 ![Themes](doc/default2.png "Theme sample")
 ![Themes](doc/default3.png "Theme sample")
 
-#### Make your own
+#### customTheme <sup>[source](src/test/java/samples/themes/ThemeSamples.java#L36-L55)</sup>
+
+Build a theme from scratch.
+
 ```java
 final TableTheme myTheme = TableTheme.builder()
-    .stringColor(AnsiColor.BLUE)
-    .numericColor(AnsiColor.GREEN)
-    .horizontalSeparator(" ")
-    .verticalSpacerColor(AnsiColor.GRAY)
-    .horizontalSpacerColor(AnsiColor.GRAY)
-    .build();
+        .stringColor(AnsiColor.BLUE)
+        .numericColor(AnsiColor.GREEN)
+        .horizontalSeparator(" ")
+        .verticalSpacerColor(AnsiColor.GRAY)
+        .horizontalSpacerColor(AnsiColor.GRAY)
+        .build();
+
+final Chronograph chronograph = Chronograph.create();
+chronograph.time("my-task", () -> Math.sqrt(42));
+System.out.println(new TableOutputFormatter(myTheme, OutputConfig.DEFAULT).format(chronograph.getTaskData()));
+
+assertEquals(AnsiColor.BLUE, myTheme.getStringColor());
 ```
+
+#### adjustTheme <sup>[source](src/test/java/samples/themes/ThemeSamples.java#L57-L68)</sup>
+
+Or start from a predefined theme and change what you need.
+
+```java
+final TableTheme myTheme = TableThemes.ROUNDED.begin()
+        .stringColor(AnsiColor.YELLOW)
+        .build();
+
+assertEquals(AnsiColor.YELLOW, myTheme.getStringColor());
+```
+
 
 ## Limitations
 

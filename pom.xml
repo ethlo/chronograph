@@ -43,6 +43,14 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.5.0</version>
                 <configuration>
+                    <includes>
+                        <!-- The defaults, plus the README samples -->
+                        <include>**/Test*.java</include>
+                        <include>**/*Test.java</include>
+                        <include>**/*Tests.java</include>
+                        <include>**/*TestCase.java</include>
+                        <include>**/*Samples.java</include>
+                    </includes>
                     <excludes>
                         <exclude>**/*BenchmarkTest.java</exclude>
                     </excludes>
@@ -216,6 +224,59 @@
             <properties>
                 <gpg.skip>false</gpg.skip>
             </properties>
+        </profile>
+        <!-- mvn -Preadme process-resources: regenerates README.md from src/site/README.md and the samples in
+             src/test/java/samples -->
+        <profile>
+            <id>readme</id>
+            <build>
+                <resources>
+                    <!-- Appended to the main <resources>, not replacing them -->
+                    <resource>
+                        <filtering>true</filtering>
+                        <directory>${project.basedir}/src/site</directory>
+                        <includes>
+                            <include>README.md</include>
+                        </includes>
+                        <targetPath>${project.basedir}</targetPath>
+                    </resource>
+                </resources>
+                <plugins>
+                    <plugin>
+                        <groupId>com.ethlo.documentation</groupId>
+                        <artifactId>source-extractor-maven-plugin</artifactId>
+                        <version>0.5.0</version>
+                        <configuration>
+                            <failOnEmpty>true</failOnEmpty>
+                            <sources>
+                                <source>
+                                    <directory>src/test/java/samples/usage</directory>
+                                    <name>samples.usage</name>
+                                </source>
+                                <source>
+                                    <directory>src/test/java/samples/output</directory>
+                                    <name>samples.output</name>
+                                </source>
+                                <source>
+                                    <directory>src/test/java/samples/sampling</directory>
+                                    <name>samples.sampling</name>
+                                </source>
+                                <source>
+                                    <directory>src/test/java/samples/themes</directory>
+                                    <name>samples.themes</name>
+                                </source>
+                            </sources>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>extract</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 </project>
