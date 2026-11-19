@@ -192,7 +192,7 @@ Or in JSON format if you need it for later analysis:
 <dependency>
   <groupId>com.ethlo.time</groupId>
   <artifactId>chronograph</artifactId>
-  <version>5.0.1</version>
+  <version>5.1.0</version>
 </dependency>
 ```
 

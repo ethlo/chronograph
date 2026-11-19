@@ -135,7 +135,7 @@ Or in JSON format if you need it for later analysis:
 <dependency>
   <groupId>com.ethlo.time</groupId>
   <artifactId>chronograph</artifactId>
-  <version>${project.version}</version>
+  <version>${released.version}</version>
 </dependency>
 ```
 

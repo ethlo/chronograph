@@ -170,6 +170,8 @@
         <developerConnection>scm:git:git@github.com:ethlo/chronograph.git</developerConnection>
     </scm>
     <properties>
+        <!-- The version shown in README.md. The release workflow updates it. -->
+        <released.version>5.1.0</released.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <gpg.skip>true</gpg.skip>
     </properties>
