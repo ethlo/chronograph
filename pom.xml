@@ -7,7 +7,7 @@
     <artifactId>chronograph</artifactId>
     <name>Chronograph</name>
     <description>Easy-to-use stopwatch for task performance statistics</description>
-    <version>5.0.1</version>
+    <version>0-SNAPSHOT</version>
     <licenses>
         <license>
             <name>Apache License, Version 2.0</name>
@@ -156,13 +156,6 @@
                 </executions>
             </plugin>
         </plugins>
-        <extensions>
-            <extension>
-                <groupId>org.apache.maven.wagon</groupId>
-                <artifactId>wagon-ssh</artifactId>
-                <version>3.5.3</version>
-            </extension>
-        </extensions>
     </build>
     <scm>
         <url>https://github.com/ethlo/chronograph</url>
@@ -170,6 +163,8 @@
         <developerConnection>scm:git:git@github.com:ethlo/chronograph.git</developerConnection>
     </scm>
     <properties>
+        <!-- The version shown in README.md. The release workflow updates it. -->
+        <released.version>5.1.0</released.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <gpg.skip>true</gpg.skip>
     </properties>
